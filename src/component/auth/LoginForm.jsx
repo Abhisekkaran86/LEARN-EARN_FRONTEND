@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Input from "../common/Input";
 import RoleToggle from "../common/TabSwitch";
+import { Link } from "react-router-dom";
 
 const LoginForm = () => {
   const [role, setRole] = useState("student");
@@ -100,9 +101,12 @@ const LoginForm = () => {
         {/* Signup */}
         <p className="text-sm text-center mt-4 text-gray-500">
           Don’t have an account?{" "}
-          <span className="text-[#82c600] font-medium cursor-pointer hover:underline">
-            Sign Up
-          </span>
+          <Link
+            to="/"
+            className="text-[#82c600] font-medium hover:underline"
+          >
+            Signup
+          </Link>
         </p>
       </form>
     </div>
