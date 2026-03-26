@@ -1,10 +1,11 @@
-// pages/Signup.jsx
+
 import { useState } from "react";
 import Input from "../components/ui/Input";
 import Button from "../components/ui/Button";
 import { FiUser, FiMail, FiLock, FiPhone } from "react-icons/fi";
 import logo from "../assets/logo.png";
 import { Link } from "react-router-dom";
+import axios from "axios";
 
 const Signup = () => {
     const [form, setForm] = useState({
@@ -16,10 +17,39 @@ const Signup = () => {
     });
 
     const [showPass, setShowPass] = useState(false);
+    const [loading, setLoading] = useState(false);
+
 
     const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value });
     };
+    const handleSubmit = async () => {
+        try {
+            setLoading(true);
+
+            const res = await axios.post(
+                "https://learn-earn-contest-2.onrender.com/api/v1/auth/register",
+                form
+            );
+
+            console.log("SUCCESS:", res.data);
+
+            alert("Signup Successful ");
+
+            // 👉 redirect to login
+            navigate("/login");
+
+        } catch (err) {
+            console.log(err);
+
+            alert(
+                err.response?.data?.message || "Something went wrong ❌"
+            );
+        } finally {
+            setLoading(false);
+        }
+    };
+
 
     return (
         <div className="min-h-screen grid lg:grid-cols-2">
@@ -116,17 +146,17 @@ const Signup = () => {
                                 }
                             />
 
-                            <Input
+                            {/* <Input
                                 label="Mobile"
                                 name="phone"
                                 placeholder="Enter number"
                                 value={form.phone}
                                 onChange={handleChange}
                                 leftIcon={<FiPhone />}
-                            />
+                            /> */}
 
                             {/* GENDER */}
-                            <div>
+                            {/* <div>
                                 <p className="text-sm text-gray-600">Gender</p>
                                 <div className="flex gap-4 mt-2">
                                     {["Male", "Female", "Other"].map((g) => (
@@ -142,9 +172,9 @@ const Signup = () => {
                                         </label>
                                     ))}
                                 </div>
-                            </div>
+                            </div> */}
 
-                            <Button>Create Account</Button>
+                            <Button onClick={handleSubmit}>Create Account</Button>
 
                             {/* DIVIDER */}
                             <div className="flex items-center gap-2">

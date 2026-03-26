@@ -18,6 +18,7 @@ const Login = () => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#f8fafc] to-[#eef2f7] px-4">
 
