@@ -4,8 +4,10 @@ import Input from "../components/ui/Input";
 import Button from "../components/ui/Button";
 import { FiMail, FiLock } from "react-icons/fi";
 import logo from "../assets/Logo.png";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import Cookies from "js-cookie";
+
 
 const Login = () => {
   const [form, setForm] = useState({
@@ -14,42 +16,69 @@ const Login = () => {
   });
 
   const [showPass, setShowPass] = useState(false);
+  const navigate = useNavigate();
+  
 
+ 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
   const [loading, setLoading] = useState(false);
 
-  const handleLogin = async () => {
-    try {
-      setLoading(true);
+  // const handleLogin = async () => {
+  //   try {
+  //     setLoading(true);
 
-      const res = await axios.post(
-        "https://learn-earn-contest-2.onrender.com/api/v1/auth/login",
-        form
-      );
+  //     const res = await axios.post(
+  //       "https://learn-earn-contest-2.onrender.com/api/v1/auth/login",
+  //       form
+  //     );
 
-      console.log("LOGIN SUCCESS:", res.data);
+  //     console.log("LOGIN SUCCESS:", res.data);
 
-      // ✅ TOKEN SAVE (IMPORTANT)
-      localStorage.setItem("token", res.data.token);
+  //     // ✅ TOKEN SAVE (IMPORTANT)
+  //     localStorage.setItem("token", res.data.token);
 
-      alert("Login Successful ✅");
+  //     alert("Login Successful ✅");
 
       
-      navigate("/dashboard");
+  //     navigate("/home");
 
-    } catch (err) {
-      console.log(err);
+  //   } catch (err) {
+  //     console.log(err);
 
-      alert(
-        err.response?.data?.message || "Invalid email or password ❌"
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
+  //     alert(
+  //       err.response?.data?.message || "Invalid email or password ❌"
+  //     );
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+const handleLogin  = async () => {
+  try {
+    setLoading(true);
 
+    const res = await axios.post(
+      "https://learn-earn-contest-2.onrender.com/api/v1/auth/login",
+      form
+    );
+
+    
+    
+
+    Cookies.set("token", res.data.token, {
+      expires: 7,
+    });
+
+    alert("Signup Successful ✅");
+    navigate("/home");
+
+  } catch (err) {
+    alert(err.response?.data?.message || "Something went wrong ❌");
+  } finally {
+    setLoading(false);
+  }
+};
 
 
   return (
