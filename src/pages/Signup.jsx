@@ -3,7 +3,7 @@ import { useState } from "react";
 import Input from "../components/ui/Input";
 import Button from "../components/ui/Button";
 import { FiUser, FiMail, FiLock, FiPhone } from "react-icons/fi";
-import logo from "../assets/logo.png";
+import logo from "../assets/Logo.png";
 import { Link } from "react-router-dom";
 import axios from "axios";
 
