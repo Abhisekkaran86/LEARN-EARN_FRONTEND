@@ -103,7 +103,7 @@ const Header = () => {
   // ✅ LOGOUT
   const handleLogout = () => {
     Cookies.remove("token"); // remove cookie
-    navigate("/login");
+    navigate("/");
   };
 
   return (
