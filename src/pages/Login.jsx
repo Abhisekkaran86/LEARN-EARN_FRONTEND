@@ -186,13 +186,12 @@ const Login = () => {
 
   const handleLogin = async () => {
     try {
-      // dispatch the thunk and unwrap to catch errors locally
       await dispatch(loginUser(form)).unwrap();
 
       alert("Login Successful ✅");
       navigate("/");
     } catch (err) {
-      // err will be the custom message from rejectWithValue
+
       alert(err);
     }
   };
