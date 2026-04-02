@@ -42,7 +42,7 @@ const WhyJoin = () => {
           </div>
 
           {/* RIGHT BLUE CARD */}
-          <div className="bg-[#2563eb] text-white rounded-2xl p-8 shadow-md flex flex-col justify-between">
+          <div className="bg-[#82c600] text-white rounded-2xl p-8 shadow-md flex flex-col justify-between">
 
             <div>
               <div className="w-12 h-12 flex items-center justify-center rounded-xl bg-white/20 text-xl">
