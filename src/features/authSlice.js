@@ -165,7 +165,7 @@ const authSlice = createSlice({
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
 
-        // ✅ store only user
+        
          state.user = {
             ...action.payload.user,
              role: action.payload.role,

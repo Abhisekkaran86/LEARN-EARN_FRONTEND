@@ -98,8 +98,26 @@
 // export default Hero;
 import heroImg from "../assets/Hero1.png";
 import { FaPaperPlane, FaStar } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 const Hero = () => {
+  const navigate = useNavigate();
+
+  // 🔐 Fake auth check (replace with context later)
+  const isAuthenticated = !!localStorage.getItem("token");
+
+  const handleExplore = () => {
+    if (!isAuthenticated) {
+      navigate("/context"); // 🔥 login / context page
+    } else {
+      navigate("/contests"); // 🔥 contests page
+    }
+  };
+
+  const handleLearnMore = () => {
+    navigate("/about"); // 🔥 you can change route
+  };
+
   return (
     <section
       className="relative min-h-screen flex items-center bg-no-repeat"
@@ -109,10 +127,8 @@ const Hero = () => {
         backgroundPosition: "right center",
       }}
     >
-
       {/* LEFT CONTENT */}
       <div className="relative z-10 w-full max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-12">
-
         <div className="max-w-xl">
 
           {/* BADGE */}
@@ -124,12 +140,9 @@ const Hero = () => {
           {/* TITLE */}
           <h1 className="text-3xl sm:text-4xl lg:text-6xl font-bold mt-6 leading-tight text-gray-900">
             Unlock Your <br />
-
-            {/* 🔥 GRADIENT TEXT */}
             <span className="bg-gradient-to-r from-[#82c600] via-[#a3e635] to-[#fbd300] bg-clip-text text-transparent">
               Academic Potential
             </span>
-
           </h1>
 
           {/* DESC */}
@@ -140,11 +153,19 @@ const Hero = () => {
           {/* BUTTONS */}
           <div className="flex flex-wrap gap-4 mt-8">
 
-            <button className="px-6 py-3 rounded-xl font-medium text-white bg-[#82c600] hover:opacity-90 transition shadow-md flex items-center gap-2">
+            {/* 🔥 EXPLORE BUTTON */}
+            <button
+              onClick={handleExplore}
+              className="px-6 py-3 rounded-xl font-medium text-white bg-[#82c600] hover:opacity-90 transition shadow-md flex items-center gap-2"
+            >
               Explore Contests →
             </button>
 
-            <button className="px-6 py-3 rounded-xl font-medium bg-[#fbd300] text-black hover:opacity-90 transition shadow-sm">
+            {/* 🔥 LEARN MORE BUTTON */}
+            <button
+              onClick={handleLearnMore}
+              className="px-6 py-3 rounded-xl font-medium bg-[#fbd300] text-black hover:opacity-90 transition shadow-sm"
+            >
               Learn More
             </button>
 
@@ -152,7 +173,6 @@ const Hero = () => {
 
           {/* STATS */}
           <div className="flex gap-8 sm:gap-10 mt-10 border-t pt-6">
-
             <div>
               <p className="text-2xl lg:text-3xl font-bold text-gray-900">10K+</p>
               <p className="text-sm text-gray-500">Students</p>
@@ -167,21 +187,19 @@ const Hero = () => {
               <p className="text-2xl lg:text-3xl font-bold text-gray-900">100+</p>
               <p className="text-sm text-gray-500">Institutes</p>
             </div>
-
           </div>
 
         </div>
       </div>
 
-      {/* 🔥 FLOAT CARD 1 (TOP RIGHT EXACT) */}
-      <div className="hidden md:flex absolute buttom-[120px] right-[80px] bg-white px-4 py-2 rounded-xl shadow-md items-center gap-2 text-sm">
+      {/* FLOAT CARD 1 */}
+      <div className="hidden md:flex absolute bottom-[120px] right-[80px] bg-white px-4 py-2 rounded-xl shadow-md items-center gap-2 text-sm">
         <FaStar className="text-yellow-400" />
         44k+ Participating
       </div>
 
-      {/* 🔥 FLOAT CARD 2 (BOTTOM RIGHT EXACT) */}
+      {/* FLOAT CARD 2 */}
       <div className="hidden md:block absolute bottom-[96px] right-[80px] bg-white p-4 rounded-xl shadow-xl w-[220px]">
-
         <div className="flex items-center gap-2 text-sm text-gray-600">
           <FaStar className="text-yellow-400" />
           4.9 Rating
@@ -194,7 +212,6 @@ const Hero = () => {
         <p className="text-xs text-gray-500 mt-1">
           Olympiad Winner 2024
         </p>
-
       </div>
 
     </section>

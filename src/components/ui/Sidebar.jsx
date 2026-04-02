@@ -142,6 +142,7 @@ import {
 import { useNavigate, useLocation } from "react-router-dom";
 import { useState } from "react";
 import Button from "../ui/Button";
+
 const Sidebar = ({ menu = [], title = "Panel", role = "admin" }) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -154,7 +155,7 @@ const Sidebar = ({ menu = [], title = "Panel", role = "admin" }) => {
     if (item.key) navigate(item.key);
   };
 
-  // 🎯 Dynamic create route
+  // 🎯 Dynamic create route (only used for admin)
   const createPath =
     role === "admin"
       ? "/admin/create-contest"
@@ -176,7 +177,6 @@ const Sidebar = ({ menu = [], title = "Panel", role = "admin" }) => {
                 ✦
               </div>
               <div>
-                {/* ✅ Dynamic Title */}
                 <h2 className="text-sm font-semibold text-gray-800">
                   {title}
                 </h2>
@@ -228,6 +228,7 @@ const Sidebar = ({ menu = [], title = "Panel", role = "admin" }) => {
                   </span>
                 )}
 
+                {/* Tooltip when collapsed */}
                 {collapsed && (
                   <div className="absolute left-14 bg-black text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition">
                     {item.label}
@@ -242,17 +243,19 @@ const Sidebar = ({ menu = [], title = "Panel", role = "admin" }) => {
       {/* 🔥 BOTTOM */}
       <div className="space-y-4">
         
-        {/* ✅ Dynamic Create Button */}
-        <Button
-          variant="primary"
-          size="md"
-          leftIcon={!collapsed && <Plus size={16} />}
-          onClick={() => navigate(createPath)}
-        >
-          {!collapsed && "Create"}
-        </Button>
+        {/* ✅ SHOW ONLY FOR ADMIN */}
+        {role === "admin" && (
+          <Button
+            variant="primary"
+            size="md"
+            leftIcon={!collapsed && <Plus size={16} />}
+            onClick={() => navigate(createPath)}
+          >
+            {!collapsed && "Create"}
+          </Button>
+        )}
 
-        {/* Bottom */}
+        {/* Bottom Links */}
         <div className="space-y-2 text-sm text-gray-500">
           <div className="flex items-center gap-2 cursor-pointer hover:text-gray-700">
             <Settings size={16} />

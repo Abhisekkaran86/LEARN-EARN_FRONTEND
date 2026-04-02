@@ -106,7 +106,7 @@ const Header = () => {
 
   const menuItems = [
     { name: "Contests", path: "/contests" },
-    { name: "Rankings", path: "/rankings" },
+    
     { name: "About", path: "/about" },
     { name: "Support", path: "/support" },
   ];
