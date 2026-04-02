@@ -12,7 +12,7 @@ const ContestsPage = () => {
   // ✅ HANDLE PARTICIPATE CLICK
   const handleParticipate = (item) => {
     if (!isLoggedIn) {
-      navigate("/login"); // 🔥 redirect if not logged in
+      navigate("/login"); 
     } else {
       // 🔥 future: go to contest details page
       navigate(`/contest/${item.id}`);
