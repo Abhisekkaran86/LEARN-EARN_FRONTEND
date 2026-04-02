@@ -89,37 +89,41 @@
 // components/Header.jsx
 import Container from "../Container";
 import Button from "../ui/Button";
-import { Link, useNavigate } from "react-router-dom";
+import { NavLink, Link, useNavigate } from "react-router-dom";
 import logo from "../../assets/desun.png";
 import Cookies from "js-cookie";
 
 const Header = () => {
   const navigate = useNavigate();
 
-  // ✅ CHECK COOKIE
   const token = Cookies.get("token");
   const isLoggedIn = !!token;
 
-  // ✅ LOGOUT
   const handleLogout = () => {
-    Cookies.remove("token"); // remove cookie
+    Cookies.remove("token");
     navigate("/");
   };
 
+  const menuItems = [
+    { name: "Contests", path: "/contests" },
+    { name: "Rankings", path: "/rankings" },
+    { name: "About", path: "/about" },
+    { name: "Support", path: "/support" },
+  ];
+
   return (
     <header className="fixed top-0 left-0 w-full z-50 backdrop-blur-md bg-white/70 border-b border-white/20">
-
       <Container>
         <div className="flex items-center justify-between py-3">
-
+          
           {/* LOGO */}
-          <div className="flex items-center gap-3">
+          <Link to="/" className="flex items-center gap-3">
             <img
               src={logo}
               alt="Desun Academy"
-              className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 object-contain scale-110"
+              className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 object-contain"
             />
-            <div className="leading-tight">
+            <div>
               <h1 className="font-bold text-base sm:text-lg">
                 DESUN <span className="text-[#82c600]">ACADEMY</span>
               </h1>
@@ -127,53 +131,42 @@ const Header = () => {
                 Get Placed by Skills
               </p>
             </div>
-          </div>
+          </Link>
 
           {/* NAV */}
-          <nav className="hidden md:flex items-center gap-10 text-[16px] lg:text-[17px] font-semibold text-gray-800">
-            {["Contests", "Rankings", "About", "Support"].map((item) => (
-              <a
-                key={item}
-                className="relative group cursor-pointer hover:text-[#82c600] transition"
+          <nav className="hidden md:flex items-center gap-10 font-semibold text-gray-800">
+            {menuItems.map((item) => (
+              <NavLink
+                key={item.name}
+                to={item.path}
+                className={({ isActive }) =>
+                  `relative group transition ${
+                    isActive ? "text-[#82c600]" : "hover:text-[#82c600]"
+                  }`
+                }
               >
-                {item}
+                {item.name}
                 <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-[#82c600] transition-all group-hover:w-full"></span>
-              </a>
+              </NavLink>
             ))}
           </nav>
 
-          {/* RIGHT SIDE */}
-          <div className="flex items-center gap-5">
-
+          {/* RIGHT */}
+          <div>
             {isLoggedIn ? (
-              <Button
-                onClick={handleLogout}
-                full={false}
-                size="sm"
-                className="shadow-md hover:scale-105 transition-transform"
-              >
+              <Button onClick={handleLogout} size="sm">
                 Logout
               </Button>
             ) : (
               <Link to="/login">
-                <Button
-                  full={false}
-                  size="sm"
-                  className="shadow-md hover:scale-105 transition-transform"
-                >
-                  Get Started
-                </Button>
+                <Button size="sm">Get Started</Button>
               </Link>
             )}
-
           </div>
-
         </div>
       </Container>
 
-      {/* BOTTOM LINE */}
       <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-[#82c600]/40 to-transparent"></div>
-
     </header>
   );
 };

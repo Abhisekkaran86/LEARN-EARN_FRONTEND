@@ -203,11 +203,13 @@ import Input from "../components/ui/Input";
 import Button from "../components/ui/Button";
 import logo from "../assets/Logo.png";
 import { registerUser } from "../features/authSlice";
+import { toast } from "react-toastify";
 
 
 const Signup = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  
   
   // Get loading state from Redux
   const { loading } = useSelector((state) => state.auth);
@@ -218,6 +220,8 @@ const Signup = () => {
     password: "",
   });
   const [showPass, setShowPass] = useState(false);
+ 
+ 
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -225,17 +229,14 @@ const Signup = () => {
 
   const handleSubmit = async () => {
     try {
-      // dispatch the thunk and unwrap to catch errors locally
-      await dispatch(registerUser(form)).unwrap();
-      
-      alert("Signup Successful ✅");
+      const res = await dispatch(registerUser(form)).unwrap();
+
+      toast.success("Signup Successful ✅");
       navigate("/login");
     } catch (err) {
-      // err will be the custom message from rejectWithValue
-      alert(err); 
+      toast.error(err || "Something went wrong ❌");
     }
   };
-
   return (
     <div className="min-h-screen grid lg:grid-cols-2">
       {/* 🔥 LEFT SIDE PREMIUM */}
