@@ -8,8 +8,9 @@ import StudentRoutes from "./route/StudentRoutes";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ContestsPage from "./pages/ContestsPage";
-import RankingsPage from "./pages/RankingsPage";
+
 import AboutPage from "./pages/AboutPage";
+import ContactPage from "./pages/ContactPage";
 
 function App() {
   return (
@@ -22,7 +23,7 @@ function App() {
           <Route path="/" element={<HomeContainer />} />
         </Route>
         <Route path="/contests" element={<ContestsPage />} />
-        <Route path="/rankings" element={<RankingsPage />} />
+        <Route path="/contact" element={<ContactPage />} />
         <Route path="/about" element={<AboutPage />} />
         {/* Auth */}
         <Route path="/signup" element={<Signup />} />

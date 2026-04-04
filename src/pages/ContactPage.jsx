@@ -13,110 +13,105 @@ const ContactPage = () => {
       <div className="relative mb-16 rounded-3xl overflow-hidden shadow-xl">
 
         <div className="absolute inset-0 bg-gradient-to-r from-[#82C600] via-[#a3e635] to-[#6ea800]" />
-
         <div className="absolute top-[-60px] right-[-60px] w-[220px] h-[220px] bg-white/20 blur-3xl rounded-full" />
 
-        <div className="relative z-10 p-8 md:p-12 text-white">
-
-          <h1 className="text-4xl md:text-5xl font-bold">
+        <div className="relative z-10 p-8 md:p-12 text-white max-w-4xl">
+          <h1 className="text-4xl md:text-5xl font-bold leading-tight">
             Get in Touch With Us
           </h1>
 
-          <p className="mt-4 text-sm md:text-base opacity-90 max-w-xl">
+          <p className="mt-4 text-sm md:text-base opacity-90">
             Have questions, feedback, or need help? We’re here to support your journey 🚀
           </p>
-
         </div>
       </div>
 
-      {/* 🔥 CONTACT GRID */}
-      <div className="grid md:grid-cols-2 gap-10">
+      {/* 🔥 MAIN GRID */}
+      <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-10 items-stretch">
 
-        {/* 🔥 LEFT - CONTACT FORM */}
-        <div className="bg-white/70 backdrop-blur-xl border border-white/20 rounded-3xl p-8 shadow-lg">
+        {/* 🔥 FORM */}
+        <div className="bg-white/70 backdrop-blur-xl border border-white/20 rounded-3xl p-8 shadow-lg flex flex-col justify-between">
 
-          <h2 className="text-xl font-bold text-gray-800 mb-6">
-            Send us a message
-          </h2>
+          <div>
+            <h2 className="text-xl font-bold text-gray-800 mb-6">
+              Send us a message
+            </h2>
 
-          <form className="space-y-5">
+            <form className="space-y-5">
 
-            <input
-              type="text"
-              placeholder="Your Name"
-              className="w-full p-3 rounded-xl border bg-white/60 focus:outline-none focus:ring-2 focus:ring-[#82C600]"
-            />
+              <input
+                type="text"
+                placeholder="Your Name"
+                className="w-full p-3 rounded-xl border bg-white/60 focus:outline-none focus:ring-2 focus:ring-[#82C600]"
+              />
 
-            <input
-              type="email"
-              placeholder="Your Email"
-              className="w-full p-3 rounded-xl border bg-white/60 focus:outline-none focus:ring-2 focus:ring-[#82C600]"
-            />
+              <input
+                type="email"
+                placeholder="Your Email"
+                className="w-full p-3 rounded-xl border bg-white/60 focus:outline-none focus:ring-2 focus:ring-[#82C600]"
+              />
 
-            <textarea
-              rows="4"
-              placeholder="Your Message"
-              className="w-full p-3 rounded-xl border bg-white/60 focus:outline-none focus:ring-2 focus:ring-[#82C600]"
-            />
+              <textarea
+                rows="5"
+                placeholder="Your Message"
+                className="w-full p-3 rounded-xl border bg-white/60 focus:outline-none focus:ring-2 focus:ring-[#82C600]"
+              />
+            </form>
+          </div>
 
-            <button
-              type="submit"
-              className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#82C600] to-[#a3e635] text-white py-3 rounded-xl font-semibold shadow-md hover:shadow-xl hover:scale-[1.02] transition"
+          {/* BUTTON FIXED AT BOTTOM */}
+          <button
+            type="submit"
+            className="mt-6 w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#82C600] to-[#a3e635] text-white py-3 rounded-xl font-semibold shadow-md hover:shadow-xl hover:scale-[1.02] transition"
+          >
+            Send Message <FaPaperPlane />
+          </button>
+        </div>
+
+        {/* 🔥 CONTACT INFO */}
+        <div className="flex flex-col justify-between gap-6">
+
+          {[
+            {
+              icon: <FaEnvelope />,
+              title: "Email",
+              value: "support@contestplatform.com",
+            },
+            {
+              icon: <FaPhone />,
+              title: "Phone",
+              value: "+91 98765 43210",
+            },
+            {
+              icon: <FaMapMarkerAlt />,
+              title: "Location",
+              value: "Kolkata, India",
+            },
+          ].map((item, i) => (
+            <div
+              key={i}
+              className="flex items-center gap-4 bg-white/70 backdrop-blur-xl border p-6 rounded-2xl shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
             >
-              Send Message <FaPaperPlane />
-            </button>
+              <div className="w-12 h-12 flex items-center justify-center rounded-xl bg-[#82C600]/10 text-[#82C600] text-xl">
+                {item.icon}
+              </div>
 
-          </form>
-        </div>
-
-        {/* 🔥 RIGHT - CONTACT INFO */}
-        <div className="space-y-6">
-
-          {/* Email */}
-          <div className="bg-white/70 backdrop-blur-xl border p-6 rounded-2xl shadow-md hover:shadow-xl transition">
-            <div className="flex items-center gap-4">
-              <FaEnvelope className="text-[#82C600] text-xl" />
               <div>
-                <h3 className="font-semibold text-gray-800">Email</h3>
+                <h3 className="font-semibold text-gray-800">
+                  {item.title}
+                </h3>
                 <p className="text-sm text-gray-500">
-                  support@contestplatform.com
+                  {item.value}
                 </p>
               </div>
             </div>
-          </div>
-
-          {/* Phone */}
-          <div className="bg-white/70 backdrop-blur-xl border p-6 rounded-2xl shadow-md hover:shadow-xl transition">
-            <div className="flex items-center gap-4">
-              <FaPhone className="text-[#82C600] text-xl" />
-              <div>
-                <h3 className="font-semibold text-gray-800">Phone</h3>
-                <p className="text-sm text-gray-500">
-                  +91 98765 43210
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Location */}
-          <div className="bg-white/70 backdrop-blur-xl border p-6 rounded-2xl shadow-md hover:shadow-xl transition">
-            <div className="flex items-center gap-4">
-              <FaMapMarkerAlt className="text-[#82C600] text-xl" />
-              <div>
-                <h3 className="font-semibold text-gray-800">Location</h3>
-                <p className="text-sm text-gray-500">
-                  Kolkata, India
-                </p>
-              </div>
-            </div>
-          </div>
+          ))}
 
         </div>
-
       </div>
 
       {/* 🔥 CTA */}
-      <div className="mt-16 bg-gradient-to-r from-[#82C600] to-[#a3e635] p-10 rounded-3xl text-center text-white shadow-lg">
+      <div className="max-w-4xl mx-auto mt-16 bg-gradient-to-r from-[#82C600] to-[#a3e635] p-10 rounded-3xl text-center text-white shadow-lg">
 
         <h2 className="text-2xl font-bold">
           Need Immediate Help?

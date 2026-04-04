@@ -50,12 +50,13 @@
 import StatCard from "../../../components/ui/StatCard";
 import Chart from "../../../components/ui/Chart";
 import ActionPanel from "../../../components/ui/ActionPanel";
-import ActiveContestPipeline from "../../../sections/ActiveContestPipeline";
+import ActiveContestPipeline from "./ActiveContestUI";
+import ActiveContestUI from "./ActiveContestUI";
 
 const AdminDashboardView = ({
   stats = [],
   chartData = [],
-  data = [],
+  children,
   actions = [],
 }) => {
   return (
@@ -84,11 +85,8 @@ const AdminDashboardView = ({
       </div>
 
       {/* ✅ ACTIVE CONTEST TABLE */}
-      <ActiveContestPipeline
-        data={data}
-        total={data.length}
-      />
-
+      <ActiveContestUI />
+  
     </div>
   );
 };
