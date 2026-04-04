@@ -443,25 +443,12 @@
 
 // export default ActiveContestPipeline;
 
+
 import { MoreVertical, Search } from "lucide-react";
+import Button from "../../../components/ui/Button";
+import Input from "../../../components/ui/Input";
 
-const StatusBadge = ({ status }) => {
-  const styles = {
-    active: "bg-[#82C600]/20 text-[#82C600]",
-    draft: "bg-gray-200 text-gray-600",
-    evaluating: "bg-blue-100 text-blue-600",
-  };
-
-  return (
-    <span
-      className={`text-xs px-3 py-1 rounded-full font-medium ${
-        styles[status] || "bg-gray-100 text-gray-600"
-      }`}
-    >
-      {status?.toUpperCase()}
-    </span>
-  );
-};
+import ContestTable from "../componnent/ContestTable";
 
 const ActiveContestUI = ({
   data = [],
@@ -470,9 +457,6 @@ const ActiveContestUI = ({
   setSearch,
   filter,
   setFilter,
-  page,
-  setPage,
-  totalPages,
   onEdit,
   onDelete,
   isEditOpen,
@@ -482,7 +466,7 @@ const ActiveContestUI = ({
   onSave,
 }) => {
 
-  // ✅ FIX: SAFE FILTER (NO CRASH)
+  // ✅ ONLY FILTER (NO PAGINATION)
   const filteredData = data
     ?.filter((item) =>
       (item?.title || "")
@@ -492,17 +476,6 @@ const ActiveContestUI = ({
     ?.filter((item) =>
       filter === "all" ? true : item?.status === filter
     );
-
-  // ✅ KEEP YOUR UI SAME (only safe)
-  const ITEMS_PER_PAGE = 5;
-  const paginatedData = filteredData.slice(
-    (page - 1) * ITEMS_PER_PAGE,
-    page * ITEMS_PER_PAGE
-  );
-
-  const totalPageCount = Math.ceil(
-    filteredData.length / ITEMS_PER_PAGE
-  );
 
   if (loading) {
     return (
@@ -556,151 +529,144 @@ const ActiveContestUI = ({
         </div>
       </div>
 
-      {/* 🔥 TABLE HEADER */}
-      <div className="grid grid-cols-5 text-xs text-gray-400 px-3 py-2">
-        <span>CONTEST TITLE</span>
-        <span>DATE WINDOW</span>
-        <span>PARTICIPANTS</span>
-        <span>STATUS</span>
-        <span className="text-right">ACTIONS</span>
-      </div>
+      {/* ✅ TABLE (FULL DATA, NO SLICE) */}
+      <ContestTable
+        data={filteredData}
+        onDelete={onDelete}
+        onEdit={onEdit}
+      />
 
-      {/* 🔥 ROWS */}
-      <div className="space-y-2">
+      {/* 🔥 ✅ SAME MODAL (UNCHANGED DESIGN) */}
+      {isEditOpen && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex justify-center items-center z-50">
 
-        {paginatedData.length === 0 ? (
-          <p className="text-center text-gray-400 py-6">
-            No contests found
-          </p>
-        ) : (
-          paginatedData.map((item) => (
-            <div
-              key={item.id}
-              className="grid grid-cols-5 items-center bg-white p-3 rounded-xl border hover:shadow-md hover:bg-[#82C600]/5 transition"
-            >
+          <div className="bg-white w-[450px] rounded-2xl shadow-xl p-6">
+
+            {/* HEADER */}
+            <div className="mb-5 border-b pb-3">
+              <h2 className="text-xl font-semibold text-gray-800">
+                ✏️ Edit Contest
+              </h2>
+              <p className="text-sm text-gray-400">
+                Update all contest details
+              </p>
+            </div>
+
+            {/* FORM */}
+            <div className="space-y-4">
 
               {/* TITLE */}
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-[#82C600]/10 flex items-center justify-center">
-                  {item.icon || "📘"}
-                </div>
-
-                <div>
-                  <p className="text-sm font-medium">{item.title}</p>
-                  <p className="text-xs text-gray-400">
-                    {item.subtitle}
-                  </p>
-                </div>
+              <div>
+                <label className="text-sm font-medium text-gray-600">
+                  Title
+                </label>
+                <Input
+                  value={selectedItem?.title || ""}
+                  onChange={(e) =>
+                    setSelectedItem({
+                      ...selectedItem,
+                      title: e.target.value,
+                    })
+                  }
+                />
               </div>
 
-              {/* DATE */}
+              {/* START DATE */}
               <div>
-                <p className="text-sm">{item.date}</p>
-                <p className="text-xs text-gray-400">
-                  {item.remaining}
-                </p>
+                <label className="text-sm font-medium text-gray-600">
+                  Start Date
+                </label>
+                <Input
+                  type="date"
+                  value={
+                    selectedItem?.startDate
+                      ? new Date(selectedItem.startDate)
+                          .toISOString()
+                          .split("T")[0]
+                      : ""
+                  }
+                  onChange={(e) =>
+                    setSelectedItem({
+                      ...selectedItem,
+                      startDate: e.target.value,
+                    })
+                  }
+                />
+              </div>
+
+              {/* DEADLINE */}
+              <div>
+                <label className="text-sm font-medium text-gray-600">
+                  Deadline
+                </label>
+                <Input
+                  type="date"
+                  value={
+                    selectedItem?.date
+                      ? new Date(selectedItem.date)
+                          .toISOString()
+                          .split("T")[0]
+                      : ""
+                  }
+                  onChange={(e) =>
+                    setSelectedItem({
+                      ...selectedItem,
+                      date: e.target.value,
+                    })
+                  }
+                />
               </div>
 
               {/* PARTICIPANTS */}
-              <div className="text-sm font-medium">
-                {item.participants}
+              <div>
+                <label className="text-sm font-medium text-gray-600">
+                  Participants
+                </label>
+                <Input
+                  type="number"
+                  value={selectedItem?.participants || 0}
+                  onChange={(e) =>
+                    setSelectedItem({
+                      ...selectedItem,
+                      participants: Number(e.target.value),
+                    })
+                  }
+                />
               </div>
 
               {/* STATUS */}
               <div>
-                <StatusBadge status={item.status} />
-              </div>
-
-              {/* ACTIONS */}
-              <div className="flex justify-end">
-                <div className="relative group">
-                  <MoreVertical className="cursor-pointer" />
-
-                  <div className="absolute right-0 mt-2 w-24 bg-white border rounded-lg shadow-md opacity-0 group-hover:opacity-100 transition z-10">
-
-                    <button
-                      onClick={() => onEdit?.(item)}
-                      className="block w-full text-left px-3 py-2 text-sm hover:bg-gray-100"
-                    >
-                      Edit
-                    </button>
-
-                    <button
-                      onClick={() => onDelete?.(item.id)}
-                      className="block w-full text-left px-3 py-2 text-sm text-red-500 hover:bg-gray-100"
-                    >
-                      Delete
-                    </button>
-
-                  </div>
-                </div>
+                <label className="text-sm font-medium text-gray-600">
+                  Status
+                </label>
+                <select
+                  value={selectedItem?.status || "upcoming"}
+                  onChange={(e) =>
+                    setSelectedItem({
+                      ...selectedItem,
+                      status: e.target.value,
+                    })
+                  }
+                  className="w-full border rounded-lg p-2 text-sm"
+                >
+                  <option value="upcoming">Upcoming</option>
+                  <option value="active">Active</option>
+                  <option value="complete">Complete</option>
+                </select>
               </div>
 
             </div>
-          ))
-        )}
 
-      </div>
+            {/* ACTION BUTTONS */}
+            <div className="flex justify-end gap-3 mt-6 border-t pt-4">
 
-      {/* 🔥 PAGINATION */}
-      <div className="flex justify-between items-center mt-4 text-sm text-gray-400">
-
-        <p>Page {page}</p>
-
-        <div className="flex gap-2">
-          {Array.from({ length: totalPageCount }, (_, i) => (
-            <button
-              key={i}
-              onClick={() => setPage(i + 1)}
-              className={`w-8 h-8 rounded ${
-                page === i + 1
-                  ? "bg-[#82C600] text-white"
-                  : "bg-gray-100"
-              }`}
-            >
-              {i + 1}
-            </button>
-          ))}
-        </div>
-
-      </div>
-
-      {/* 🔥 MODAL */}
-      {isEditOpen && (
-        <div className="fixed inset-0 bg-black/30 flex justify-center items-center z-50">
-
-          <div className="bg-white p-6 rounded-xl w-[350px]">
-
-            <h2 className="text-lg font-semibold mb-4">
-              Edit Contest
-            </h2>
-
-            <input
-              className="w-full border p-2 mb-3 rounded"
-              value={selectedItem?.title || ""}
-              onChange={(e) =>
-                setSelectedItem({
-                  ...selectedItem,
-                  title: e.target.value,
-                })
-              }
-            />
-
-            <div className="flex justify-end gap-2">
-
-              <button
-                onClick={() => setIsEditOpen(false)}
-                className="px-3 py-1 bg-gray-200 rounded"
-              >
+              <Button onClick={() => setIsEditOpen(false)}>
                 Cancel
-              </button>
+              </Button>
 
-              <button
-                onClick={onSave}
-                className="px-3 py-1 bg-[#82C600] text-white rounded"
-              >
-                Save
-              </button>
+              <Button variant="primary" onClick={onSave}>
+                💾 Save Changes
+              </Button>
 
             </div>
 

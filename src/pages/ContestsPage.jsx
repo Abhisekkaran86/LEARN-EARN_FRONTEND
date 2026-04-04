@@ -87,9 +87,19 @@ import { challenges } from "../data/challengesData";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import { FaArrowRight, FaTrophy } from "react-icons/fa";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchContests } from "../features/contestSlice";
 
 const ContestsPage = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+const { contests = [] } = useSelector((state) => state.contest);
+
+useEffect(() => {
+  dispatch(fetchContests());
+}, [dispatch]);
 
   const token = Cookies.get("token");
   const user = JSON.parse(localStorage.getItem("user"));
@@ -128,7 +138,7 @@ const ContestsPage = () => {
       {/* 🔥 GRID */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
 
-        {challenges.map((item) => (
+        {contests.map((item) => (
           <div
             key={item.id}
             className="group relative rounded-3xl overflow-hidden bg-white/60 backdrop-blur-xl border border-white/20 shadow-md hover:shadow-2xl transition-all duration-500 hover:-translate-y-2"

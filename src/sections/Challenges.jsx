@@ -85,20 +85,143 @@
 // export default ContestsPage;
 
 
+// import Container from "../components/Container";
+// import Button from "../components/ui/Button";
+// import { challenges } from "../data/challengesData";
+
+// import { Swiper, SwiperSlide } from "swiper/react";
+// import { Autoplay, Navigation } from "swiper/modules";
+// import { useEffect } from "react";
+// import { useDispatch, useSelector } from "react-redux";
+// import { fetchContests } from "../features/contestSlice";
+
+// import { useNavigate } from "react-router-dom"; // ✅ added
+
+// import "swiper/css";
+// import "swiper/css/navigation";
+
+// const Challenges = () => {
+//   const navigate = useNavigate(); // ✅ added
+//   const dispatch = useDispatch();
+
+// const { contests = [] } = useSelector((state) => state.contest);
+
+// useEffect(() => {
+//   dispatch(fetchContests());
+// }, [dispatch]);
+
+//   return (
+//     <section className="py-24 bg-[#f6f7fb]">
+//       <Container>
+
+//         <div className="flex justify-between items-center">
+//           <div>
+//             <h2 className="text-3xl font-bold">Active Challenges</h2>
+//             <p className="text-gray-500 text-sm mt-1">
+//               Explore live contests and boost your skills
+//             </p>
+//           </div>
+
+//           <Button variant="ghost" full={false}>
+//             View all →
+//           </Button>
+//         </div>
+
+//         <div className="mt-10">
+//           <Swiper
+//             modules={[Autoplay, Navigation]}
+//             spaceBetween={20}
+//             slidesPerView={1}
+//             navigation
+//             autoplay={{
+//               delay: 2500,
+//               disableOnInteraction: false,
+//             }}
+//             breakpoints={{
+//               640: { slidesPerView: 1.2 },
+//               768: { slidesPerView: 2 },
+//               1024: { slidesPerView: 3 },
+//             }}
+//           >
+//             {contests.map((item, i) => (
+//               <SwiperSlide key={i}>
+//                 <div className="bg-white rounded-2xl shadow hover:shadow-xl transition overflow-hidden">
+
+//                   <div
+//                     className="h-44 bg-cover bg-center"
+//                     style={{ backgroundImage: `url(${item.image})` }}
+//                   />
+
+//                   <div className="p-5">
+//                     <span className="text-xs bg-[#82c600]/10 text-[#82c600] px-2 py-1 rounded">
+//                       {item.category}
+//                     </span>
+
+//                     <h3 className="font-semibold mt-3">
+//                       {item.title}
+//                     </h3>
+
+//                     <p className="text-[#82c600] mt-2 font-medium">
+//                       {item.prize}
+//                     </p>
+
+//                     {/* ✅ Navigation added */}
+//                     <Button
+//                       size="sm"
+//                       className="mt-4"
+//                       onClick={() => navigate("/login")}
+//                     >
+//                       View Details
+//                     </Button>
+
+//                   </div>
+//                 </div>
+//               </SwiperSlide>
+//             ))}
+//           </Swiper>
+//         </div>
+
+//       </Container>
+//     </section>
+//   );
+// };
+
+// export default Challenges;
+
+
 import Container from "../components/Container";
 import Button from "../components/ui/Button";
-import { challenges } from "../data/challengesData";
+
+// ❌ removed static data
+// import { challenges } from "../data/challengesData";
 
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Navigation } from "swiper/modules";
 
-import { useNavigate } from "react-router-dom"; // ✅ added
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchContests } from "../features/contestSlice";
+
+
+import { useNavigate } from "react-router-dom";
 
 import "swiper/css";
 import "swiper/css/navigation";
 
 const Challenges = () => {
-  const navigate = useNavigate(); // ✅ added
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  // ✅ Contest data (Redux)
+  const { contests = [] } = useSelector((state) => state.contest);
+
+  // ✅ Auth data (Redux)
+  const { user } = useSelector((state) => state.auth);
+
+  // ✅ Fetch contests
+  useEffect(() => {
+    dispatch(fetchContests());
+  }, [dispatch]);
 
   return (
     <section className="py-24 bg-[#f6f7fb]">
@@ -133,13 +256,16 @@ const Challenges = () => {
               1024: { slidesPerView: 3 },
             }}
           >
-            {challenges.map((item, i) => (
+            {contests.map((item, i) => (
               <SwiperSlide key={i}>
                 <div className="bg-white rounded-2xl shadow hover:shadow-xl transition overflow-hidden">
 
+                  {/* IMAGE */}
                   <div
                     className="h-44 bg-cover bg-center"
-                    style={{ backgroundImage: `url(${item.image})` }}
+                    style={{
+                      backgroundImage: `url(${item.image || item.thumbnail})`,
+                    }}
                   />
 
                   <div className="p-5">
@@ -155,11 +281,17 @@ const Challenges = () => {
                       {item.prize}
                     </p>
 
-                    {/* ✅ Navigation added */}
+                    {/* ✅ Updated Logic (IMPORTANT) */}
                     <Button
                       size="sm"
                       className="mt-4"
-                      onClick={() => navigate("/login")}
+                      onClick={() => {
+                        if (user && user._id) {
+                          navigate("/student/dashboard"); // logged in
+                        } else {
+                          navigate("/login"); // not logged in
+                        }
+                      }}
                     >
                       View Details
                     </Button>

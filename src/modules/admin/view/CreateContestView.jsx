@@ -221,7 +221,7 @@
 
 //             {requirements.map((req, index) => (
 //               <div key={index} className="mb-2 flex gap-2 items-center">
-                
+
 //                 <Input
 //                   value={req}
 //                   onChange={(e) =>
@@ -329,13 +329,22 @@
 // };
 
 // export default CreateContestView;
-import { useState } from "react";
-import ContestFormSection from "../componnent/ContestFormSection";
-import ContestSidebar from "../componnent/ContestSidebar";
-import Button from "../../../components/ui/Button";
+import { useState, useEffect } from "react";
+import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
 
+import ContestFormSection from "../componnent/ContestFormSection";
+import ContestSidebar from "../componnent/ContestSidebar";
+
+import {
+  createContest,
+  fetchContests,
+} from "../../../features/contestSlice";
+
+import Button from "../../../components/ui/Button";
+
 const CreateContestView = () => {
+  const dispatch = useDispatch();
 
   const [form, setForm] = useState({
     title: "",
@@ -344,109 +353,146 @@ const CreateContestView = () => {
     deadline: "",
   });
 
-  const [requirements, setRequirements] = useState([""]);
-  const [prizes, setPrizes] = useState([
-    "1st Place - ₹5000 + Medal",
-    "Certificate - Merit",
-  ]);
+  const [requirements, setRequirements] = useState([]);
+  const [prizes, setPrizes] = useState([]);
   const [banner, setBanner] = useState(null);
 
-  // ✅ VALIDATION
-  const validate = () => {
-    if (!form.title || !form.description) {
-      toast.error("❌ Please fill all required fields");
-      return false;
-    }
-    return true;
-  };
+  // 🔥 FETCH DATA
+  useEffect(() => {
+    dispatch(fetchContests());
+  }, [dispatch]);
 
-  // ✅ PUBLISH
-  const handlePublish = async () => {
-    if (!validate()) return;
-
+  // 🔥 CREATE
+  const handleCreate = async () => {
     try {
-      // 👉 API call (replace with your backend)
-      console.log({ form, requirements, prizes, banner });
+      // ✅ VALIDATION
+      if (
+        !form.title ||
+        !form.description ||
+        !form.startDate ||
+        !form.deadline
+      ) {
+        toast.error("All fields are required");
+        return;
+      }
 
-      toast.success(`🎉 ${form.title} created successfully!`);
+      const formData = new FormData();
 
-      // reset form (optional)
+      // ✅ BASIC FIELDS
+      formData.append("title", form.title.trim());
+      formData.append("description", form.description.trim());
+      formData.append("startDate", form.startDate);
+      formData.append("deadline", form.deadline);
+
+      // ✅ REQUIREMENTS (STRING)
+      formData.append(
+        "requirements",
+        Array.isArray(requirements)
+          ? requirements.join(",")
+          : ""
+      );
+
+      // ✅ REWARDS (STRING)
+      formData.append(
+        "rewards",
+        Array.isArray(prizes)
+          ? prizes.join(",")
+          : ""
+      );
+
+      // ✅ IMAGE (SAFE)
+      if (banner && banner instanceof File && banner.size > 0) {
+        formData.append("image", banner);
+      }
+
+      // 🔥 DEBUG
+      console.log("===== FINAL FORM DATA =====");
+      for (let [key, value] of formData.entries()) {
+        console.log(key, ":", value);
+      }
+      console.log("===== END =====");
+
+      // ✅ API CALL
+      const res = await dispatch(createContest(formData)).unwrap();
+
+      console.log("✅ RESPONSE:", res);
+
+      toast.success("🎉 Contest Created Successfully");
+
+      // ✅ RESET FORM
       setForm({
         title: "",
         description: "",
         startDate: "",
         deadline: "",
       });
-      setRequirements([""]);
+      setRequirements([]);
       setPrizes([]);
+      setBanner(null);
 
     } catch (err) {
-      toast.error("❌ Failed to create contest");
+      console.log("❌ ERROR:", err);
+
+      toast.error(
+        err?.response?.data?.message ||
+        err?.message ||
+        "❌ Create failed"
+      );
     }
-  };
-
-  // ✅ DRAFT
-  const handleDraft = () => {
-    toast.info("💾 Draft saved successfully");
-  };
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-[#f8fafc] via-white to-[#ecfdf5] px-3 sm:px-6 py-6">
+  }; return (
+    <div className="min-h-screen bg-gradient-to-br from-[#f8fafc] via-white to-[#ecfdf5] p-6">
 
       {/* 🔥 HEADER */}
-      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 mb-8">
+      <div className="mb-8">
 
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">
-            Create New Contest
-          </h1>
-          <p className="text-gray-500 text-sm mt-1">
-            Design and launch engaging contests 🚀
-          </p>
-        </div>
+        <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
+          🎯 Create New Contest
+        </h1>
 
-        <div className="flex items-center gap-3 bg-white border rounded-xl p-2 shadow-sm">
+        <p className="text-gray-500 mt-1 text-sm md:text-base">
+          Build engaging contests with rewards, timelines, and guidelines.
+        </p>
 
-          <Button
-            variant="outline"
-            onClick={handleDraft}
-          >
-            Save Draft
-          </Button>
-
-          <Button
-            className="bg-[#82C600] hover:bg-[#6ea800]"
-            onClick={handlePublish}
-          >
-            🚀 Publish
-          </Button>
-
-        </div>
       </div>
 
-      {/* 🔥 MAIN */}
-      <div className="bg-white/80 backdrop-blur rounded-3xl shadow-lg p-4 sm:p-6">
+      {/* 🔥 MAIN GRID */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+        {/* LEFT */}
+        <ContestFormSection
+          form={form}
+          setForm={setForm}
+          requirements={requirements}
+          setRequirements={setRequirements}
+          setBanner={setBanner}
+        />
 
-          <div className="lg:col-span-2">
-            <ContestFormSection
-              form={form}
-              setForm={setForm}
-              requirements={requirements}
-              setRequirements={setRequirements}
-              setBanner={setBanner}
-            />
-          </div>
+        {/* RIGHT */}
+        <ContestSidebar
+          form={form}
+          setForm={setForm}
+          prizes={prizes}
+          setPrizes={setPrizes}
+        />
 
-          <div>
-            <ContestSidebar
-              form={form}
-              setForm={setForm}
-              prizes={prizes}
-              setPrizes={setPrizes}
-            />
-          </div>
+      </div>
+
+      {/* 🔥 ACTION BAR */}
+      <div className="mt-8 flex justify-end">
+
+        <div className="bg-white shadow-md rounded-xl px-5 py-3 border flex items-center gap-4">
+
+          <p className="text-sm text-gray-400 hidden sm:block">
+            Ready to publish your contest?
+          </p>
+
+          <Button
+            onClick={handleCreate}
+            variant="primary"
+            className="px-6 py-2 text-sm font-medium"
+          >
+            🚀 Create Contest
+          </Button>
 
         </div>
 
