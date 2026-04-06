@@ -83,8 +83,9 @@
 
 // export default ContestsPage;
 import { useNavigate } from "react-router-dom";
-import Cookies from "js-cookie";
 import { FaArrowRight, FaTrophy } from "react-icons/fa";
+import { ArrowLeft } from "lucide-react";
+
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchContests } from "../features/contestSlice";
@@ -95,14 +96,15 @@ const ContestsPage = () => {
 
   const { contests = [] } = useSelector((state) => state.contest);
 
+  // ✅ FIXED LOGIN STATE (REDUX)
+  const { user } = useSelector((state) => state.auth);
+  const isLoggedIn = !!user;
+
   useEffect(() => {
     dispatch(fetchContests());
   }, [dispatch]);
 
-  const token = Cookies.get("token");
-  const user = JSON.parse(localStorage.getItem("user"));
-  const isLoggedIn = !!token;
-
+  // ✅ COMMON FUNCTION
   const handleParticipate = (item) => {
     if (!isLoggedIn) {
       navigate("/login");
@@ -119,18 +121,25 @@ const ContestsPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#f8fafc] via-white to-[#ecfdf5] px-4 md:px-10 py-12">
+    <div className="min-h-screen bg-gradient-to-br from-[#f8fafc] via-white to-[#ecfdf5] px-4 md:px-10 py-10">
 
-      {/* 🔥 HEADER */}
-      <div className="mb-12 max-w-2xl">
-        <h1 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight">
-          Discover & Join <br />
-          <span className="text-[#82C600]">Exciting Contests</span>
-        </h1>
+      {/* 🔥 HEADER WITH PERFECT BACK BUTTON */}
+      <div className="flex items-center gap-4 mb-10">
+        <button
+          onClick={() => navigate(-1)}
+          className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition shadow-sm"
+        >
+          <ArrowLeft size={18} />
+        </button>
 
-        <p className="text-gray-500 mt-4 text-sm md:text-base">
-          Compete with top students, win rewards, and build your career profile 🚀
-        </p>
+        <div>
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
+            Discover Contests
+          </h1>
+          <p className="text-gray-500 text-sm">
+            Compete, win rewards, and grow 🚀
+          </p>
+        </div>
       </div>
 
       {/* 🔥 GRID */}
@@ -144,9 +153,13 @@ const ContestsPage = () => {
           return (
             <div
               key={item._id}
-              className="group relative rounded-3xl overflow-hidden bg-white shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border border-gray-100"
+
+              // ✅ CARD CLICK
+              onClick={() => handleParticipate(item)}
+
+              className="group relative rounded-3xl overflow-hidden bg-white shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border border-gray-100 cursor-pointer"
             >
-              {/* 🔥 IMAGE */}
+              {/* IMAGE */}
               <div className="relative h-52 overflow-hidden">
                 <img
                   src={item.image || "https://via.placeholder.com/400"}
@@ -154,35 +167,29 @@ const ContestsPage = () => {
                   className="w-full h-full object-cover transition duration-700 group-hover:scale-110"
                 />
 
-                {/* Overlay */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
 
-                {/* Status */}
                 <div className="absolute top-4 left-4 text-xs px-3 py-1 rounded-full font-semibold bg-green-500 text-white shadow">
                   {item.status || "Active"}
                 </div>
 
-                {/* Reward */}
                 <div className="absolute top-4 right-4 bg-yellow-400 text-black text-xs font-bold px-3 py-1 rounded-full shadow flex items-center gap-1">
                   <FaTrophy />
                   {item.rewards?.[0] || "Reward"}
                 </div>
 
-                {/* Title */}
                 <h3 className="absolute bottom-3 left-4 right-4 text-white font-bold text-lg">
                   {item.title}
                 </h3>
               </div>
 
-              {/* 🔥 CONTENT */}
+              {/* CONTENT */}
               <div className="p-5 flex flex-col justify-between">
 
-                {/* Description */}
                 <p className="text-sm text-gray-500 line-clamp-2">
                   {item.description}
                 </p>
 
-                {/* 🔥 TAGS */}
                 <div className="flex flex-wrap gap-2 mt-3">
                   <span className="text-xs bg-[#82C600]/10 text-[#82C600] px-2 py-1 rounded">
                     {item.category || "General"}
@@ -195,12 +202,10 @@ const ContestsPage = () => {
                   )}
                 </div>
 
-                {/* ⏳ Countdown */}
                 <p className="text-xs text-red-500 mt-2">
                   ⏳ {daysLeft > 0 ? `${daysLeft} days left` : "Ended"}
                 </p>
 
-                {/* 🔥 INFO GRID */}
                 <div className="grid grid-cols-2 gap-3 mt-4 text-xs">
 
                   <div className="bg-gray-50 p-3 rounded-xl">
@@ -223,7 +228,6 @@ const ContestsPage = () => {
                       👥 {item.participants?.length || 0}+ Joined
                     </p>
 
-                    {/* Progress bar */}
                     <div className="w-full bg-gray-200 h-2 rounded-full mt-2">
                       <div
                         className="bg-[#82C600] h-2 rounded-full"
@@ -238,16 +242,18 @@ const ContestsPage = () => {
                   </div>
                 </div>
 
-                {/* 🔥 BUTTON */}
+                {/* BUTTON */}
                 <button
-                  onClick={() => handleParticipate(item)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleParticipate(item);
+                  }}
                   className="mt-5 w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#82C600] to-[#a3e635] text-white py-2.5 rounded-xl font-semibold shadow-md hover:shadow-xl hover:scale-[1.02] transition-all duration-300"
                 >
                   Participate <FaArrowRight />
                 </button>
               </div>
 
-              {/* 🔥 HOVER GLOW */}
               <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-[#82c600]/10 to-[#a3e635]/10 opacity-0 group-hover:opacity-100 transition duration-500"></div>
             </div>
           );

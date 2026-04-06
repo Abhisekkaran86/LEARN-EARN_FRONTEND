@@ -108,7 +108,7 @@ const Hero = () => {
 
   const handleExplore = () => {
     if (!isAuthenticated) {
-      navigate("/context"); // 🔥 login / context page
+      navigate("/contests"); // 🔥 login / context page
     } else {
       navigate("/contests"); // 🔥 contests page
     }

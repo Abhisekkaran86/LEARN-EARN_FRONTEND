@@ -104,15 +104,26 @@ const AdminDashboardView = ({
   chartData = [],
   actions = [],
   onCardClick,
+  dashboardData = {},
 }) => {
+  const cards = [
+    { title: "ACTIVE CONTESTS", key: "activeContestList", icon: "users" },
+    { title: "TOTAL USERS", key: "users", icon: "users" },
+    { title: "TOTAL SUBMISSIONS", key: "submissions", icon: "submissions" },
+    { title: "PENDING APPROVALS", key: "pendingList", icon: "pending" },
+  ];
   return (
     <div className="space-y-6">
 
       {/* ✅ STATS */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
-        {stats.map((item, i) => (
-          <div key={i} onClick={() => onCardClick(item.title)} className="cursor-pointer">
-            <StatCard {...item} />
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {cards.map((card) => (
+          <div key={card.title} onClick={() => onCardClick(card.title)}>
+            <StatCard
+              title={card.title}
+              value={dashboardData[card.key]}
+              icon={card.icon}
+            />
           </div>
         ))}
       </div>
@@ -125,7 +136,7 @@ const AdminDashboardView = ({
 
 
 
-          <Chart data={chartData} />
+          <Chart data={chartData} dataKey="contests" />
 
         </div>
 

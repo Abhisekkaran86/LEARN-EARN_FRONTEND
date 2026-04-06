@@ -55,10 +55,10 @@ export const STUDENT_CONFIG = {
   },
 
   // ✅ NEW → navigation menu
-  menu: [
-    { name: "Dashboard", path: "/student/dashboard", icon: "🏠" },
-    { name: "Contests", path: "/student/contests", icon: "🏆" },
-    { name: "My Progress", path: "/student/progress", icon: "📊" },
-    { name: "Profile", path: "/student/profile", icon: "👤" },
-  ],
+  // menu: [
+  //   { name: "Dashboard", path: "/student/dashboard", icon: "🏠" },
+  //   { name: "Contests", path: "/student/contests", icon: "🏆" },
+  //   { name: "My Progress", path: "/student/progress", icon: "📊" },
+  //   { name: "Profile", path: "/student/profile", icon: "👤" },
+  // ],
 };

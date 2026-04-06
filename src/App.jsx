@@ -21,19 +21,19 @@ function App() {
         {/* Main Layout */}
         <Route element={<MainLayout />}>
           <Route path="/" element={<HomeContainer />} />
+          <Route path="/contests" element={<ContestsPage />} /> {/* ✅ FIXED */}
+          <Route path="/contact" element={<ContactPage />} />
+          <Route path="/about" element={<AboutPage />} />
         </Route>
-        <Route path="/contests" element={<ContestsPage />} />
-        <Route path="/contact" element={<ContactPage />} />
-        <Route path="/about" element={<AboutPage />} />
+
         {/* Auth */}
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
 
-        {/* ✅ NOW WORKS */}
+        {/* Admin + Student */}
         {AdminRoutes()}
         {StudentRoutes()}
       </Routes>
-
     </BrowserRouter>
   );
 }
@@ -63,6 +63,43 @@ export default App;
 
 //         {/* ✅ ADMIN ROUTES (DIRECT CALL) */}
 //         {AdminRoutes()}
+
+//       </Routes>
+//     </BrowserRouter>
+//   );
+// }
+
+// export default App;
+
+// import { BrowserRouter, Routes, Route } from "react-router-dom";
+// import Login from "./pages/Login";
+// import Signup from "./pages/Signup";
+// import HomeContainer from "./containers/HomeContainer";
+// import MainLayout from "./layouts/MainLayout";
+// import AdminRoutes from "./route/AdminRoutes";
+// import StudentRoutes from "./route/StudentRoutes";
+// import ContestsPage from "./pages/ContestsPage";
+
+// function App() {
+//   return (
+//     <BrowserRouter>
+//       <Routes>
+
+//         {/* ✅ MAIN LAYOUT */}
+//         <Route element={<MainLayout />}>
+//           <Route path="/" element={<HomeContainer />} />
+//           <Route path="/contests" element={<ContestsPage />} />
+//           <Route path="/about" element={<AboutPage />} />
+//           <Route path="/contact" element={<ContactPage />} />
+//         </Route>
+
+//         {/* AUTH */}
+//         <Route path="/login" element={<Login />} />
+//         <Route path="/signup" element={<Signup />} />
+
+//         {/* ADMIN + STUDENT */}
+//         {AdminRoutes()}
+//         {StudentRoutes()}
 
 //       </Routes>
 //     </BrowserRouter>

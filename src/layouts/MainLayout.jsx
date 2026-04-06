@@ -61,7 +61,7 @@ const MainLayout = () => {
 
   return (
     <div className="flex flex-col min-h-screen">
-      
+
       {/* HEADER */}
       <Header />
 
@@ -69,14 +69,10 @@ const MainLayout = () => {
       {!hideBack && (
         <div className="sticky top-[70px] z-40 px-4 pt-3 bg-white/80 backdrop-blur">
           <button
-            onClick={handleBack}
-            className="flex items-center gap-2 px-3 py-1.5 rounded-xl 
-            bg-white shadow-sm border border-gray-200
-            hover:bg-[#82C600] hover:text-white hover:shadow-md 
-            transition-all duration-300"
+            onClick={() => navigate(-1)}
+            className="p-2 rounded-full bg-gray-100 hover:bg-gray-200"
           >
             <ArrowLeft size={18} />
-            Back
           </button>
         </div>
       )}

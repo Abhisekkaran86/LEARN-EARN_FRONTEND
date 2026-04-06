@@ -40,7 +40,7 @@
 //             key={item.id}
 //             className="group overflow-hidden rounded-2xl p-0 bg-white/70 backdrop-blur-md border border-white/20 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
 //           >
-            
+
 //             {/* IMAGE */}
 //             <div className="relative h-48 overflow-hidden">
 //               <img
@@ -208,23 +208,19 @@ const Challenges = () => {
   const dispatch = useDispatch();
 
   const { contests = [] } = useSelector((state) => state.contest);
-  const { user } = useSelector((state) => state.auth);
 
   useEffect(() => {
     dispatch(fetchContests());
   }, [dispatch]);
 
-  // ✅ EXISTING (UNCHANGED)
   const activeContests = contests.filter(
     (item) => item.status === "active"
   );
 
-  // ✅ NEW (ADDED ONLY)
   const upcomingContests = contests.filter(
     (item) => item.status === "upcoming"
   );
 
-  // ✅ MERGE (NO UI CHANGE)
   const mergedContests = [...activeContests, ...upcomingContests];
 
   return (
@@ -247,8 +243,6 @@ const Challenges = () => {
         </div>
 
         <div className="mt-14">
-
-          {/* ✅ ONLY THIS LINE CHANGED */}
           {mergedContests.length === 0 ? (
             <p className="text-center text-gray-500">
               No active contests available 😔
@@ -259,7 +253,7 @@ const Challenges = () => {
               spaceBetween={25}
               slidesPerView={1}
               loop={true}
-              speed={4000}
+              speed={2000}
               autoplay={{
                 delay: 0,
                 disableOnInteraction: false,
@@ -270,10 +264,14 @@ const Challenges = () => {
                 1024: { slidesPerView: 3 },
               }}
             >
-              {/* ✅ ONLY THIS LINE CHANGED */}
               {mergedContests.map((item) => (
                 <SwiperSlide key={item._id}>
-                  <div className="h-[380px] flex flex-col justify-between relative rounded-3xl overflow-hidden bg-white/70 backdrop-blur-xl border border-white/20 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 group">
+                  
+                  {/* ✅ FULL CARD CLICKABLE */}
+                  <div
+                    onClick={() => navigate("/contests")}
+                    className="h-[380px] flex flex-col justify-between relative rounded-3xl overflow-hidden bg-white/70 backdrop-blur-xl border border-white/20 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 group cursor-pointer"
+                  >
 
                     <div
                       className="h-44 bg-cover bg-center relative"
@@ -283,7 +281,6 @@ const Challenges = () => {
                     >
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
 
-                      {/* ❌ UI NOT CHANGED */}
                       <span className="absolute top-3 right-3 text-xs px-3 py-1 rounded-full font-semibold bg-[#82C600] text-white shadow">
                         Active
                       </span>
@@ -310,15 +307,13 @@ const Challenges = () => {
                         </div>
                       </div>
 
+                      {/* ✅ BUTTON CLICK (STOP PROPAGATION) */}
                       <Button
                         size="sm"
                         className="mt-4 w-full bg-gradient-to-r from-[#82C600] to-[#a3e635] text-white"
-                        onClick={() => {
-                          if (user && user._id) {
-                            navigate("/student/dashboard");
-                          } else {
-                            navigate("/login");
-                          }
+                        onClick={(e) => {
+                          e.stopPropagation(); // 🛑 prevent parent click
+                          navigate("/contests");
                         }}
                       >
                         View Details →
@@ -329,6 +324,7 @@ const Challenges = () => {
                     <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-[#82c600]/20 to-[#a3e635]/20 blur-xl opacity-0 group-hover:opacity-100 transition"></div>
 
                   </div>
+
                 </SwiperSlide>
               ))}
             </Swiper>
