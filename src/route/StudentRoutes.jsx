@@ -4,6 +4,7 @@ import StudentLayout from "../layouts/StudentLayout";
 import StudentDashboardContainer from "../containers/StudentDashboardContainer";
 
 import { LayoutDashboard, BookOpen, ClipboardList, Trophy } from "lucide-react";
+import ContestParticipatePage from "../modules/student/ContestParticipatePage";
 
 // ✅ Sidebar menu (dynamic)
 const sidebarMenu = [
@@ -42,6 +43,9 @@ const StudentRoutes = () => {
       <Route path="dashboard" element={<StudentDashboardContainer />} />
 
       {/* Future routes */}
+      <Route path="contest/:id" element={<ContestParticipatePage />} />
+
+
       <Route path="courses" element={<div>Courses Page</div>} />
       <Route path="assignments" element={<div>Assignments Page</div>} />
       <Route path="leaderboard" element={<div>Leaderboard Page</div>} />

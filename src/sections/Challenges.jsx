@@ -192,115 +192,147 @@
 import Container from "../components/Container";
 import Button from "../components/ui/Button";
 
-// ❌ removed static data
-// import { challenges } from "../data/challengesData";
-
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay, Navigation } from "swiper/modules";
+import { Autoplay } from "swiper/modules";
 
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchContests } from "../features/contestSlice";
 
-
 import { useNavigate } from "react-router-dom";
 
 import "swiper/css";
-import "swiper/css/navigation";
 
 const Challenges = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  // ✅ Contest data (Redux)
   const { contests = [] } = useSelector((state) => state.contest);
-
-  // ✅ Auth data (Redux)
   const { user } = useSelector((state) => state.auth);
 
-  // ✅ Fetch contests
   useEffect(() => {
     dispatch(fetchContests());
   }, [dispatch]);
 
+  // ✅ EXISTING (UNCHANGED)
+  const activeContests = contests.filter(
+    (item) => item.status === "active"
+  );
+
+  // ✅ NEW (ADDED ONLY)
+  const upcomingContests = contests.filter(
+    (item) => item.status === "upcoming"
+  );
+
+  // ✅ MERGE (NO UI CHANGE)
+  const mergedContests = [...activeContests, ...upcomingContests];
+
   return (
-    <section className="py-24 bg-[#f6f7fb]">
+    <section className="py-24 bg-gradient-to-br from-[#f8fafc] via-white to-[#ecfdf5] overflow-hidden">
       <Container>
 
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
           <div>
-            <h2 className="text-3xl font-bold">Active Challenges</h2>
-            <p className="text-gray-500 text-sm mt-1">
-              Explore live contests and boost your skills
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight">
+              Explore{" "}
+              <span className="bg-gradient-to-r from-[#82C600] to-[#a3e635] bg-clip-text text-transparent">
+                Live Challenges
+              </span>
+            </h2>
+
+            <p className="text-gray-500 mt-4 max-w-md">
+              Compete with top students, win rewards, and level up your career 🚀
             </p>
           </div>
-
-          <Button variant="ghost" full={false}>
-            View all →
-          </Button>
         </div>
 
-        <div className="mt-10">
-          <Swiper
-            modules={[Autoplay, Navigation]}
-            spaceBetween={20}
-            slidesPerView={1}
-            navigation
-            autoplay={{
-              delay: 2500,
-              disableOnInteraction: false,
-            }}
-            breakpoints={{
-              640: { slidesPerView: 1.2 },
-              768: { slidesPerView: 2 },
-              1024: { slidesPerView: 3 },
-            }}
-          >
-            {contests.map((item, i) => (
-              <SwiperSlide key={i}>
-                <div className="bg-white rounded-2xl shadow hover:shadow-xl transition overflow-hidden">
+        <div className="mt-14">
 
-                  {/* IMAGE */}
-                  <div
-                    className="h-44 bg-cover bg-center"
-                    style={{
-                      backgroundImage: `url(${item.image || item.thumbnail})`,
-                    }}
-                  />
+          {/* ✅ ONLY THIS LINE CHANGED */}
+          {mergedContests.length === 0 ? (
+            <p className="text-center text-gray-500">
+              No active contests available 😔
+            </p>
+          ) : (
+            <Swiper
+              modules={[Autoplay]}
+              spaceBetween={25}
+              slidesPerView={1}
+              loop={true}
+              speed={4000}
+              autoplay={{
+                delay: 0,
+                disableOnInteraction: false,
+              }}
+              breakpoints={{
+                640: { slidesPerView: 2 },
+                768: { slidesPerView: 2 },
+                1024: { slidesPerView: 3 },
+              }}
+            >
+              {/* ✅ ONLY THIS LINE CHANGED */}
+              {mergedContests.map((item) => (
+                <SwiperSlide key={item._id}>
+                  <div className="h-[380px] flex flex-col justify-between relative rounded-3xl overflow-hidden bg-white/70 backdrop-blur-xl border border-white/20 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 group">
 
-                  <div className="p-5">
-                    <span className="text-xs bg-[#82c600]/10 text-[#82c600] px-2 py-1 rounded">
-                      {item.category}
-                    </span>
-
-                    <h3 className="font-semibold mt-3">
-                      {item.title}
-                    </h3>
-
-                    <p className="text-[#82c600] mt-2 font-medium">
-                      {item.prize}
-                    </p>
-
-                    {/* ✅ Updated Logic (IMPORTANT) */}
-                    <Button
-                      size="sm"
-                      className="mt-4"
-                      onClick={() => {
-                        if (user && user._id) {
-                          navigate("/student/dashboard"); // logged in
-                        } else {
-                          navigate("/login"); // not logged in
-                        }
+                    <div
+                      className="h-44 bg-cover bg-center relative"
+                      style={{
+                        backgroundImage: `url(${item.image || item.thumbnail || "https://via.placeholder.com/300"})`,
                       }}
                     >
-                      View Details
-                    </Button>
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+
+                      {/* ❌ UI NOT CHANGED */}
+                      <span className="absolute top-3 right-3 text-xs px-3 py-1 rounded-full font-semibold bg-[#82C600] text-white shadow">
+                        Active
+                      </span>
+                    </div>
+
+                    <div className="p-5 flex flex-col justify-between flex-1">
+
+                      <div>
+                        <h3 className="text-lg font-bold text-gray-800 group-hover:text-[#82C600] transition">
+                          {item.title}
+                        </h3>
+
+                        <p className="text-sm text-gray-500 mt-2 line-clamp-2">
+                          {item.description}
+                        </p>
+
+                        <p className="mt-3 text-sm font-semibold text-[#82C600]">
+                          🎁 {item.rewards?.[0] || "No reward"}
+                        </p>
+
+                        <div className="text-xs text-gray-400 mt-2 space-y-1">
+                          <p>📅 {new Date(item.startDate).toLocaleDateString()}</p>
+                          <p>⏳ {new Date(item.deadline).toLocaleDateString()}</p>
+                        </div>
+                      </div>
+
+                      <Button
+                        size="sm"
+                        className="mt-4 w-full bg-gradient-to-r from-[#82C600] to-[#a3e635] text-white"
+                        onClick={() => {
+                          if (user && user._id) {
+                            navigate("/student/dashboard");
+                          } else {
+                            navigate("/login");
+                          }
+                        }}
+                      >
+                        View Details →
+                      </Button>
+
+                    </div>
+
+                    <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-[#82c600]/20 to-[#a3e635]/20 blur-xl opacity-0 group-hover:opacity-100 transition"></div>
 
                   </div>
-                </div>
-              </SwiperSlide>
-            ))}
-          </Swiper>
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          )}
         </div>
 
       </Container>

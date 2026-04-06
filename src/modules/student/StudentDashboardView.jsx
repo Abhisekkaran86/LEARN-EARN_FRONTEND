@@ -250,12 +250,14 @@ import { Autoplay, Navigation } from "swiper/modules";
 
 import "swiper/css";
 import "swiper/css/navigation";
+import { useNavigate } from "react-router-dom";
 
 const StudentDashboardView = ({ config }) => {
   const dispatch = useDispatch();
 
   // ✅ Auth Data (student)
   const { user } = useSelector((state) => state.auth);
+  const navigate = useNavigate();
 
   // ✅ Contest Data (featured)
   const { contests = [], loading } = useSelector(
@@ -365,9 +367,27 @@ const StudentDashboardView = ({ config }) => {
                           {item.description || "No description"}
                         </p>
 
-                        <button className="mt-4 w-full bg-[#82C600] text-white py-2 rounded-xl hover:bg-[#6ea800] transition">
-                          Participate Now
-                        </button>
+                        <button
+  onClick={() => {
+    // ❌ Not logged
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+
+    // ❌ Not student
+    if (user.role !== "student") {
+      alert("Only students can participate ❌");
+      return;
+    }
+
+    // ✅ Go to student participate page
+    navigate(`/student/contest/${item._id}`);
+  }}
+  className="mt-4 w-full bg-[#82C600] text-white py-2 rounded-xl hover:bg-[#6ea800] transition"
+>
+  Participate Now
+</button>
                       </div>
 
                     </Card>

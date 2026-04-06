@@ -73,23 +73,182 @@
 
 // export default contestSlice.reducer;
 
+// import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+// import axios from "axios";
+
+// const BASE_URL =
+//   "https://learn-earn-contest-2.onrender.com/api/v1/contest";
+
+
+// // ✅ CREATE
+// export const createContest = createAsyncThunk(
+//   "contest/createContest",
+//   async (data, { rejectWithValue }) => {
+//     try {
+//       const res = await axios.post(
+//         `${BASE_URL}/create`,
+//         data,
+//         {
+//           headers: {
+//             "Content-Type": "multipart/form-data",
+//           },
+//         }
+//       );
+
+//       return res.data;
+//     } catch (err) {
+//       console.log("AXIOS ERROR:", err);
+
+//       return rejectWithValue(
+//         err.response?.data || { message: err.message }
+//       );
+//     }
+//   }
+// );
+
+
+// // ✅ FETCH
+// export const fetchContests = createAsyncThunk(
+//   "contest/fetchContests",
+//   async (_, { rejectWithValue }) => {
+//     try {
+//       const res = await axios.get(BASE_URL);
+//        console.log("DATA:", res.data);
+//       return res.data;
+      
+//     } catch (err) {
+//       return rejectWithValue(err.response?.data);
+//     }
+//   }
+// );
+
+
+// // ✅ UPDATE
+// export const deleteContest = createAsyncThunk(
+//   "contest/deleteContest",
+//   async (id, { rejectWithValue }) => {
+//     try {
+//       await axios.delete(`${BASE_URL}/delete/${id}`); // ✅ correct
+//       return id;
+//     } catch (err) {
+//       console.log("DELETE ERROR:", err);
+
+//       return rejectWithValue(
+//         err.response?.data || { message: err.message }
+//       );
+//     }
+//   }
+// );
+
+// // ✅ DELETE
+// export const updateContest = createAsyncThunk(
+//   "contest/updateContest",
+//   async ({ id, data }, { rejectWithValue }) => {
+//     try {
+//       const res = await axios.put(
+//         `${BASE_URL}/update/${id}`, // ✅ match backend
+//         data
+//       );
+
+//       return res.data;
+//     } catch (err) {
+//       console.log("UPDATE ERROR:", err);
+
+//       return rejectWithValue(
+//         err.response?.data || { message: err.message }
+//       );
+//     }
+//   }
+// );
+
+
+// // ✅ SLICE
+// const contestSlice = createSlice({
+//   name: "contest",
+//   initialState: {
+//     contests: [],
+//     loading: false,
+//   },
+
+//   extraReducers: (builder) => {
+//     builder
+
+//       // 🔥 FETCH
+//       .addCase(fetchContests.pending, (state) => {
+//         state.loading = true;
+//       })
+//       .addCase(fetchContests.fulfilled, (state, action) => {
+//         state.loading = false;
+
+//         state.contests =
+//           action.payload?.data ||
+//           action.payload?.contests ||
+//           action.payload?.data?.contests ||
+//           [];
+//       })
+//       .addCase(fetchContests.rejected, (state) => {
+//         state.loading = false;
+//       })
+
+
+//       // 🔥 CREATE
+//       .addCase(createContest.fulfilled, (state, action) => {
+//         state.contests.unshift(action.payload.data);
+//       })
+//       .addCase(createContest.rejected, (state, action) => {
+//         console.log("❌ CREATE ERROR:", action.payload);
+//       })
+
+
+//       // 🔥 UPDATE
+//       .addCase(updateContest.fulfilled, (state, action) => {
+//         const index = state.contests.findIndex(
+//           (c) => c._id === action.payload.data._id
+//         );
+
+//         if (index !== -1) {
+//           state.contests[index] = action.payload.data;
+//         }
+//       })
+//       .addCase(updateContest.rejected, (state, action) => {
+//         console.log("❌ UPDATE ERROR:", action.payload);
+//       })
+
+
+//       // 🔥 DELETE
+//       .addCase(deleteContest.fulfilled, (state, action) => {
+//         state.contests = state.contests.filter(
+//           (c) => c._id !== action.payload
+//         );
+//       })
+//       .addCase(deleteContest.rejected, (state, action) => {
+//         console.log("❌ DELETE ERROR:", action.payload);
+//       });
+//   },
+// });
+
+// export default contestSlice.reducer;
+
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
+import Cookies from "js-cookie";
 
 const BASE_URL =
   "https://learn-earn-contest-2.onrender.com/api/v1/contest";
 
-
-// ✅ CREATE
+// ✅ CREATE (FIXED)
 export const createContest = createAsyncThunk(
   "contest/createContest",
   async (data, { rejectWithValue }) => {
     try {
+      const token = Cookies.get("token"); // ✅ FIX
+
       const res = await axios.post(
         `${BASE_URL}/create`,
         data,
         {
           headers: {
+            Authorization: `Bearer ${token}`, // ✅ IMPORTANT
             "Content-Type": "multipart/form-data",
           },
         }
@@ -106,13 +265,13 @@ export const createContest = createAsyncThunk(
   }
 );
 
-
 // ✅ FETCH
 export const fetchContests = createAsyncThunk(
   "contest/fetchContests",
   async (_, { rejectWithValue }) => {
     try {
       const res = await axios.get(BASE_URL);
+      console.log("DATA:", res.data);
       return res.data;
     } catch (err) {
       return rejectWithValue(err.response?.data);
@@ -120,13 +279,19 @@ export const fetchContests = createAsyncThunk(
   }
 );
 
-
-// ✅ UPDATE
+// ✅ DELETE
 export const deleteContest = createAsyncThunk(
   "contest/deleteContest",
   async (id, { rejectWithValue }) => {
     try {
-      await axios.delete(`${BASE_URL}/delete/${id}`); // ✅ correct
+      const token = Cookies.get("token");
+
+      await axios.delete(`${BASE_URL}/delete/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
       return id;
     } catch (err) {
       console.log("DELETE ERROR:", err);
@@ -138,19 +303,28 @@ export const deleteContest = createAsyncThunk(
   }
 );
 
-// ✅ DELETE
+// ✅ UPDATE
 export const updateContest = createAsyncThunk(
   "contest/updateContest",
   async ({ id, data }, { rejectWithValue }) => {
     try {
+      const token = Cookies.get("token");
+
+      console.log("UPDATE TOKEN:", token); // debug
+
       const res = await axios.put(
-        `${BASE_URL}/update/${id}`, // ✅ match backend
-        data
+        `${BASE_URL}/update/${id}`,
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // ✅ MUST
+          },
+        }
       );
 
       return res.data;
     } catch (err) {
-      console.log("UPDATE ERROR:", err);
+      console.log("UPDATE ERROR:", err.response?.data);
 
       return rejectWithValue(
         err.response?.data || { message: err.message }
@@ -158,8 +332,6 @@ export const updateContest = createAsyncThunk(
     }
   }
 );
-
-
 // ✅ SLICE
 const contestSlice = createSlice({
   name: "contest",
@@ -182,45 +354,45 @@ const contestSlice = createSlice({
           action.payload?.data ||
           action.payload?.contests ||
           action.payload?.data?.contests ||
+          action.payload ||
           [];
       })
       .addCase(fetchContests.rejected, (state) => {
         state.loading = false;
       })
 
-
-      // 🔥 CREATE
+      // 🔥 CREATE (FIXED)
       .addCase(createContest.fulfilled, (state, action) => {
-        state.contests.unshift(action.payload.data);
+        const newContest =
+          action.payload?.data || action.payload;
+
+        if (newContest) {
+          state.contests.unshift(newContest);
+        }
       })
       .addCase(createContest.rejected, (state, action) => {
         console.log("❌ CREATE ERROR:", action.payload);
       })
 
-
       // 🔥 UPDATE
       .addCase(updateContest.fulfilled, (state, action) => {
+        const updated =
+          action.payload?.data || action.payload;
+
         const index = state.contests.findIndex(
-          (c) => c._id === action.payload.data._id
+          (c) => c._id === updated._id
         );
 
         if (index !== -1) {
-          state.contests[index] = action.payload.data;
+          state.contests[index] = updated;
         }
       })
-      .addCase(updateContest.rejected, (state, action) => {
-        console.log("❌ UPDATE ERROR:", action.payload);
-      })
-
 
       // 🔥 DELETE
       .addCase(deleteContest.fulfilled, (state, action) => {
         state.contests = state.contests.filter(
           (c) => c._id !== action.payload
         );
-      })
-      .addCase(deleteContest.rejected, (state, action) => {
-        console.log("❌ DELETE ERROR:", action.payload);
       });
   },
 });

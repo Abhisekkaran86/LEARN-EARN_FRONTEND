@@ -47,46 +47,98 @@
 
 // export default AdminDashboardView;
 
+// import StatCard from "../../../components/ui/StatCard";
+// import Chart from "../../../components/ui/Chart";
+// import ActionPanel from "../../../components/ui/ActionPanel";
+
+// import ActiveContestContainer from "./ActiveContestContainer";
+
+// const AdminDashboardView = ({
+//   stats = [],
+//   chartData = [],
+//   children,
+//   actions = [],
+// }) => {
+//   return (
+//     <div className="space-y-6">
+
+//       {/* ✅ STATS */}
+//       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+//         {stats.map((item, i) => (
+//           <StatCard key={item.id || i} {...item} />
+//         ))}
+//       </div>
+
+//       {/* ✅ CHART + ACTION PANEL */}
+//       <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
+
+//         {/* Chart */}
+//         <div className="bg-white p-5 rounded-2xl shadow-sm">
+//           <Chart data={chartData} />
+//         </div>
+
+//         {/* Action Panel */}
+//         <div>
+//           <ActionPanel actions={actions} />
+//         </div>
+
+//       </div>
+
+//       {/* Active Contests */}
+//       <ActiveContestContainer />
+
+//     </div>
+//   );
+// };
+
+// export default AdminDashboardView;
+
+
 import StatCard from "../../../components/ui/StatCard";
 import Chart from "../../../components/ui/Chart";
 import ActionPanel from "../../../components/ui/ActionPanel";
-
 import ActiveContestContainer from "./ActiveContestContainer";
 
 const AdminDashboardView = ({
   stats = [],
   chartData = [],
-  children,
   actions = [],
+  onCardClick,
 }) => {
   return (
     <div className="space-y-6">
 
       {/* ✅ STATS */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
         {stats.map((item, i) => (
-          <StatCard key={item.id || i} {...item} />
+          <div key={i} onClick={() => onCardClick(item.title)} className="cursor-pointer">
+            <StatCard {...item} />
+          </div>
         ))}
       </div>
 
       {/* ✅ CHART + ACTION PANEL */}
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
-        
-        {/* Chart */}
-        <div className="xl:col-span-2">
+      <div className="grid grid-cols-1 xl:grid-cols-5 gap-6">
+
+        {/* ✅ CHART (Bigger Section) */}
+        <div className="xl:col-span-3 bg-white p-6 rounded-2xl shadow-sm h-[420px] flex flex-col">
+
+
+
           <Chart data={chartData} />
+
         </div>
 
-        {/* Action Panel */}
-        <div>
+        {/* ✅ ACTION PANEL */}
+        <div className="xl:col-span-2">
           <ActionPanel actions={actions} />
         </div>
 
       </div>
 
-     
+      {/* ✅ ACTIVE CONTESTS */}
       <ActiveContestContainer />
-  
+
     </div>
   );
 };

@@ -341,7 +341,7 @@
 //     dispatch(fetchContests(),
 //     updateContest(),
 //   deleteContest(),
-    
+
 //   );
 //   }, [dispatch]);
 
@@ -506,10 +506,11 @@ const ActiveContestContainer = () => {
   useEffect(() => {
     if (contests && contests.length) {
       const formatted = contests.map((item) => ({
-        id: item._id,
+        id: item._id,   // ✅ REQUIRED for backend
+        _id: item._id, // ✅ FIXED
         title: item.title || "No Title",
         startDate: item.startDate || "",
-        date: item.deadline || "",
+        deadline: item.deadline || "",
         participants: Array.isArray(item.users)
           ? item.users.length
           : 0,
@@ -519,7 +520,6 @@ const ActiveContestContainer = () => {
       setTableData(formatted);
     }
   }, [contests]);
-
   // ✅ RESET PAGE
   useEffect(() => {
     setPage(1);
@@ -527,50 +527,56 @@ const ActiveContestContainer = () => {
 
   // ✅ DELETE (Redux)
   const handleDelete = async (id) => {
-    console.log("CLICKED DELETE", id);
-  try {
-    await dispatch(deleteContest(id)).unwrap();
-
-    toast.success("🗑️ Contest deleted");
-  } catch (err) {
-    console.log("DELETE ERROR:", err);
-    toast.error("❌ Delete failed");
-  }
-};
+    try {
+      await dispatch(deleteContest(id)).unwrap();
+      toast.success("🗑️ Contest deleted");
+    } catch (err) {
+      console.log(err);
+      toast.error(err?.message || "Delete failed ❌");
+    }
+  };
 
   // ✅ EDIT OPEN
   const handleEdit = (item) => {
-    setSelectedItem({ ...item });
+    setSelectedItem(item);
     setIsEditOpen(true);
   };
-
   // ✅ UPDATE (Redux)
   const handleSave = async () => {
   try {
-    const payload = {
-      title: selectedItem.title || "",
-      startDate: selectedItem.startDate || "",
-      deadline: selectedItem.date || "",
-      status: selectedItem.status || "upcoming",
-    };
+    console.log("UPDATE ID:", selectedItem?.id);
 
-    console.log("EDIT PAYLOAD:", payload);
+    if (!selectedItem?.id) {
+      toast.error("Invalid ID ❌");
+      return;
+    }
+
+    const cleanData = {
+      title: selectedItem.title,
+      startDate: selectedItem.startDate,
+      deadline: selectedItem.deadline,
+      status: selectedItem.status,
+    };
 
     await dispatch(
       updateContest({
-        id: selectedItem.id,
-        data: payload,
+        id: selectedItem.id, // ✅ FINAL FIX
+        data: cleanData,
       })
     ).unwrap();
 
-    setIsEditOpen(false);
-    toast.success("✅ Contest updated");
+    toast.success("✏️ Contest updated");
+    dispatch(fetchContests());
 
+
+    setIsEditOpen(false);
+    setSelectedItem(null);
   } catch (err) {
-    console.log("UPDATE ERROR:", err);
-    toast.error("❌ Update failed");
+    console.log(err);
+    toast.error(err?.message || "Update failed ❌");
   }
 };
+
   // 🔍 FILTER
   const filteredData = useMemo(() => {
     let result = [...tableData];
