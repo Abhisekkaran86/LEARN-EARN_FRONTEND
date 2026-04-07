@@ -65,7 +65,7 @@
 
 import { Bell, Search, LogOut } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
-import { logout } from "../../../features/authSlice"; // adjust path if needed
+import { logout } from "../../../features/authSlice";
 import { useNavigate } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
 
@@ -73,10 +73,8 @@ const AdminHeader = ({ onSearch }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  // ✅ Redux user
   const { user } = useSelector((state) => state.auth);
 
-  // ✅ Dropdown state
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -95,16 +93,19 @@ const AdminHeader = ({ onSearch }) => {
   // ✅ Logout
   const handleLogout = () => {
     dispatch(logout());
+    localStorage.removeItem("token"); // optional safety
     navigate("/login");
   };
 
   return (
-    <div className="flex items-center justify-between bg-white px-6 py-4 rounded-2xl shadow-sm">
-      
+    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white px-4 sm:px-6 py-4 rounded-2xl shadow-sm">
+
       {/* LEFT */}
-      <div className="flex items-center gap-4 w-full max-w-xl">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 w-full">
+
+        {/* TITLE */}
         <div>
-          <h1 className="text-xl font-semibold text-gray-800">
+          <h1 className="text-lg sm:text-xl font-semibold text-gray-800">
             Dashboard
           </h1>
           <p className="text-xs text-gray-400">
@@ -112,8 +113,8 @@ const AdminHeader = ({ onSearch }) => {
           </p>
         </div>
 
-        {/* Search */}
-        <div className="flex items-center bg-[#f5f7fb] px-3 py-2 rounded-lg w-full">
+        {/* SEARCH */}
+        <div className="flex items-center bg-[#f5f7fb] px-3 py-2 rounded-lg w-full sm:max-w-xs md:max-w-sm lg:max-w-md">
           <Search size={16} className="text-gray-400 mr-2" />
           <input
             type="text"
@@ -122,32 +123,33 @@ const AdminHeader = ({ onSearch }) => {
             className="bg-transparent outline-none text-sm w-full"
           />
         </div>
+
       </div>
 
       {/* RIGHT */}
-      <div className="flex items-center gap-4">
-        
-        {/* Notification */}
+      <div className="flex items-center justify-between sm:justify-end gap-4">
+
+        {/* 🔔 Notification */}
         <div className="relative cursor-pointer hover:scale-105 transition">
           <Bell className="text-gray-500" />
-          <span className="absolute -top-1 -right-1 w-3 h-3 bg-[#82C600] rounded-full"></span>
+          <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-[#82C600] rounded-full"></span>
         </div>
 
-        {/* Profile */}
+        {/* 👤 Profile */}
         <div className="relative" ref={dropdownRef}>
-          
+
           {/* Profile Button */}
           <div
             onClick={() => setOpen(!open)}
-            className="flex items-center gap-3 cursor-pointer hover:bg-gray-50 px-2 py-1 rounded-lg transition"
+            className="flex items-center gap-2 sm:gap-3 cursor-pointer hover:bg-gray-50 px-2 py-1 rounded-lg transition"
           >
             {/* Avatar */}
-            <div className="w-10 h-10 rounded-full bg-[#82C600]/20 text-[#82C600] flex items-center justify-center font-semibold">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#82C600]/20 text-[#82C600] flex items-center justify-center font-semibold text-sm sm:text-base">
               {user?.name?.charAt(0) || "A"}
             </div>
 
             {/* Name + Role */}
-            <div className="hidden sm:block">
+            <div className="hidden md:block">
               <p className="text-sm font-medium text-gray-800">
                 {user?.name || "Admin"}
               </p>
@@ -157,9 +159,9 @@ const AdminHeader = ({ onSearch }) => {
             </div>
           </div>
 
-          {/* 🔥 DROPDOWN */}
+          {/* 🔽 DROPDOWN */}
           <div
-            className={`absolute right-0 mt-2 w-44 bg-white border rounded-xl shadow-lg overflow-hidden transform transition-all duration-200 ${
+            className={`absolute right-0 mt-2 w-40 sm:w-44 bg-white border rounded-xl shadow-lg overflow-hidden transform transition-all duration-200 ${
               open
                 ? "opacity-100 scale-100 translate-y-0"
                 : "opacity-0 scale-95 -translate-y-2 pointer-events-none"
@@ -167,10 +169,10 @@ const AdminHeader = ({ onSearch }) => {
           >
             {/* Profile Info */}
             <div className="px-4 py-3 border-b bg-gray-50">
-              <p className="text-sm font-medium text-gray-800">
+              <p className="text-sm font-medium text-gray-800 truncate">
                 {user?.name || "Admin"}
               </p>
-              <p className="text-xs text-gray-400">
+              <p className="text-xs text-gray-400 truncate">
                 {user?.email || "admin@email.com"}
               </p>
             </div>

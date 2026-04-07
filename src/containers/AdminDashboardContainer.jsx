@@ -662,7 +662,7 @@ const AdminDashboardContainer = () => {
 
         case "TOTAL SUBMISSIONS":
           res = await axios.get(
-            "https://learn-earn-contest-2.onrender.com/api/v1/submission",
+            "https://learn-earn-contest-2.onrender.com/api/v1/submission/contest",
             config
           );
           finalData = extractData(res);

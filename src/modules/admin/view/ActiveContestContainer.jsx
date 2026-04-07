@@ -489,7 +489,6 @@ const ActiveContestContainer = () => {
   const { contests, loading } = useSelector((state) => state.contest);
 
   const [tableData, setTableData] = useState([]);
-
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
   const [page, setPage] = useState(1);
@@ -502,12 +501,12 @@ const ActiveContestContainer = () => {
     dispatch(fetchContests());
   }, [dispatch]);
 
-  // ✅ MAP DATA FROM REDUX
+  // ✅ MAP DATA
   useEffect(() => {
     if (contests && contests.length) {
       const formatted = contests.map((item) => ({
-        id: item._id,   // ✅ REQUIRED for backend
-        _id: item._id, // ✅ FIXED
+        id: item._id,
+        _id: item._id,
         title: item.title || "No Title",
         startDate: item.startDate || "",
         deadline: item.deadline || "",
@@ -520,12 +519,13 @@ const ActiveContestContainer = () => {
       setTableData(formatted);
     }
   }, [contests]);
-  // ✅ RESET PAGE
+
+  // ✅ RESET PAGE (important for UX)
   useEffect(() => {
     setPage(1);
   }, [search, filter]);
 
-  // ✅ DELETE (Redux)
+  // ✅ DELETE
   const handleDelete = async (id) => {
     try {
       await dispatch(deleteContest(id)).unwrap();
@@ -536,48 +536,46 @@ const ActiveContestContainer = () => {
     }
   };
 
-  // ✅ EDIT OPEN
+  // ✅ EDIT
   const handleEdit = (item) => {
     setSelectedItem(item);
     setIsEditOpen(true);
   };
-  // ✅ UPDATE (Redux)
+
+  // ✅ UPDATE
   const handleSave = async () => {
-  try {
-    console.log("UPDATE ID:", selectedItem?.id);
+    try {
+      if (!selectedItem?.id) {
+        toast.error("Invalid ID ❌");
+        return;
+      }
 
-    if (!selectedItem?.id) {
-      toast.error("Invalid ID ❌");
-      return;
+      const cleanData = {
+        title: selectedItem.title,
+        startDate: selectedItem.startDate,
+        deadline: selectedItem.deadline,
+        status: selectedItem.status,
+      };
+
+      await dispatch(
+        updateContest({
+          id: selectedItem.id,
+          data: cleanData,
+        })
+      ).unwrap();
+
+      toast.success("✏️ Contest updated");
+      dispatch(fetchContests());
+
+      setIsEditOpen(false);
+      setSelectedItem(null);
+    } catch (err) {
+      console.log(err);
+      toast.error(err?.message || "Update failed ❌");
     }
+  };
 
-    const cleanData = {
-      title: selectedItem.title,
-      startDate: selectedItem.startDate,
-      deadline: selectedItem.deadline,
-      status: selectedItem.status,
-    };
-
-    await dispatch(
-      updateContest({
-        id: selectedItem.id, // ✅ FINAL FIX
-        data: cleanData,
-      })
-    ).unwrap();
-
-    toast.success("✏️ Contest updated");
-    dispatch(fetchContests());
-
-
-    setIsEditOpen(false);
-    setSelectedItem(null);
-  } catch (err) {
-    console.log(err);
-    toast.error(err?.message || "Update failed ❌");
-  }
-};
-
-  // 🔍 FILTER
+  // 🔍 FILTER (optimized)
   const filteredData = useMemo(() => {
     let result = [...tableData];
 
@@ -597,30 +595,39 @@ const ActiveContestContainer = () => {
   // ✅ PAGINATION
   const totalPages = Math.ceil(filteredData.length / ITEMS_PER_PAGE);
 
-  const paginatedData = filteredData.slice(
-    (page - 1) * ITEMS_PER_PAGE,
-    page * ITEMS_PER_PAGE
-  );
+  const paginatedData = useMemo(() => {
+    return filteredData.slice(
+      (page - 1) * ITEMS_PER_PAGE,
+      page * ITEMS_PER_PAGE
+    );
+  }, [filteredData, page]);
 
   return (
-    <ActiveContestUI
-      data={paginatedData}
-      loading={loading}
-      search={search}
-      setSearch={setSearch}
-      filter={filter}
-      setFilter={setFilter}
-      page={page}
-      setPage={setPage}
-      totalPages={totalPages}
-      onEdit={handleEdit}
-      onDelete={handleDelete}
-      isEditOpen={isEditOpen}
-      setIsEditOpen={setIsEditOpen}
-      selectedItem={selectedItem}
-      setSelectedItem={setSelectedItem}
-      onSave={handleSave}
-    />
+    <div className="w-full overflow-hidden">
+
+      {/* ✅ Important wrapper for mobile scroll */}
+      <div className="w-full overflow-x-auto">
+        <ActiveContestUI
+          data={paginatedData}
+          loading={loading}
+          search={search}
+          setSearch={setSearch}
+          filter={filter}
+          setFilter={setFilter}
+          page={page}
+          setPage={setPage}
+          totalPages={totalPages}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+          isEditOpen={isEditOpen}
+          setIsEditOpen={setIsEditOpen}
+          selectedItem={selectedItem}
+          setSelectedItem={setSelectedItem}
+          onSave={handleSave}
+        />
+      </div>
+
+    </div>
   );
 };
 

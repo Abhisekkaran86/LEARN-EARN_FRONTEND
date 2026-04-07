@@ -1,8 +1,6 @@
-
 import { MoreVertical, Search } from "lucide-react";
 import Button from "../../../components/ui/Button";
 import Input from "../../../components/ui/Input";
-
 import ContestTable from "../componnent/ContestTable";
 
 const ActiveContestUI = ({
@@ -20,8 +18,7 @@ const ActiveContestUI = ({
   setSelectedItem,
   onSave,
 }) => {
-
-  // ✅ ONLY FILTER (NO PAGINATION)
+  // ✅ FILTER
   const filteredData = data
     ?.filter((item) =>
       (item?.title || "")
@@ -41,68 +38,71 @@ const ActiveContestUI = ({
   }
 
   return (
-    <div className="bg-[#f8fafc] p-5 rounded-2xl shadow-sm">
+    <div className="bg-[#f8fafc] p-4 sm:p-5 rounded-2xl shadow-sm">
 
       {/* 🔥 HEADER */}
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-4">
 
+        {/* TITLE */}
         <div>
-          <h2 className="font-semibold text-gray-800 text-lg">
+          <h2 className="font-semibold text-gray-800 text-base sm:text-lg">
             Active Contest Pipeline
           </h2>
-          <p className="text-sm text-gray-400">
+          <p className="text-xs sm:text-sm text-gray-400">
             Real-time status of current academic challenges
           </p>
         </div>
 
         {/* SEARCH + FILTER */}
-        <div className="flex gap-2">
+        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
 
-          <div className="flex items-center bg-white px-3 py-2 rounded-lg border">
+          {/* SEARCH */}
+          <div className="flex items-center bg-white px-3 py-2 rounded-lg border w-full sm:w-auto">
             <Search size={16} className="text-gray-400 mr-2" />
-
             <input
               type="text"
               placeholder="Search contests..."
               value={search || ""}
               onChange={(e) => setSearch(e.target.value)}
-              className="outline-none text-sm"
+              className="outline-none text-sm w-full"
             />
           </div>
 
+          {/* FILTER */}
           <select
             value={filter || "all"}
             onChange={(e) => setFilter(e.target.value)}
-            className="px-3 py-2 bg-white border rounded-lg text-sm"
+            className="px-3 py-2 bg-white border rounded-lg text-sm w-full sm:w-auto"
           >
             <option value="all">All</option>
             <option value="active">Active</option>
             <option value="draft">Draft</option>
             <option value="evaluating">Evaluating</option>
           </select>
-
         </div>
       </div>
 
-      {/* ✅ TABLE (FULL DATA, NO SLICE) */}
-      <ContestTable
-        data={filteredData}
-        onDelete={onDelete}
-        onEdit={onEdit}
-      />
+      {/* ✅ TABLE (Responsive Fix) */}
+      <div className="w-full overflow-x-auto">
+        <ContestTable
+          data={filteredData}
+          onDelete={onDelete}
+          onEdit={onEdit}
+        />
+      </div>
 
-      {/* 🔥 ✅ SAME MODAL (UNCHANGED DESIGN) */}
+      {/* 🔥 MODAL */}
       {isEditOpen && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex justify-center items-center z-50">
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex justify-center items-center z-50 px-3">
 
-          <div className="bg-white w-[450px] rounded-2xl shadow-xl p-6">
+          <div className="bg-white w-full max-w-md sm:max-w-lg rounded-2xl shadow-xl p-4 sm:p-6">
 
             {/* HEADER */}
             <div className="mb-5 border-b pb-3">
-              <h2 className="text-xl font-semibold text-gray-800">
+              <h2 className="text-lg sm:text-xl font-semibold text-gray-800">
                 ✏️ Edit Contest
               </h2>
-              <p className="text-sm text-gray-400">
+              <p className="text-xs sm:text-sm text-gray-400">
                 Update all contest details
               </p>
             </div>
@@ -136,8 +136,8 @@ const ActiveContestUI = ({
                   value={
                     selectedItem?.startDate
                       ? new Date(selectedItem.startDate)
-                        .toISOString()
-                        .split("T")[0]
+                          .toISOString()
+                          .split("T")[0]
                       : ""
                   }
                   onChange={(e) =>
@@ -159,14 +159,14 @@ const ActiveContestUI = ({
                   value={
                     selectedItem?.deadline
                       ? new Date(selectedItem.deadline)
-                        .toISOString()
-                        .split("T")[0]
+                          .toISOString()
+                          .split("T")[0]
                       : ""
                   }
                   onChange={(e) =>
                     setSelectedItem({
                       ...selectedItem,
-                      deadline: e.target.value, // ✅ FIX
+                      deadline: e.target.value,
                     })
                   }
                 />
@@ -209,12 +209,10 @@ const ActiveContestUI = ({
                   <option value="complete">Complete</option>
                 </select>
               </div>
-
             </div>
 
             {/* ACTION BUTTONS */}
-            <div className="flex justify-end gap-3 mt-6 border-t pt-4">
-
+            <div className="flex flex-col sm:flex-row justify-end gap-3 mt-6 border-t pt-4">
               <Button onClick={() => setIsEditOpen(false)}>
                 Cancel
               </Button>
@@ -222,13 +220,11 @@ const ActiveContestUI = ({
               <Button variant="primary" onClick={onSave}>
                 💾 Save Changes
               </Button>
-
             </div>
 
           </div>
         </div>
       )}
-
     </div>
   );
 };

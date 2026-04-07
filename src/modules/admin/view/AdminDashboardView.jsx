@@ -93,7 +93,6 @@
 
 // export default AdminDashboardView;
 
-
 import StatCard from "../../../components/ui/StatCard";
 import Chart from "../../../components/ui/Chart";
 import ActionPanel from "../../../components/ui/ActionPanel";
@@ -112,16 +111,21 @@ const AdminDashboardView = ({
     { title: "TOTAL SUBMISSIONS", key: "submissions", icon: "submissions" },
     { title: "PENDING APPROVALS", key: "pendingList", icon: "pending" },
   ];
+
   return (
     <div className="space-y-6">
 
       {/* ✅ STATS */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {cards.map((card) => (
-          <div key={card.title} onClick={() => onCardClick(card.title)}>
+          <div
+            key={card.title}
+            onClick={() => onCardClick(card.title)}
+            className="cursor-pointer"
+          >
             <StatCard
               title={card.title}
-              value={dashboardData[card.key]}
+              value={dashboardData[card.key]?.count || 0}
               icon={card.icon}
             />
           </div>
@@ -131,12 +135,13 @@ const AdminDashboardView = ({
       {/* ✅ CHART + ACTION PANEL */}
       <div className="grid grid-cols-1 xl:grid-cols-5 gap-6">
 
-        {/* ✅ CHART (Bigger Section) */}
-        <div className="xl:col-span-3 bg-white p-6 rounded-2xl shadow-sm h-[420px] flex flex-col">
-
-
-
-          <Chart data={chartData} dataKey="contests" />
+        {/* ✅ CHART */}
+        <div className="xl:col-span-3 bg-white p-4 sm:p-6 rounded-2xl shadow-sm">
+          
+          {/* Responsive height */}
+          <div className="w-full h-[250px] sm:h-[300px] md:h-[350px] lg:h-[400px]">
+            <Chart data={chartData} dataKey="value" />
+          </div>
 
         </div>
 
@@ -148,7 +153,9 @@ const AdminDashboardView = ({
       </div>
 
       {/* ✅ ACTIVE CONTESTS */}
-      <ActiveContestContainer />
+      <div className="overflow-x-auto">
+        <ActiveContestContainer />
+      </div>
 
     </div>
   );
