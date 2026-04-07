@@ -97,28 +97,48 @@ const ContestsPage = () => {
   const { contests = [] } = useSelector((state) => state.contest);
 
   // ✅ FIXED LOGIN STATE (REDUX)
-  const { user } = useSelector((state) => state.auth);
-  const isLoggedIn = !!user;
+  // const { user } = useSelector((state) => state.auth);
+  // const isLoggedIn = !!user;
+
+  const token = localStorage.getItem("token");
+const role = localStorage.getItem("role");
+
+const isLoggedIn = !!token;
 
   useEffect(() => {
     dispatch(fetchContests());
   }, [dispatch]);
 
   // ✅ COMMON FUNCTION
-  const handleParticipate = (item) => {
-    if (!isLoggedIn) {
-      navigate("/login");
-      return;
-    }
+  // const handleParticipate = (item) => {
+  //   if (!isLoggedIn) {
+  //     navigate("/login");
+  //     return;
+  //   }
 
-    if (user?.role === "student") {
-      navigate("/student/dashboard");
-    } else if (user?.role === "admin") {
-      navigate("/admin/dashboard");
-    } else {
-      navigate("/");
-    }
-  };
+  //   if (user?.role === "student") {
+  //     navigate("/student/dashboard");
+  //   } else if (user?.role === "admin") {
+  //     navigate("/admin/dashboard");
+  //   } else {
+  //     navigate("/");
+  //   }
+  // };
+
+  const handleParticipate = (item) => {
+  if (!isLoggedIn) {
+    navigate("/login");
+    return;
+  }
+
+  if (role === "student") {
+    navigate(`/student/contest/${item._id}`);
+  } else if (role === "admin") {
+    navigate("/admin/dashboard");
+  } else {
+    navigate("/");
+  }
+};
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#f8fafc] via-white to-[#ecfdf5] px-4 md:px-10 py-10">

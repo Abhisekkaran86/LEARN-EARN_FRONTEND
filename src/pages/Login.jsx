@@ -334,39 +334,80 @@ const Login = () => {
   };
 
   // ✅ UPDATED LOGIN FUNCTION
+  // const handleLogin = async () => {
+  //   // 🔒 Validation
+  //   if (!form.email || !form.password) {
+  //     toast.error("Please fill all fields ❌");
+  //     return;
+  //   }
+
+  //   try {
+      
+  //     const res = await dispatch(loginUser(form)).unwrap();
+
+  //     console.log("LOGIN RESPONSE:", res);
+
+  //     const role = res.role;
+
+  //     if (!role) {
+  //       toast.error("Role not found ❌");
+  //       return;
+  //     }
+
+  //     toast.success(`Login as ${role} ✅`);
+
+  //     // ✅ Role based redirect
+  //     if (role === "admin") {
+  //       navigate("/admin/dashboard");
+  //     } else {
+  //       navigate("/student/dashboard");
+  //     }
+  //   } catch (err) {
+  //     console.log(err);
+  //     toast.error(err || "Login failed ❌");
+  //   }
+  // };
+
   const handleLogin = async () => {
-    // 🔒 Validation
-    if (!form.email || !form.password) {
-      toast.error("Please fill all fields ❌");
+  if (!form.email || !form.password) {
+    toast.error("Please fill all fields ❌");
+    return;
+  }
+
+  try {
+    const res = await dispatch(loginUser(form)).unwrap();
+
+    console.log("LOGIN RESPONSE:", res);
+
+    // ✅ 🔥 ADD THIS (IMPORTANT)
+    const userId = res._id || res.user?._id;
+
+    localStorage.setItem("userId", userId);        // ✅ store userId
+    localStorage.setItem("token", res.accessToken); // (safe backup)
+    localStorage.setItem("role", res.role);         // (safe backup)
+
+    console.log("STORED USER ID:", userId);
+
+    const role = res.role;
+
+    if (!role) {
+      toast.error("Role not found ❌");
       return;
     }
 
-    try {
-      
-      const res = await dispatch(loginUser(form)).unwrap();
+    toast.success(`Login as ${role} ✅`);
 
-      console.log("LOGIN RESPONSE:", res);
-
-      const role = res.role;
-
-      if (!role) {
-        toast.error("Role not found ❌");
-        return;
-      }
-
-      toast.success(`Login as ${role} ✅`);
-
-      // ✅ Role based redirect
-      if (role === "admin") {
-        navigate("/admin/dashboard");
-      } else {
-        navigate("/student/dashboard");
-      }
-    } catch (err) {
-      console.log(err);
-      toast.error(err || "Login failed ❌");
+    if (role === "admin") {
+      navigate("/admin/dashboard");
+    } else {
+      navigate("/student/dashboard");
     }
-  };
+
+  } catch (err) {
+    console.log(err);
+    toast.error(err || "Login failed ❌");
+  }
+};
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#f8fafc] to-[#eef2f7] px-4">

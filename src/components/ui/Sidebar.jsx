@@ -309,7 +309,7 @@ const Sidebar = ({ menu = [], title = "Panel", role = "admin" }) => {
       const token = localStorage.getItem("token");
 
       await axios.post(
-        "/api/auth/logout",
+        "https://learn-earn-contest-2.onrender.com/api/v1/auth/user/logout",
         {},
         {
           headers: {
