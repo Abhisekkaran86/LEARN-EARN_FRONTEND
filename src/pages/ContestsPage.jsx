@@ -82,6 +82,209 @@
 // };
 
 // export default ContestsPage;
+// import { useNavigate } from "react-router-dom";
+// import { FaArrowRight, FaTrophy } from "react-icons/fa";
+// import { ArrowLeft } from "lucide-react";
+
+// import { useEffect } from "react";
+// import { useDispatch, useSelector } from "react-redux";
+// import { fetchContests } from "../features/contestSlice";
+
+// const ContestsPage = () => {
+//   const navigate = useNavigate();
+//   const dispatch = useDispatch();
+
+//   const { contests = [] } = useSelector((state) => state.contest);
+
+//   // ✅ FIXED LOGIN STATE (REDUX)
+//   // const { user } = useSelector((state) => state.auth);
+//   // const isLoggedIn = !!user;
+
+//   const token = localStorage.getItem("token");
+// const role = localStorage.getItem("role");
+
+// const isLoggedIn = !!token;
+
+//   useEffect(() => {
+//     dispatch(fetchContests());
+//   }, [dispatch]);
+
+//   // ✅ COMMON FUNCTION
+//   // const handleParticipate = (item) => {
+//   //   if (!isLoggedIn) {
+//   //     navigate("/login");
+//   //     return;
+//   //   }
+
+//   //   if (user?.role === "student") {
+//   //     navigate("/student/dashboard");
+//   //   } else if (user?.role === "admin") {
+//   //     navigate("/admin/dashboard");
+//   //   } else {
+//   //     navigate("/");
+//   //   }
+//   // };
+
+//   const handleParticipate = (item) => {
+//   if (!isLoggedIn) {
+//     navigate("/login");
+//     return;
+//   }
+
+//   if (role === "student") {
+//     navigate(`/student/contest/${item._id}`);
+//   } else if (role === "admin") {
+//     navigate("/admin/dashboard");
+//   } else {
+//     navigate("/");
+//   }
+// };
+
+//   return (
+//     <div className="min-h-screen bg-gradient-to-br from-[#f8fafc] via-white to-[#ecfdf5] px-4 md:px-10 py-10">
+
+//       {/* 🔥 HEADER WITH PERFECT BACK BUTTON */}
+//       <div className="flex items-center gap-4 mb-10">
+//         <button
+//           onClick={() => navigate(-1)}
+//           className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition shadow-sm"
+//         >
+//           <ArrowLeft size={18} />
+//         </button>
+
+//         <div>
+//           <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
+//             Discover Contests
+//           </h1>
+//           <p className="text-gray-500 text-sm">
+//             Compete, win rewards, and grow 🚀
+//           </p>
+//         </div>
+//       </div>
+
+//       {/* 🔥 GRID */}
+//       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
+
+//         {contests.map((item) => {
+//           const daysLeft = Math.ceil(
+//             (new Date(item.deadline) - new Date()) / (1000 * 60 * 60 * 24)
+//           );
+
+//           return (
+//             <div
+//               key={item._id}
+
+//               // ✅ CARD CLICK
+//               onClick={() => handleParticipate(item)}
+
+//               className="group relative rounded-3xl overflow-hidden bg-white shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border border-gray-100 cursor-pointer"
+//             >
+//               {/* IMAGE */}
+//               <div className="relative h-52 overflow-hidden">
+//                 <img
+//                   src={item.image || "https://via.placeholder.com/400"}
+//                   alt={item.title}
+//                   className="w-full h-full object-cover transition duration-700 group-hover:scale-110"
+//                 />
+
+//                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+
+//                 <div className="absolute top-4 left-4 text-xs px-3 py-1 rounded-full font-semibold bg-green-500 text-white shadow">
+//                   {item.status || "Active"}
+//                 </div>
+
+//                 <div className="absolute top-4 right-4 bg-yellow-400 text-black text-xs font-bold px-3 py-1 rounded-full shadow flex items-center gap-1">
+//                   <FaTrophy />
+//                   {item.rewards?.[0] || "Reward"}
+//                 </div>
+
+//                 <h3 className="absolute bottom-3 left-4 right-4 text-white font-bold text-lg">
+//                   {item.title}
+//                 </h3>
+//               </div>
+
+//               {/* CONTENT */}
+//               <div className="p-5 flex flex-col justify-between">
+
+//                 <p className="text-sm text-gray-500 line-clamp-2">
+//                   {item.description}
+//                 </p>
+
+//                 <div className="flex flex-wrap gap-2 mt-3">
+//                   <span className="text-xs bg-[#82C600]/10 text-[#82C600] px-2 py-1 rounded">
+//                     {item.category || "General"}
+//                   </span>
+
+//                   {item.level && (
+//                     <span className="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded">
+//                       {item.level}
+//                     </span>
+//                   )}
+//                 </div>
+
+//                 <p className="text-xs text-red-500 mt-2">
+//                   ⏳ {daysLeft > 0 ? `${daysLeft} days left` : "Ended"}
+//                 </p>
+
+//                 <div className="grid grid-cols-2 gap-3 mt-4 text-xs">
+
+//                   <div className="bg-gray-50 p-3 rounded-xl">
+//                     <p className="text-gray-400">Start</p>
+//                     <p className="font-semibold text-gray-700">
+//                       {new Date(item.startDate).toLocaleDateString()}
+//                     </p>
+//                   </div>
+
+//                   <div className="bg-gray-50 p-3 rounded-xl">
+//                     <p className="text-gray-400">Deadline</p>
+//                     <p className="font-semibold text-gray-700">
+//                       {new Date(item.deadline).toLocaleDateString()}
+//                     </p>
+//                   </div>
+
+//                   <div className="bg-gray-50 p-3 rounded-xl col-span-2">
+//                     <p className="text-gray-400">Participants</p>
+//                     <p className="font-semibold text-gray-700">
+//                       👥 {item.participants?.length || 0}+ Joined
+//                     </p>
+
+//                     <div className="w-full bg-gray-200 h-2 rounded-full mt-2">
+//                       <div
+//                         className="bg-[#82C600] h-2 rounded-full"
+//                         style={{
+//                           width: `${Math.min(
+//                             (item.participants?.length || 0) * 10,
+//                             100
+//                           )}%`,
+//                         }}
+//                       ></div>
+//                     </div>
+//                   </div>
+//                 </div>
+
+//                 {/* BUTTON */}
+//                 <button
+//                   onClick={(e) => {
+//                     e.stopPropagation();
+//                     handleParticipate(item);
+//                   }}
+//                   className="mt-5 w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#82C600] to-[#a3e635] text-white py-2.5 rounded-xl font-semibold shadow-md hover:shadow-xl hover:scale-[1.02] transition-all duration-300"
+//                 >
+//                   Participate <FaArrowRight />
+//                 </button>
+//               </div>
+
+//               <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-[#82c600]/10 to-[#a3e635]/10 opacity-0 group-hover:opacity-100 transition duration-500"></div>
+//             </div>
+//           );
+//         })}
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default ContestsPage;
+
 import { useNavigate } from "react-router-dom";
 import { FaArrowRight, FaTrophy } from "react-icons/fa";
 import { ArrowLeft } from "lucide-react";
@@ -96,54 +299,33 @@ const ContestsPage = () => {
 
   const { contests = [] } = useSelector((state) => state.contest);
 
-  // ✅ FIXED LOGIN STATE (REDUX)
-  // const { user } = useSelector((state) => state.auth);
-  // const isLoggedIn = !!user;
-
   const token = localStorage.getItem("token");
-const role = localStorage.getItem("role");
-
-const isLoggedIn = !!token;
+  const role = localStorage.getItem("role");
+  const isLoggedIn = !!token;
 
   useEffect(() => {
     dispatch(fetchContests());
   }, [dispatch]);
 
-  // ✅ COMMON FUNCTION
-  // const handleParticipate = (item) => {
-  //   if (!isLoggedIn) {
-  //     navigate("/login");
-  //     return;
-  //   }
-
-  //   if (user?.role === "student") {
-  //     navigate("/student/dashboard");
-  //   } else if (user?.role === "admin") {
-  //     navigate("/admin/dashboard");
-  //   } else {
-  //     navigate("/");
-  //   }
-  // };
-
   const handleParticipate = (item) => {
-  if (!isLoggedIn) {
-    navigate("/login");
-    return;
-  }
+    if (!isLoggedIn) {
+      navigate("/login");
+      return;
+    }
 
-  if (role === "student") {
-    navigate(`/student/contest/${item._id}`);
-  } else if (role === "admin") {
-    navigate("/admin/dashboard");
-  } else {
-    navigate("/");
-  }
-};
+    if (role === "student") {
+      navigate(`/student/contest/${item._id}`);
+    } else if (role === "admin") {
+      navigate("/admin/dashboard");
+    } else {
+      navigate("/");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#f8fafc] via-white to-[#ecfdf5] px-4 md:px-10 py-10">
 
-      {/* 🔥 HEADER WITH PERFECT BACK BUTTON */}
+      {/* HEADER */}
       <div className="flex items-center gap-4 mb-10">
         <button
           onClick={() => navigate(-1)}
@@ -162,7 +344,7 @@ const isLoggedIn = !!token;
         </div>
       </div>
 
-      {/* 🔥 GRID */}
+      {/* GRID */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
 
         {contests.map((item) => {
@@ -174,8 +356,8 @@ const isLoggedIn = !!token;
             <div
               key={item._id}
 
-              // ✅ CARD CLICK
-              onClick={() => handleParticipate(item)}
+              
+              onClick={() => navigate(`/contest/${item._id}`)}
 
               className="group relative rounded-3xl overflow-hidden bg-white shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border border-gray-100 cursor-pointer"
             >

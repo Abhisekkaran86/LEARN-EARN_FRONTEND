@@ -322,7 +322,7 @@ const Sidebar = ({ menu = [], title = "Panel", role = "admin" }) => {
     } finally {
       localStorage.removeItem("token");
       sessionStorage.clear();
-      navigate("/login");
+      navigate("/");
     }
   };
 

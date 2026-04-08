@@ -439,7 +439,7 @@
 //     fetchData();
 //   }, []);
 
-  
+
 // const handleCardClick = async (type) => {
 //   setModalType(type);
 //   setModalOpen(true);
@@ -544,12 +544,198 @@
 
 // export default AdminDashboardContainer;
 
+// import axios from "axios";
+// import { useEffect, useState } from "react";
+// import AdminDashboardView from "../modules/admin/view/AdminDashboardView";
+// import DashboardModal from "../containers/DashboardModal";
+// import { useSelector } from "react-redux";
+// // ❌ removed Cookies
+
+// const AdminDashboardContainer = () => {
+//   const [dashboardData, setDashboardData] = useState({});
+//   const [modalOpen, setModalOpen] = useState(false);
+//   const [modalData, setModalData] = useState([]);
+//   const [modalType, setModalType] = useState("");
+//   const [chartData, setChartData] = useState([]);
+//   const [loadingModal, setLoadingModal] = useState(false);
+
+//   // ✅ get token from redux OR fallback localStorage
+//   const reduxToken = useSelector((state) => state.auth.token);
+
+//   // ✅ UNIVERSAL DATA EXTRACTOR
+//   const extractData = (res) => {
+//     console.log("FULL API RESPONSE:", res.data);
+
+//     return (
+//       res?.data?.data ||
+//       res?.data?.users ||
+//       res?.data?.contests ||
+//       res?.data?.submissions ||
+//       res?.data ||
+//       []
+//     );
+//   };
+
+//   // ✅ DASHBOARD FETCH
+//   useEffect(() => {
+//     const fetchData = async () => {
+//       try {
+//         const res = await axios.get(
+//           "https://learn-earn-contest-2.onrender.com/api/v1/dashboard"
+//         );
+
+//         const api = res?.data?.data || {};
+
+//         const formattedData = {
+//           activeContestList: api.activeContests || [],
+//           completedContestList: api.completedContests || [],
+
+//           users: {
+//             count: api.totalUsers || 0,
+//             list: [],
+//           },
+
+//           submissions: {
+//             count: api.totalSubmissions || 0,
+//             list: [],
+//           },
+
+//           pendingList: {
+//             count: api.pendingApprovals || 0,
+//             list: [],
+//           },
+//         };
+
+//         setDashboardData(formattedData);
+
+//         const chartFormatted = [
+//           { name: "Active", value: api.activeContests?.count || 0 },
+//           { name: "Completed", value: api.completedContests?.count || 0 },
+//           { name: "Users", value: api.totalUsers || 0 },
+//           { name: "Submissions", value: api.totalSubmissions || 0 },
+//           { name: "Pending", value: api.pendingApprovals || 0 },
+//         ];
+
+//         setChartData(chartFormatted);
+//       } catch (err) {
+//         console.error("DASHBOARD FETCH ERROR:", err);
+//       }
+//     };
+
+//     fetchData();
+//   }, []);
+
+//   // ✅ HANDLE CARD CLICK
+//   const handleCardClick = async (type) => {
+//     setModalType(type);
+//     setModalOpen(true);
+
+//     // ✅ get token from redux OR localStorage
+//     const token = reduxToken || localStorage.getItem("token");
+
+//     if (!token) {
+//       console.error("No token found. Please login.");
+//       setModalData([]);
+//       return;
+//     }
+
+//     setLoadingModal(true);
+
+//     try {
+//       let res;
+//       let finalData = [];
+
+//       const config = {
+//         headers: {
+//           Authorization: `Bearer ${token}`,
+//         },
+//       };
+
+//       switch (type) {
+//         case "TOTAL USERS":
+//           res = await axios.get(
+//             "https://learn-earn-contest-2.onrender.com/api/v1/auth/users",
+//             config
+//           );
+//           finalData = extractData(res);
+//           break;
+
+//         case "TOTAL SUBMISSIONS":
+//           res = await axios.get(
+//             "https://learn-earn-contest-2.onrender.com/api/v1/submission/submitted-contests-count",
+//             config
+//           );
+//           finalData = extractData(res);
+//           break;
+
+//         case "ACTIVE CONTESTS":
+//           res = await axios.get(
+//             "https://learn-earn-contest-2.onrender.com/api/v1/contest/active",
+//             config
+//           );
+
+//           const allData = extractData(res);
+
+//           finalData = allData.filter(
+//             (item) => item.status?.toLowerCase() === "active"
+//           );
+//           break;
+
+//         case "PENDING APPROVALS":
+//           res = await axios.get(
+//             "https://learn-earn-contest-2.onrender.com/api/v1/pending",
+//             config
+//           );
+//           finalData = extractData(res);
+//           break;
+
+//         default:
+//           finalData = [];
+//       }
+
+//       console.log("FINAL MODAL DATA:", finalData);
+//       setModalData(Array.isArray(finalData) ? finalData : []);
+
+//     } catch (err) {
+//       console.error("MODAL FETCH ERROR:", err.response?.data || err.message);
+
+//       if (err.response?.status === 401) {
+//         console.error("Unauthorized! Please login again.");
+//         localStorage.removeItem("token"); // ✅ removed cookie logic
+//       }
+
+//       setModalData([]);
+//     } finally {
+//       setLoadingModal(false);
+//     }
+//   };
+
+//   return (
+//     <>
+//       <AdminDashboardView
+//         dashboardData={dashboardData}
+//         chartData={chartData}
+//         onCardClick={handleCardClick}
+//       />
+
+//       <DashboardModal
+//         isOpen={modalOpen}
+//         onClose={() => setModalOpen(false)}
+//         data={modalData}
+//         title={modalType}
+//         loading={loadingModal}
+//       />
+//     </>
+//   );
+// };
+
+// export default AdminDashboardContainer;
+
 import axios from "axios";
 import { useEffect, useState } from "react";
 import AdminDashboardView from "../modules/admin/view/AdminDashboardView";
 import DashboardModal from "../containers/DashboardModal";
 import { useSelector } from "react-redux";
-// ❌ removed Cookies
 
 const AdminDashboardContainer = () => {
   const [dashboardData, setDashboardData] = useState({});
@@ -559,13 +745,12 @@ const AdminDashboardContainer = () => {
   const [chartData, setChartData] = useState([]);
   const [loadingModal, setLoadingModal] = useState(false);
 
-  // ✅ get token from redux OR fallback localStorage
+  // ✅ NEW (drill-down)
+  const [selectedContest, setSelectedContest] = useState(null);
+
   const reduxToken = useSelector((state) => state.auth.token);
 
-  // ✅ UNIVERSAL DATA EXTRACTOR
   const extractData = (res) => {
-    console.log("FULL API RESPONSE:", res.data);
-
     return (
       res?.data?.data ||
       res?.data?.users ||
@@ -585,6 +770,8 @@ const AdminDashboardContainer = () => {
         );
 
         const api = res?.data?.data || {};
+        console.log("dasbor data", res)
+
 
         const formattedData = {
           activeContestList: api.activeContests || [],
@@ -596,12 +783,12 @@ const AdminDashboardContainer = () => {
           },
 
           submissions: {
-            count: api.totalSubmissions || 0,
+            count: api.submissions?.total || 0,
             list: [],
           },
 
           pendingList: {
-            count: api.pendingApprovals || 0,
+            count: api.submissions?.pending || 0,
             list: [],
           },
         };
@@ -630,7 +817,9 @@ const AdminDashboardContainer = () => {
     setModalType(type);
     setModalOpen(true);
 
-    // ✅ get token from redux OR localStorage
+    // ✅ reset drill-down
+    setSelectedContest(null);
+
     const token = reduxToken || localStorage.getItem("token");
 
     if (!token) {
@@ -662,7 +851,7 @@ const AdminDashboardContainer = () => {
 
         case "TOTAL SUBMISSIONS":
           res = await axios.get(
-            "https://learn-earn-contest-2.onrender.com/api/v1/submission/contest",
+            "https://learn-earn-contest-2.onrender.com/api/v1/submission/submitted-contests-count",
             config
           );
           finalData = extractData(res);
@@ -693,21 +882,23 @@ const AdminDashboardContainer = () => {
           finalData = [];
       }
 
-      console.log("FINAL MODAL DATA:", finalData);
       setModalData(Array.isArray(finalData) ? finalData : []);
-
     } catch (err) {
       console.error("MODAL FETCH ERROR:", err.response?.data || err.message);
 
       if (err.response?.status === 401) {
-        console.error("Unauthorized! Please login again.");
-        localStorage.removeItem("token"); // ✅ removed cookie logic
+        localStorage.removeItem("token");
       }
 
       setModalData([]);
     } finally {
       setLoadingModal(false);
     }
+  };
+
+  // ✅ NEW: contest click
+  const handleContestClick = (contest) => {
+    setSelectedContest(contest);
   };
 
   return (
@@ -720,13 +911,143 @@ const AdminDashboardContainer = () => {
 
       <DashboardModal
         isOpen={modalOpen}
-        onClose={() => setModalOpen(false)}
+        onClose={() => {
+          setModalOpen(false);
+          setSelectedContest(null);
+        }}
         data={modalData}
         title={modalType}
         loading={loadingModal}
+        selectedContest={selectedContest}
+        onContestClick={handleContestClick}
+        setSelectedContest={setSelectedContest}
       />
     </>
   );
 };
 
 export default AdminDashboardContainer;
+
+// import axios from "axios";
+// import { useEffect, useState } from "react";
+// import AdminDashboardView from "../modules/admin/view/AdminDashboardView";
+// import DashboardModal from "../containers/DashboardModal";
+// import { useSelector } from "react-redux";
+
+// const AdminDashboardContainer = () => {
+//   const [dashboardData, setDashboardData] = useState({});
+//   const [modalOpen, setModalOpen] = useState(false);
+//   const [modalData, setModalData] = useState([]);
+//   const [modalType, setModalType] = useState("");
+//   const [chartData, setChartData] = useState([]);
+//   const [loadingModal, setLoadingModal] = useState(false);
+
+//   // ✅ drill-down
+//   const [selectedContest, setSelectedContest] = useState(null);
+
+//   const reduxToken = useSelector((state) => state.auth.token);
+
+//   const extractData = (res) => {
+//     return (
+//       res?.data?.data ||
+//       res?.data?.users ||
+//       res?.data?.contests ||
+//       res?.data?.submissions ||
+//       res?.data ||
+//       []
+//     );
+//   };
+
+//   useEffect(() => {
+//     const fetchData = async () => {
+//       try {
+//         const res = await axios.get(
+//           "https://learn-earn-contest-2.onrender.com/api/v1/dashboard"
+//         );
+
+//         const api = res?.data?.data || {};
+
+//         setDashboardData({
+//           activeContestList: api.activeContests || [],
+//           completedContestList: api.completedContests || [],
+//           users: { count: api.totalUsers || 0, list: [] },
+//           submissions: { count: api.totalSubmissions || 0, list: [] },
+//           pendingList: { count: api.pendingApprovals || 0, list: [] },
+//         });
+
+//         setChartData([
+//           { name: "Active", value: api.activeContests?.count || 0 },
+//           { name: "Completed", value: api.completedContests?.count || 0 },
+//           { name: "Users", value: api.totalUsers || 0 },
+//           { name: "Submissions", value: api.totalSubmissions || 0 },
+//           { name: "Pending", value: api.pendingApprovals || 0 },
+//         ]);
+//       } catch (err) {
+//         console.error(err);
+//       }
+//     };
+
+//     fetchData();
+//   }, []);
+
+//   const handleCardClick = async (type) => {
+//     setModalType(type);
+//     setModalOpen(true);
+//     setSelectedContest(null);
+
+//     const token = reduxToken || localStorage.getItem("token");
+
+//     try {
+//       let res;
+//       let finalData = [];
+
+//       const config = {
+//         headers: { Authorization: `Bearer ${token}` },
+//       };
+
+//       if (type === "TOTAL SUBMISSIONS") {
+//         res = await axios.get(
+//           "https://learn-earn-contest-2.onrender.com/api/v1/submission/submitted-contests-count",
+//           config
+//         );
+//         finalData = extractData(res);
+//       }
+
+//       setModalData(finalData);
+//     } catch (err) {
+//       console.error(err);
+//     } finally {
+//       setLoadingModal(false);
+//     }
+//   };
+
+//   const handleContestClick = (contest) => {
+//     setSelectedContest(contest);
+//   };
+
+//   return (
+//     <>
+//       <AdminDashboardView
+//         dashboardData={dashboardData}
+//         chartData={chartData}
+//         onCardClick={handleCardClick}
+//       />
+
+//       <DashboardModal
+//         isOpen={modalOpen}
+//         onClose={() => {
+//           setModalOpen(false);
+//           setSelectedContest(null);
+//         }}
+//         data={modalData}
+//         title={modalType}
+//         loading={loadingModal}
+//         selectedContest={selectedContest}
+//         onContestClick={handleContestClick}
+//         setSelectedContest={setSelectedContest}
+//       />
+//     </>
+//   );
+// };
+
+// export default AdminDashboardContainer;

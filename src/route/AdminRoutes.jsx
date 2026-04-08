@@ -9,6 +9,8 @@ import CreateContestView from "../modules/admin/view/CreateContestView";
 import { LayoutDashboard, Trophy, ClipboardCheck, Users } from "lucide-react";
 import AdminSubmissionPage from "../modules/admin/view/AdminSubmissionPage"
 import UsersPage from "../modules/admin/view/UsersPage";
+import AdminAIWinner from "../modules/admin/view/AdminAIWinner";
+import { FiBarChart2, FiCpu } from "react-icons/fi";
 
 const sidebarMenu = [
   {
@@ -31,6 +33,12 @@ const sidebarMenu = [
     key: "/admin/users",
     icon: <Users size={18} />,
   },
+  {
+  key: "/admin/evaluation",
+  icon: <FiBarChart2 />,
+  label: "Evaluation"
+}
+          
 ];
 
 const AdminRoutes = () => {
@@ -47,6 +55,8 @@ const AdminRoutes = () => {
       <Route path="create-contest" element={<CreateContestView />} />
       <Route path="submission" element={<AdminSubmissionPage />} />
       <Route path="/admin/users" element={<UsersPage />} />
+      <Route path="/admin/evaluation" element={<AdminAIWinner />} />
+
     </Route>
   );
 };

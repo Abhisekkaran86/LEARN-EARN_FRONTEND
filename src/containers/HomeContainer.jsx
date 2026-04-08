@@ -21,6 +21,7 @@ import Hero from "../sections/Hero";
 import WhyJoin from "../sections/WhyJoin";
 import Challenges from "../sections/Challenges";
 import Audience from "../sections/Audience";
+import ThemeToggle from "../components/ThemeToggle";
 
 const HomeContainer = () => {
   return (

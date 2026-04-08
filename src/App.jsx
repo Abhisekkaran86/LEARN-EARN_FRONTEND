@@ -11,6 +11,7 @@ import ContestsPage from "./pages/ContestsPage";
 
 import AboutPage from "./pages/AboutPage";
 import ContactPage from "./pages/ContactPage";
+import ContestDetails from "./pages/ContestDetails";
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
           <Route path="/contests" element={<ContestsPage />} /> {/* ✅ FIXED */}
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/about" element={<AboutPage />} />
+          <Route path="/contest/:id" element={<ContestDetails />} />
         </Route>
 
         {/* Auth */}
