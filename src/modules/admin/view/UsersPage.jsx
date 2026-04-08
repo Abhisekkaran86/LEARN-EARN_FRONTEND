@@ -219,7 +219,7 @@ const UsersPage = () => {
       setDeletingId(userId);
 
       await axios.delete(
-        `https://learn-earn-contest-2.onrender.com/api/v1/auth/users/${userId}`,
+        `https://learn-earn-contest-2.onrender.com/api/v1/auth/delete/user/${userId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

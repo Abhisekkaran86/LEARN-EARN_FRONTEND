@@ -529,7 +529,7 @@ const Sidebar = ({ menu = [], title = "Panel", role = "admin" }) => {
   return (
     <>
       {/* 🔥 MOBILE HEADER */}
-      <div className="lg:hidden fixed top- left-0 w-full  bg-white border-b z-50 flex items-center justify-between px-4">
+      <div className="lg:hidden fixed top- left-0 w-full  bg-white  z-50 flex items-center justify-between px-4">
         <button
           onClick={() => setMobileOpen(true)}
           className="p-2 rounded-lg hover:bg-gray-100"

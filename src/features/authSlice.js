@@ -133,6 +133,32 @@ export default authSlice.reducer;
 
 // const BASE_URL = "https://learn-earn-contest-2.onrender.com/api/v1";
 
+// // ✅ REGISTER
+// export const registerUser = createAsyncThunk(
+//   "auth/registerUser",
+//   async (userData, { rejectWithValue }) => {
+//     try {
+//       const res = await axios.post(`${BASE_URL}/auth/register`, userData);
+
+//       const token = res.data.accessToken;
+
+//       // 🔥 STORE TOKEN
+//       Cookies.set("token", token, { expires: 7 });
+//       localStorage.setItem("token", token);
+
+//       return {
+//         user: res.data.user,
+//         role: res.data.role,
+//         token,
+//       };
+//     } catch (err) {
+//       return rejectWithValue(
+//         err.response?.data?.message || "Registration failed ❌"
+//       );
+//     }
+//   }
+// );
+
 // // ✅ LOGIN
 // export const loginUser = createAsyncThunk(
 //   "auth/loginUser",
@@ -142,7 +168,6 @@ export default authSlice.reducer;
 
 //       const token = res.data.accessToken;
 
-//       // 🔥 STORE IN BOTH
 //       Cookies.set("token", token, { expires: 7 });
 //       localStorage.setItem("token", token);
 
@@ -182,7 +207,7 @@ export default authSlice.reducer;
 //   initialState: {
 //     user: null,
 //     token:
-//       localStorage.getItem("token") || Cookies.get("token") || null, // 🔥 RESTORE FROM BOTH
+//       localStorage.getItem("token") || Cookies.get("token") || null,
 //     loading: false,
 //     error: null,
 //   },
@@ -192,7 +217,6 @@ export default authSlice.reducer;
 //       state.user = null;
 //       state.token = null;
 
-//       // 🔥 REMOVE BOTH
 //       localStorage.removeItem("token");
 //       Cookies.remove("token");
 //     },
@@ -200,7 +224,24 @@ export default authSlice.reducer;
 
 //   extraReducers: (builder) => {
 //     builder
-//       // LOGIN
+//       // 🔥 REGISTER
+//       .addCase(registerUser.pending, (state) => {
+//         state.loading = true;
+//       })
+//       .addCase(registerUser.fulfilled, (state, action) => {
+//         state.loading = false;
+
+//         state.user = action.payload.user;
+//         state.token = action.payload.token;
+
+//         state.error = null;
+//       })
+//       .addCase(registerUser.rejected, (state, action) => {
+//         state.loading = false;
+//         state.error = action.payload;
+//       })
+
+//       // 🔥 LOGIN
 //       .addCase(loginUser.pending, (state) => {
 //         state.loading = true;
 //       })
@@ -217,7 +258,7 @@ export default authSlice.reducer;
 //         state.error = action.payload;
 //       })
 
-//       // LOGOUT
+//       // 🔥 LOGOUT
 //       .addCase(logoutUser.fulfilled, (state) => {
 //         state.user = null;
 //         state.token = null;
