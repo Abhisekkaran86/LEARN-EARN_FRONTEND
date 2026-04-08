@@ -529,7 +529,7 @@ const Sidebar = ({ menu = [], title = "Panel", role = "admin" }) => {
   return (
     <>
       {/* 🔥 MOBILE HEADER */}
-      <div className="lg:hidden fixed top-0 left-0 w-full h-14 bg-white border-b z-50 flex items-center justify-between px-4">
+      <div className="lg:hidden fixed top- left-0 w-full  bg-white border-b z-50 flex items-center justify-between px-4">
         <button
           onClick={() => setMobileOpen(true)}
           className="p-2 rounded-lg hover:bg-gray-100"
@@ -537,9 +537,9 @@ const Sidebar = ({ menu = [], title = "Panel", role = "admin" }) => {
           <Menu size={22} />
         </button>
 
-        <h2 className="absolute left-1/2 -translate-x-1/2 text-sm font-semibold">
+        {/* <h2 className="absolute left-1/2 -translate-x-1/2 text-sm font-semibold">
           {title}
-        </h2>
+        </h2> */}
 
         <div className="w-8" />
       </div>
@@ -560,7 +560,7 @@ const Sidebar = ({ menu = [], title = "Panel", role = "admin" }) => {
         `}
       >
         {/* 🔥 TOP */}
-        <div className="pt-14 lg:pt-0">
+        <div className="pt-4">
 
           {/* LOGO + TOGGLE */}
           <div className="flex items-center justify-between mb-6">
