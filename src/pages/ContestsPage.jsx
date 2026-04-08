@@ -510,12 +510,12 @@ const ContestsPage = () => {
       {/* HEADER */}
       <div className="flex items-start sm:items-center gap-3 sm:gap-4 mb-6 sm:mb-8 md:mb-10 flex-wrap">
 
-        <button
+        {/* <button
           onClick={() => navigate(-1)}
           className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition shadow-sm"
         >
           <ArrowLeft size={18} />
-        </button>
+        </button> */}
 
         <div>
           <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900">

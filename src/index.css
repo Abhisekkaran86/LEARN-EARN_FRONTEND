@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
 @custom-variant dark (&:where(.dark, .dark *));
+@import 'react-toastify/dist/ReactToastify.css';
 
 body {
   @apply m-0 p-0;
@@ -13,4 +14,66 @@ body {
 .scrollbar-hide {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+/* 🔥 Toastify Custom Style */
+
+/* 🔥 PREMIUM TOAST DESIGN */
+
+.Toastify__toast-container {
+  width: 320px;
+}
+
+/* Main Toast */
+.custom-toast {
+  border-radius: 14px;
+  padding: 14px 16px;
+  background: #ffffff;
+  color: #0f172a;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: 'Inter', sans-serif;
+  animation: slideIn 0.4s ease;
+}
+
+/* Body text */
+.custom-toast-body {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* Success */
+.Toastify__toast--success {
+  border-left: 5px solid #22c55e;
+}
+
+/* Error */
+.Toastify__toast--error {
+  border-left: 5px solid #ef4444;
+}
+
+/* Info */
+.Toastify__toast--info {
+  border-left: 5px solid #3b82f6;
+}
+
+/* Progress bar */
+.Toastify__progress-bar {
+  height: 3px;
+  background: linear-gradient(to right, #6366f1, #3b82f6);
+}
+
+/* Animation */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(40px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
 }

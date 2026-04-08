@@ -16,16 +16,26 @@ import ContestDetails from "./pages/ContestDetails";
 import { useEffect } from "react";
 
 function App() {
-  
+
   return (
     <BrowserRouter>
-      <ToastContainer position="top-right" autoClose={3000} />
-      
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        pauseOnHover
+        draggable
+        theme="light"
+        toastClassName="custom-toast"
+        bodyClassName="custom-toast-body"
+      />
       <Routes>
         {/* Main Layout */}
         <Route element={<MainLayout />}>
           <Route path="/" element={<HomeContainer />} />
-          <Route path="/contests" element={<ContestsPage />} /> 
+          <Route path="/contests" element={<ContestsPage />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/contest/:id" element={<ContestDetails />} />

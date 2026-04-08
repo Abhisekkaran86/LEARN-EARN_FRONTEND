@@ -138,10 +138,9 @@ const AdminDashboardView = ({
         {/* ✅ CHART */}
         <div className="xl:col-span-3 bg-white p-4 sm:p-6 rounded-2xl shadow-sm">
           
-          {/* Responsive height */}
-          <div className="w-full h-[250px] sm:h-[300px] md:h-[350px] lg:h-[400px]">
+         
             <Chart data={chartData} dataKey="value" />
-          </div>
+          
 
         </div>
 

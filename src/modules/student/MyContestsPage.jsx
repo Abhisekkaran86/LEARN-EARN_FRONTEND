@@ -511,3 +511,4 @@ const ContestParticipatePage = () => {
 };
 
 export default ContestParticipatePage;
+
