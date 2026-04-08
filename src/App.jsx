@@ -13,16 +13,19 @@ import AboutPage from "./pages/AboutPage";
 import ContactPage from "./pages/ContactPage";
 import ContestDetails from "./pages/ContestDetails";
 
+import { useEffect } from "react";
+
 function App() {
+  
   return (
     <BrowserRouter>
       <ToastContainer position="top-right" autoClose={3000} />
-
+      
       <Routes>
         {/* Main Layout */}
         <Route element={<MainLayout />}>
           <Route path="/" element={<HomeContainer />} />
-          <Route path="/contests" element={<ContestsPage />} /> {/* ✅ FIXED */}
+          <Route path="/contests" element={<ContestsPage />} /> 
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/contest/:id" element={<ContestDetails />} />
