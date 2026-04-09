@@ -3,8 +3,20 @@
 @custom-variant dark (&:where(.dark, .dark *));
 @import 'react-toastify/dist/ReactToastify.css';
 
-body {
-  @apply m-0 p-0;
+
+* {
+  caret-color: transparent;
+}
+
+input:focus,
+textarea:focus {
+  caret-color: #82C600;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
 }
 
 /* hide scrollbar */

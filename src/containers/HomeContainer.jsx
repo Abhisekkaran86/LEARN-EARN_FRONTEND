@@ -22,6 +22,7 @@ import WhyJoin from "../sections/WhyJoin";
 import Challenges from "../sections/Challenges";
 import Audience from "../sections/Audience";
 import ThemeToggle from "../components/ThemeToggle";
+import ReviewSlider from "../sections/ReviewSlider";
 
 const HomeContainer = () => {
   return (
@@ -44,7 +45,9 @@ const HomeContainer = () => {
 
       {/* AUDIENCE */}
       <section className="relative">
-        <Audience />
+        {/* <Audience /> */}
+
+        <ReviewSlider/>
       </section>
 
     </main>

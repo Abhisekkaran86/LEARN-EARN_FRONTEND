@@ -425,43 +425,52 @@ const Signup = () => {
   });
 
   const [showPass, setShowPass] = useState(false);
+  const [focused, setFocused] = useState("");
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async () => {
-  try {
-    const { name, email, password, phoneNumber, gender } = form;
+    try {
+      const { name, email, password, phoneNumber, gender } = form;
 
-    const payload = {
-      name,
-      email,
-      password,
-      phoneNumber,
-      gender,
-    };
+      const payload = {
+        name,
+        email,
+        password,
+        phoneNumber,
+        gender,
+      };
 
-    await dispatch(registerUser(payload)).unwrap();
+      await dispatch(registerUser(payload)).unwrap();
 
-    toast.success("Signup Successful ✅");
-    navigate("/login");
-  } catch (err) {
-    toast.error(err || "Something went wrong ❌");
-  }
-};
+      toast.success("Signup Successful ✅");
+      navigate("/login");
+    } catch (err) {
+      toast.error(err || "Something went wrong ❌");
+    }
+  };
+
+  const getLabelClass = (field) =>
+    `absolute left-10 transition-all duration-200 pointer-events-none ${
+      form[field] || focused === field
+        ? "top-1 text-xs text-[#a3e635]"
+        : "top-3 text-white/50"
+    }`;
+
+  const inputClass =
+    "w-full pl-10 pt-5 pb-2 rounded-xl bg-white/5 border border-white/20 text-white outline-none relative z-20";
 
   return (
     <div className="min-h-screen flex">
 
-      {/* 🔥 LEFT SIDE (PREMIUM BRANDING) */}
+      {/* LEFT */}
       <div className="hidden md:flex w-1/2 relative overflow-hidden bg-black text-white p-12 flex-col justify-between">
 
-        {/* GLOW */}
-        <div className="absolute w-[500px] h-[500px] bg-[#82C600]/25 blur-[140px] top-[-150px] left-[-150px] animate-pulse"></div>
-        <div className="absolute w-[400px] h-[400px] bg-green-400/20 blur-[120px] bottom-[-100px] right-[-100px] animate-pulse"></div>
+        <div className="absolute w-[500px] h-[500px] bg-[#82C600]/25 blur-[140px] top-[-150px] left-[-150px] animate-pulse pointer-events-none"></div>
+        <div className="absolute w-[400px] h-[400px] bg-green-400/20 blur-[120px] bottom-[-100px] right-[-100px] animate-pulse pointer-events-none"></div>
 
-        {/* BRAND TEXT */}
         <div className="relative z-10">
           <h1 className="text-4xl font-bold leading-tight">
             <span className="bg-gradient-to-r from-[#82C600] to-[#a3e635] bg-clip-text text-transparent">
@@ -478,45 +487,36 @@ const Signup = () => {
           </p>
         </div>
 
-        {/* FEATURE CARDS */}
         <div className="relative z-10 mt-10 space-y-5">
-
-          <div className="bg-white/5 border border-white/10 backdrop-blur-xl p-4 rounded-xl hover:border-[#82C600] transition">
+          <div className="bg-white/5 border border-white/10 backdrop-blur-xl p-4 rounded-xl">
             <div className="flex items-center gap-3">
               <FiTarget className="text-[#82C600]" />
               <div>
                 <p className="text-sm font-medium">Real Contest Experience</p>
-                <p className="text-xs text-white/50">
-                  Industry-level challenges to test your skills
-                </p>
+                <p className="text-xs text-white/50">Industry-level challenges</p>
               </div>
             </div>
           </div>
 
-          <div className="bg-white/5 border border-white/10 backdrop-blur-xl p-4 rounded-xl hover:border-[#82C600] transition">
+          <div className="bg-white/5 border border-white/10 backdrop-blur-xl p-4 rounded-xl">
             <div className="flex items-center gap-3">
               <FiTrendingUp className="text-[#82C600]" />
               <div>
-                <p className="text-sm font-medium">Live Performance Tracking</p>
-                <p className="text-xs text-white/50">
-                  Track progress with smart analytics
-                </p>
+                <p className="text-sm font-medium">Performance Tracking</p>
+                <p className="text-xs text-white/50">Track progress</p>
               </div>
             </div>
           </div>
 
-          <div className="bg-white/5 border border-white/10 backdrop-blur-xl p-4 rounded-xl hover:border-[#82C600] transition">
+          <div className="bg-white/5 border border-white/10 backdrop-blur-xl p-4 rounded-xl">
             <div className="flex items-center gap-3">
               <FiAward className="text-[#82C600]" />
               <div>
-                <p className="text-sm font-medium">Rewards & Certification</p>
-                <p className="text-xs text-white/50">
-                  Earn rewards and boost your career profile
-                </p>
+                <p className="text-sm font-medium">Rewards</p>
+                <p className="text-xs text-white/50">Earn certifications</p>
               </div>
             </div>
           </div>
-
         </div>
 
         <p className="relative z-10 text-xs text-white/40">
@@ -524,25 +524,19 @@ const Signup = () => {
         </p>
       </div>
 
-      {/* 🔥 RIGHT SIDE (FORM) */}
+      {/* RIGHT */}
       <div className="flex-1 flex items-center justify-center bg-black relative overflow-hidden">
+        <div className="absolute w-[400px] h-[400px] bg-[#82C600]/30 blur-[120px] top-[-100px] right-[-100px] pointer-events-none"></div>
 
-        <div className="absolute w-[400px] h-[400px] bg-[#82C600]/30 blur-[120px] top-[-100px] right-[-100px]"></div>
-
-        <div className="relative z-10 w-full max-w-md">
-
+        <div className="relative z-10 w-full max-w-md pointer-events-auto">
           <div className="bg-white/10 backdrop-blur-3xl border border-white/20 rounded-3xl p-8 shadow-[0_0_40px_rgba(130,198,0,0.3)]">
 
-            {/* ✅ SINGLE LOGO */}
+            {/* LOGO */}
             <div className="flex items-center justify-center gap-3 mb-6">
-              <img src={logo} alt="logo" className="w-10 h-10 object-contain" />
+              <img src={logo} alt="logo" className="w-10 h-10" />
               <div>
-                <h1 className="text-white font-bold text-lg">
-                  Desun Academy
-                </h1>
-                <p className="text-xs text-white/60">
-                  Get Placed by Skill
-                </p>
+                <h1 className="text-white font-bold text-lg">Desun Academy</h1>
+                <p className="text-xs text-white/60">Get Placed by Skill</p>
               </div>
             </div>
 
@@ -554,32 +548,50 @@ const Signup = () => {
 
               {/* NAME */}
               <div className="relative">
-                <FiUser className="absolute left-4 top-4 text-white/50" />
-                <input name="name" value={form.name} onChange={handleChange}
-                  className="w-full pl-10 pt-5 pb-2 rounded-xl bg-white/5 border border-white/20 text-white outline-none" />
-                <label className={`absolute left-10 ${form.name ? "top-1 text-xs text-[#a3e635]" : "top-3 text-white/50"}`}>
-                  Full Name
-                </label>
+                <FiUser className="absolute left-4 top-4 text-white/50 pointer-events-none" />
+                <input
+                  type="text"
+                  name="name"
+                  value={form.name}
+                  onChange={handleChange}
+                  onFocus={() => setFocused("name")}
+                  onBlur={() => setFocused("")}
+                  autoComplete="off"
+                  className={inputClass}
+                />
+                <label className={getLabelClass("name")}>Full Name</label>
               </div>
 
               {/* EMAIL */}
               <div className="relative">
-                <FiMail className="absolute left-4 top-4 text-white/50" />
-                <input name="email" value={form.email} onChange={handleChange}
-                  className="w-full pl-10 pt-5 pb-2 rounded-xl bg-white/5 border border-white/20 text-white outline-none" />
-                <label className={`absolute left-10 ${form.email ? "top-1 text-xs text-[#a3e635]" : "top-3 text-white/50"}`}>
-                  Email
-                </label>
+                <FiMail className="absolute left-4 top-4 text-white/50 pointer-events-none" />
+                <input
+                  type="email"
+                  name="email"
+                  value={form.email}
+                  onChange={handleChange}
+                  onFocus={() => setFocused("email")}
+                  onBlur={() => setFocused("")}
+                  autoComplete="off"
+                  className={inputClass}
+                />
+                <label className={getLabelClass("email")}>Email</label>
               </div>
 
-              {/* MOBILE */}
+              {/* PHONE */}
               <div className="relative">
-                <FiPhone className="absolute left-4 top-4 text-white/50" />
-                <input name="phoneNumber" value={form.phoneNumber} onChange={handleChange}
-                  className="w-full pl-10 pt-5 pb-2 rounded-xl bg-white/5 border border-white/20 text-white outline-none" />
-                <label className={`absolute left-10 ${form.phoneNumber ? "top-1 text-xs text-[#a3e635]" : "top-3 text-white/50"}`}>
-                  Mobile Number
-                </label>
+                <FiPhone className="absolute left-4 top-4 text-white/50 pointer-events-none" />
+                <input
+                  type="tel"
+                  name="phoneNumber"
+                  value={form.phoneNumber}
+                  onChange={handleChange}
+                  onFocus={() => setFocused("phoneNumber")}
+                  onBlur={() => setFocused("")}
+                  autoComplete="off"
+                  className={inputClass}
+                />
+                <label className={getLabelClass("phoneNumber")}>Mobile Number</label>
               </div>
 
               {/* GENDER */}
@@ -604,16 +616,23 @@ const Signup = () => {
 
               {/* PASSWORD */}
               <div className="relative">
-                <FiLock className="absolute left-4 top-4 text-white/50" />
-                <input type={showPass ? "text" : "password"} name="password"
-                  value={form.password} onChange={handleChange}
-                  className="w-full pl-10 pr-10 pt-5 pb-2 rounded-xl bg-white/5 border border-white/20 text-white outline-none" />
-                <label className={`absolute left-10 ${form.password ? "top-1 text-xs text-[#a3e635]" : "top-3 text-white/50"}`}>
-                  Password
-                </label>
+                <FiLock className="absolute left-4 top-4 text-white/50 pointer-events-none" />
+                <input
+                  type={showPass ? "text" : "password"}
+                  name="password"
+                  value={form.password}
+                  onChange={handleChange}
+                  onFocus={() => setFocused("password")}
+                  onBlur={() => setFocused("")}
+                  autoComplete="off"
+                  className={inputClass + " pr-10"}
+                />
+                <label className={getLabelClass("password")}>Password</label>
 
-                <span onClick={() => setShowPass(!showPass)}
-                  className="absolute right-4 top-4 text-white/60 cursor-pointer">
+                <span
+                  onClick={() => setShowPass(!showPass)}
+                  className="absolute right-4 top-4 text-white/60 cursor-pointer z-30"
+                >
                   {showPass ? <FiEyeOff /> : <FiEye />}
                 </span>
               </div>

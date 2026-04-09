@@ -34,38 +34,27 @@ const MainLayout = () => {
 
   const path = location.pathname;
 
-  // 🔥 Detect role based on route
   const isAdmin = path.startsWith("/admin");
   const isStudent = path.startsWith("/student");
 
-  // ❌ Hide back button on main pages
   const hideBack =
     path === "/" ||
     path === "/admin" ||
     path === "/student";
 
-  // 🔥 Smart fallback
   const getFallbackRoute = () => {
     if (isAdmin) return "/admin";
     if (isStudent) return "/student";
     return "/";
   };
 
-  const handleBack = () => {
-    if (window.history.length > 1) {
-      navigate(-1);
-    } else {
-      navigate(getFallbackRoute());
-    }
-  };
-
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen w-full overflow-x-hidden">
 
       {/* HEADER */}
       <Header />
 
-      {/* 🔥 GLOBAL BACK BUTTON */}
+      {/* BACK BUTTON */}
       {!hideBack && (
         <div className="sticky top-[70px] z-40 px-4 pt-3 bg-white/80 backdrop-blur">
           <button
@@ -77,8 +66,8 @@ const MainLayout = () => {
         </div>
       )}
 
-      {/* MAIN CONTENT */}
-      <main className="pt-20 px-6 pb-6">
+      {/* 🔥 FIXED MAIN */}
+      <main className="pt-20 pb-6 w-full">
         <Outlet />
       </main>
 

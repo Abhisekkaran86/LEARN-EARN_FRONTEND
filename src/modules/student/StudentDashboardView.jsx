@@ -446,54 +446,54 @@ const StudentDashboardView = ({ config }) => {
   const [summary, setSummary] = useState({});
 
   useEffect(() => {
-  dispatch(fetchContests());
+    dispatch(fetchContests());
 
-  const fetchParticipation = async () => {
-    try {
-      const token = localStorage.getItem("token");
+    const fetchParticipation = async () => {
+      try {
+        const token = localStorage.getItem("token");
 
-      if (!token) {
-        console.log("❌ No token found");
-        return;
-      }
-
-      const res = await axios.get(
-        "https://learn-earn-contest-2.onrender.com/api/v1/participations/my-history",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+        if (!token) {
+          console.log("❌ No token found");
+          return;
         }
-      );
 
-      console.log("✅ API DATA:", res.data);
+        const res = await axios.get(
+          "https://learn-earn-contest-2.onrender.com/api/v1/participations/my-history",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
-      // ✅ SAFE DATA SET
-      const historyData = Array.isArray(res.data?.history)
-        ? res.data.history
-        : [];
+        console.log("✅ API DATA:", res.data);
 
-      setHistory(historyData);
-      setSummary(res.data?.summary || {});
+        // ✅ SAFE DATA SET
+        const historyData = Array.isArray(res.data?.history)
+          ? res.data.history
+          : [];
 
-    } catch (err) {
-      console.log("❌ API ERROR:", err?.response || err);
+        setHistory(historyData);
+        setSummary(res.data?.summary || {});
 
-      // 🔥 HANDLE TOKEN EXPIRE
-      if (err?.response?.status === 401) {
-        console.log("🔴 Token expired → login again");
+      } catch (err) {
+        console.log("❌ API ERROR:", err?.response || err);
 
-        localStorage.removeItem("token");
-        localStorage.removeItem("role");
+        // 🔥 HANDLE TOKEN EXPIRE
+        if (err?.response?.status === 401) {
+          console.log("🔴 Token expired → login again");
 
-        
+          localStorage.removeItem("token");
+          localStorage.removeItem("role");
+
+
+        }
       }
-    }
-  };
+    };
 
-  fetchParticipation(); // ✅ always call
+    fetchParticipation(); // ✅ always call
 
-}, [dispatch]);
+  }, [dispatch]);
 
   if (loading) return <p>Loading...</p>;
 
@@ -540,9 +540,15 @@ const StudentDashboardView = ({ config }) => {
               <h2 className="text-xl font-semibold">
                 {config.featured.title}
               </h2>
-              <span className="text-[#82C600] text-sm cursor-pointer">
+              {/* <span className="text-[#82C600] text-sm cursor-pointer">
                 {config.featured.action}
-              </span>
+              </span> */}
+              <button
+                onClick={() => navigate("/student/contests")}
+                className="text-[#82C600] text-sm font-semibold flex items-center gap-1 hover:gap-2 transition-all"
+              >
+                {config.featured.action} →
+              </button>
             </div>
 
             <Swiper
