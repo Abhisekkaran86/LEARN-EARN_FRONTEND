@@ -531,7 +531,7 @@ const MyActiveContestsPage = () => {
         const token = localStorage.getItem("token");
 
         const res = await axios.get(
-          "https://learn-earn-contest-2.onrender.com/api/v1/participations/my-participations",
+          "https://learn-earn-contest-3.onrender.com/api/v1/participations/my-participations",
           {
             headers: {
               Authorization: `Bearer ${token}`,

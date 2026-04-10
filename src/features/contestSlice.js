@@ -234,7 +234,7 @@ import axios from "axios";
 import Cookies from "js-cookie";
 
 const BASE_URL =
-  "https://learn-earn-contest-2.onrender.com/api/v1/contest";
+  "https://learn-earn-contest-3.onrender.com/api/v1/contest";
 
 // ✅ CREATE (FIXED)
 export const createContest = createAsyncThunk(

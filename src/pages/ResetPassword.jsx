@@ -38,7 +38,7 @@ const ResetPassword = () => {
       setLoading(true);
 
       const { data } = await axios.post(
-        `https://learn-earn-contest-2.onrender.com/api/v1/auth/reset-password/${token}`,
+        `https://learn-earn-contest-3.onrender.com/api/v1/auth/reset-password/${token}`,
         { password: form.password }
       );
 

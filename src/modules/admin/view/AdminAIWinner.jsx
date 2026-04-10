@@ -191,7 +191,7 @@ const AdminEvaluationPage = () => {
       const token = localStorage.getItem("token");
 
       await axios.put(
-        `https://learn-earn-contest-2.onrender.com/api/v1/admin/evaluate/${student._id}`,
+        `https://learn-earn-contest-3.onrender.com/api/v1/admin/evaluate/${student._id}`,
         {
           contestId: contest._id,
           score,
@@ -218,7 +218,7 @@ const AdminEvaluationPage = () => {
       const token = localStorage.getItem("token");
 
       await axios.post(
-        "https://learn-earn-contest-2.onrender.com/api/v1/admin/declare-winner",
+        "https://learn-earn-contest-3.onrender.com/api/v1/admin/declare-winner",
         {
           contestId: contest._id,
           studentId: student._id,

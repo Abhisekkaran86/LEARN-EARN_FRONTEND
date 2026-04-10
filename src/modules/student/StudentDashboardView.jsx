@@ -458,7 +458,7 @@ const StudentDashboardView = ({ config }) => {
         }
 
         const res = await axios.get(
-          "https://learn-earn-contest-2.onrender.com/api/v1/participations/my-history",
+          "https://learn-earn-contest-3.onrender.com/api/v1/participations/my-history",
           {
             headers: {
               Authorization: `Bearer ${token}`,

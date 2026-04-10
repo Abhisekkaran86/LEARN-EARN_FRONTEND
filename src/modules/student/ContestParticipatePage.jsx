@@ -651,7 +651,7 @@ const ContestParticipatePage = () => {
         const token = localStorage.getItem("token");
 
         const res = await axios.get(
-          "https://learn-earn-contest-2.onrender.com/api/v1/participations/my-participations",
+          "https://learn-earn-contest-3.onrender.com/api/v1/participations/my-participations",
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -682,7 +682,7 @@ const ContestParticipatePage = () => {
       const token = localStorage.getItem("token");
 
       const res = await axios.get(
-        "https://learn-earn-contest-2.onrender.com/api/v1/auth/users",
+        "https://learn-earn-contest-3.onrender.com/api/v1/auth/users",
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -716,7 +716,7 @@ const ContestParticipatePage = () => {
       const token = localStorage.getItem("token");
 
       await axios.post(
-        `https://learn-earn-contest-2.onrender.com/api/v1/participations/contest/${id}/join/solo`,
+        `https://learn-earn-contest-3.onrender.com/api/v1/participations/contest/${id}/join/solo`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -734,7 +734,7 @@ const ContestParticipatePage = () => {
       const token = localStorage.getItem("token");
 
       await axios.post(
-        `https://learn-earn-contest-2.onrender.com/api/v1/participations/contest/${id}/join/team`,
+        `https://learn-earn-contest-3.onrender.com/api/v1/participations/contest/${id}/join/team`,
         {
           teamName,
           members,

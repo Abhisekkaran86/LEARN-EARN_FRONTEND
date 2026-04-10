@@ -224,7 +224,7 @@ const Header = () => {
 
     dispatch(logout()); // redux clear
     localStorage.removeItem("token"); // ✅ remove token
-    navigate("/login");
+    navigate("/");
   };
 
   const menuItems = [

@@ -32,7 +32,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "https://learn-earn-contest-2.onrender.com/api/v1",
+  baseURL: "https://learn-earn-contest-3.onrender.com/api/v1",
 });
 
 

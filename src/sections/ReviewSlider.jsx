@@ -25,30 +25,30 @@ const reviews = [
 
 const ReviewSlider = () => {
   const sliderRef = useRef();
+  const isPausedRef = useRef(false);
 
   useEffect(() => {
     const slider = sliderRef.current;
-    let scrollAmount = 0;
     let animationFrame;
     let lastTime = 0;
 
-    const speed = 0.08; // 🔥 control smooth speed (0.05 slow, 0.1 fast)
+    const baseSpeed = 0.04; // 🔥 ultra smooth speed
 
     const slide = (time) => {
       if (!lastTime) lastTime = time;
       const delta = time - lastTime;
       lastTime = time;
 
-      if (slider) {
-        const move = delta * speed;
+      if (!isPausedRef.current && slider) {
+        // 🔥 easing for natural motion
+        const ease = 1 - Math.pow(0.995, delta);
+        const move = delta * baseSpeed * (1 + ease);
 
-        scrollAmount += move;
         slider.scrollLeft += move;
 
-        // infinite loop reset (seamless)
-        if (scrollAmount >= slider.scrollWidth / 2) {
-          slider.scrollLeft = 0;
-          scrollAmount = 0;
+        // 🔥 seamless infinite loop
+        if (slider.scrollLeft >= slider.scrollWidth / 2) {
+          slider.scrollLeft -= slider.scrollWidth / 2;
         }
       }
 
@@ -80,7 +80,9 @@ const ReviewSlider = () => {
         {/* SLIDER */}
         <div
           ref={sliderRef}
-          className="flex gap-6 overflow-x-auto scroll-smooth no-scrollbar"
+          onMouseEnter={() => (isPausedRef.current = true)}
+          onMouseLeave={() => (isPausedRef.current = false)}
+          className="flex gap-6 overflow-x-auto no-scrollbar slider-container"
         >
           {[...reviews, ...reviews].map((item, index) => (
             <div
@@ -89,7 +91,6 @@ const ReviewSlider = () => {
               rounded-3xl p-[1px] 
               bg-gradient-to-r from-[#82c600] via-[#a3e635] to-[#fbd300]"
             >
-              {/* CARD */}
               <div className="h-full bg-white/80 backdrop-blur-xl 
               rounded-3xl p-6 
               border border-white/40 
@@ -97,7 +98,7 @@ const ReviewSlider = () => {
               hover:shadow-[0_15px_40px_rgba(130,198,0,0.3)]
               transition duration-500 hover:-translate-y-2">
 
-                {/* TOP USER */}
+                {/* USER */}
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 flex items-center justify-center 
                   rounded-full bg-gradient-to-br from-[#82c600] to-[#a3e635] 
@@ -115,7 +116,7 @@ const ReviewSlider = () => {
                   </div>
                 </div>
 
-                {/* REVIEW */}
+                {/* TEXT */}
                 <p className="text-gray-600 text-sm leading-relaxed mt-4">
                   "{item.text}"
                 </p>
@@ -134,7 +135,7 @@ const ReviewSlider = () => {
 
       </div>
 
-      {/* HIDE SCROLLBAR */}
+      {/* 🔥 PERFORMANCE CSS */}
       <style jsx>{`
         .no-scrollbar::-webkit-scrollbar {
           display: none;
@@ -142,6 +143,11 @@ const ReviewSlider = () => {
         .no-scrollbar {
           -ms-overflow-style: none;
           scrollbar-width: none;
+        }
+        .slider-container {
+          will-change: transform;
+          transform: translateZ(0);
+          backface-visibility: hidden;
         }
       `}</style>
     </section>

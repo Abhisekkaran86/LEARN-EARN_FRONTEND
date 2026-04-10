@@ -766,7 +766,7 @@ const AdminDashboardContainer = () => {
     const fetchData = async () => {
       try {
         const res = await axios.get(
-          "https://learn-earn-contest-2.onrender.com/api/v1/dashboard"
+          "https://learn-earn-contest-3.onrender.com/api/v1/dashboard"
         );
 
         const api = res?.data?.data || {};
@@ -843,7 +843,7 @@ const AdminDashboardContainer = () => {
       switch (type) {
         case "TOTAL USERS":
           res = await axios.get(
-            "https://learn-earn-contest-2.onrender.com/api/v1/auth/users",
+            "https://learn-earn-contest-3.onrender.com/api/v1/auth/users",
             config
           );
           finalData = extractData(res);
@@ -851,7 +851,7 @@ const AdminDashboardContainer = () => {
 
         case "TOTAL SUBMISSIONS":
           res = await axios.get(
-            "https://learn-earn-contest-2.onrender.com/api/v1/submission/submitted-contests-count",
+            "https://learn-earn-contest-3.onrender.com/api/v1/submission/submitted-contests-count",
             config
           );
           finalData = extractData(res);
@@ -859,7 +859,7 @@ const AdminDashboardContainer = () => {
 
         case "ACTIVE CONTESTS":
           res = await axios.get(
-            "https://learn-earn-contest-2.onrender.com/api/v1/contest/active",
+            "https://learn-earn-contest-3.onrender.com/api/v1/contest/active",
             config
           );
 
@@ -872,7 +872,7 @@ const AdminDashboardContainer = () => {
 
         case "PENDING APPROVALS":
           res = await axios.get(
-            "https://learn-earn-contest-2.onrender.com/api/v1/pending",
+            "https://learn-earn-contest-3.onrender.com/api/v1/pending",
             config
           );
           finalData = extractData(res);

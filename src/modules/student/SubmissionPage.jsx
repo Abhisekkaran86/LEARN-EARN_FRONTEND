@@ -339,7 +339,7 @@ const SubmissionPage = () => {
       console.log("FINAL PAYLOAD:", payload);
 
       const res = await axios.post(
-        "https://learn-earn-contest-2.onrender.com/api/v1/submission",
+        "https://learn-earn-contest-3.onrender.com/api/v1/submission",
         payload,
         {
           headers: {

@@ -133,7 +133,7 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import { logoutUserApi } from "../api/authApi";
 
-const BASE_URL = "https://learn-earn-contest-2.onrender.com/api/v1";
+const BASE_URL = "https://learn-earn-contest-3.onrender.com/api/v1";
 
 // ✅ LOAD USER FROM LOCAL STORAGE
 const savedUser = localStorage.getItem("user")
