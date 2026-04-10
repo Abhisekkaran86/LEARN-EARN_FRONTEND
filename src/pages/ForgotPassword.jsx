@@ -21,7 +21,7 @@ const ForgotPassword = () => {
       setLoading(true);
 
       const { data } = await axios.post(
-        "https://learn-earn-contest-3.onrender.com/api/v1/auth/forgot-password",
+        `https://learn-earn-contest-2.onrender.com/api/v1/auth/forgot-password`,
         { email }
       );
 

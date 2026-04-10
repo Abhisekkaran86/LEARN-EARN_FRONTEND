@@ -29,21 +29,35 @@ const ReviewSlider = () => {
   useEffect(() => {
     const slider = sliderRef.current;
     let scrollAmount = 0;
+    let animationFrame;
+    let lastTime = 0;
 
-    const slide = () => {
+    const speed = 0.08; // 🔥 control smooth speed (0.05 slow, 0.1 fast)
+
+    const slide = (time) => {
+      if (!lastTime) lastTime = time;
+      const delta = time - lastTime;
+      lastTime = time;
+
       if (slider) {
-        scrollAmount += 0.5;
-        slider.scrollLeft += 0.5;
+        const move = delta * speed;
 
+        scrollAmount += move;
+        slider.scrollLeft += move;
+
+        // infinite loop reset (seamless)
         if (scrollAmount >= slider.scrollWidth / 2) {
           slider.scrollLeft = 0;
           scrollAmount = 0;
         }
       }
+
+      animationFrame = requestAnimationFrame(slide);
     };
 
-    const interval = setInterval(slide, 16);
-    return () => clearInterval(interval);
+    animationFrame = requestAnimationFrame(slide);
+
+    return () => cancelAnimationFrame(animationFrame);
   }, []);
 
   const getInitials = (name) =>
