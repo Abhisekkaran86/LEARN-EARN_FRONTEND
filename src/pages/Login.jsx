@@ -39,7 +39,7 @@
 //   //   }
 
 //   //   try {
-      
+
 //   //     const res = await dispatch(loginUser(form)).unwrap();
 
 //   //     console.log("LOGIN RESPONSE:", res);
@@ -693,9 +693,12 @@ const Login = () => {
               <input type="checkbox" className="accent-[#82C600]" />
               Remember
             </label>
-            <span className="hover:text-white cursor-pointer">
-              Forgot?
-            </span>
+            <Link
+              to="/forgot-password"
+              className="text-sm text-[#82C600] hover:underline"
+            >
+              Forgot Password?
+            </Link>
           </div>
 
           {/* BUTTON */}

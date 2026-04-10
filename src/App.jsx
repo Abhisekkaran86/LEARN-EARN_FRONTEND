@@ -14,6 +14,8 @@ import ContactPage from "./pages/ContactPage";
 import ContestDetails from "./pages/ContestDetails";
 
 import { useEffect } from "react";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 
 function App() {
 
@@ -44,6 +46,8 @@ function App() {
         {/* Auth */}
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
 
         {/* Admin + Student */}
         {AdminRoutes()}
