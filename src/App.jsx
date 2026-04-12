@@ -1,26 +1,23 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Login from "./pages/Login";
-import Signup from "./pages/Signup";
-import HomeContainer from "./containers/HomeContainer";
-import MainLayout from "./layouts/MainLayout";
-import AdminRoutes from "./route/AdminRoutes";
-import StudentRoutes from "./route/StudentRoutes";
+import { useEffect } from "react";
+import { BrowserRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import ContestsPage from "./pages/ContestsPage";
-
-import AboutPage from "./pages/AboutPage";
-import ContactPage from "./pages/ContactPage";
-import ContestDetails from "./pages/ContestDetails";
-
-import { useEffect } from "react";
-import ForgotPassword from "./pages/ForgotPassword";
-import ResetPassword from "./pages/ResetPassword";
+import AppRoutes from "@/routes/AppRoutes";
+import GlobalLoader from "@/components/ui/GlobalLoader";
+import { useLoader } from "@/context/LoaderContext";
+import { connectLoader } from "@/services/axios";
 
 function App() {
+  const { showLoader, hideLoader } = useLoader();
+
+  // Wire loader to axios interceptors once
+  useEffect(() => {
+    connectLoader(showLoader, hideLoader);
+  }, [showLoader, hideLoader]);
 
   return (
     <BrowserRouter>
+      <GlobalLoader />
       <ToastContainer
         position="top-right"
         autoClose={2000}
@@ -33,96 +30,9 @@ function App() {
         toastClassName="custom-toast"
         bodyClassName="custom-toast-body"
       />
-      <Routes>
-        {/* Main Layout */}
-        <Route element={<MainLayout />}>
-          <Route path="/" element={<HomeContainer />} />
-          <Route path="/contests" element={<ContestsPage />} />
-          <Route path="/contact" element={<ContactPage />} />
-          <Route path="/about" element={<AboutPage />} />
-          <Route path="/contest/:id" element={<ContestDetails />} />
-        </Route>
-
-        {/* Auth */}
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/reset-password/:token" element={<ResetPassword />} />
-
-        {/* Admin + Student */}
-        {AdminRoutes()}
-        {StudentRoutes()}
-      </Routes>
+      <AppRoutes />
     </BrowserRouter>
   );
 }
 
 export default App;
-
-// import { BrowserRouter, Routes, Route } from "react-router-dom";
-// import Login from "./pages/Login";
-// import Signup from "./pages/Signup";
-// import HomeContainer from "./containers/HomeContainer";
-// import MainLayout from "./layouts/MainLayout";
-// import AdminRoutes from "./route/AdminRoutes";
-
-// function App() {
-//   return (
-//     <BrowserRouter>
-//       <Routes>
-
-//         {/* MAIN WEBSITE */}
-//         <Route element={<MainLayout />}>
-//           <Route path="/" element={<HomeContainer />} />
-//         </Route>
-
-//         {/* AUTH */}
-//         <Route path="/signup" element={<Signup />} />
-//         <Route path="/login" element={<Login />} />
-
-//         {/* ✅ ADMIN ROUTES (DIRECT CALL) */}
-//         {AdminRoutes()}
-
-//       </Routes>
-//     </BrowserRouter>
-//   );
-// }
-
-// export default App;
-
-// import { BrowserRouter, Routes, Route } from "react-router-dom";
-// import Login from "./pages/Login";
-// import Signup from "./pages/Signup";
-// import HomeContainer from "./containers/HomeContainer";
-// import MainLayout from "./layouts/MainLayout";
-// import AdminRoutes from "./route/AdminRoutes";
-// import StudentRoutes from "./route/StudentRoutes";
-// import ContestsPage from "./pages/ContestsPage";
-
-// function App() {
-//   return (
-//     <BrowserRouter>
-//       <Routes>
-
-//         {/* ✅ MAIN LAYOUT */}
-//         <Route element={<MainLayout />}>
-//           <Route path="/" element={<HomeContainer />} />
-//           <Route path="/contests" element={<ContestsPage />} />
-//           <Route path="/about" element={<AboutPage />} />
-//           <Route path="/contact" element={<ContactPage />} />
-//         </Route>
-
-//         {/* AUTH */}
-//         <Route path="/login" element={<Login />} />
-//         <Route path="/signup" element={<Signup />} />
-
-//         {/* ADMIN + STUDENT */}
-//         {AdminRoutes()}
-//         {StudentRoutes()}
-
-//       </Routes>
-//     </BrowserRouter>
-//   );
-// }
-
-// export default App;

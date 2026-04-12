@@ -106,7 +106,7 @@ const ActionPanel = () => {
 
         {/* Submissions */}
         <div
-          onClick={() => navigate("/submissions")}
+          onClick={() => navigate("/admin/submission")}
           className="flex items-center justify-between p-3 sm:p-4 bg-white rounded-xl border border-gray-100 hover:shadow-md hover:bg-[#82C600]/5 transition-all cursor-pointer group"
         >
           <div className="flex items-center gap-2 sm:gap-3">
@@ -132,7 +132,7 @@ const ActionPanel = () => {
 
         {/* View Contests */}
         <div
-          onClick={() => navigate("/contests")}
+          onClick={() => navigate("/admin/all-contests")}
           className="flex items-center justify-between p-3 sm:p-4 bg-white rounded-xl border border-gray-100 hover:shadow-md hover:bg-[#82C600]/5 transition-all cursor-pointer group"
         >
           <div className="flex items-center gap-2 sm:gap-3">

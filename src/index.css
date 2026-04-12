@@ -3,7 +3,6 @@
 @custom-variant dark (&:where(.dark, .dark *));
 @import 'react-toastify/dist/ReactToastify.css';
 
-
 * {
   caret-color: transparent;
 }
@@ -19,7 +18,17 @@ html, body {
   overflow-x: hidden;
 }
 
-/* hide scrollbar */
+/* Dark mode body transition */
+html {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+html.dark {
+  background-color: #030712;
+  color-scheme: dark;
+}
+
+/* Hide scrollbar */
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
@@ -28,15 +37,11 @@ html, body {
   scrollbar-width: none;
 }
 
-/* 🔥 Toastify Custom Style */
-
-/* 🔥 PREMIUM TOAST DESIGN */
-
+/* Toast Styles */
 .Toastify__toast-container {
   width: 320px;
 }
 
-/* Main Toast */
 .custom-toast {
   border-radius: 14px;
   padding: 14px 16px;
@@ -51,41 +56,47 @@ html, body {
   animation: slideIn 0.4s ease;
 }
 
-/* Body text */
+/* Dark mode toast */
+.dark .custom-toast {
+  background: #1e293b;
+  color: #f1f5f9;
+  border-color: #334155;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
 .custom-toast-body {
   font-size: 14px;
   font-weight: 500;
 }
 
-/* Success */
 .Toastify__toast--success {
   border-left: 5px solid #22c55e;
 }
 
-/* Error */
 .Toastify__toast--error {
   border-left: 5px solid #ef4444;
 }
 
-/* Info */
 .Toastify__toast--info {
   border-left: 5px solid #3b82f6;
 }
 
-/* Progress bar */
 .Toastify__progress-bar {
   height: 3px;
-  background: linear-gradient(to right, #6366f1, #3b82f6);
+  background: linear-gradient(to right, #82c600, #a3e635);
 }
 
-/* Animation */
-@keyframes slideIn {
+@keyframes slideUp {
   from {
+    transform: translateY(20px) translateX(-50%);
     opacity: 0;
-    transform: translateX(40px) scale(0.95);
   }
   to {
+    transform: translateY(0) translateX(-50%);
     opacity: 1;
-    transform: translateX(0) scale(1);
   }
+}
+
+.animate-slideUp {
+  animation: slideUp 0.3s ease;
 }
