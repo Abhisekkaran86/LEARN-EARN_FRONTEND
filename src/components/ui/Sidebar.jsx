@@ -10,6 +10,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
 import Button from "@/components/ui/Button";
+import { clearAuthSession, getAuthToken } from "@/utils/authStorage";
 
 const Sidebar = ({ menu = [], title = "Panel", role = "admin" }) => {
   const navigate = useNavigate();
@@ -32,7 +33,7 @@ const Sidebar = ({ menu = [], title = "Panel", role = "admin" }) => {
     if (!confirmLogout) return;
 
     try {
-      const token = localStorage.getItem("token");
+      const token = getAuthToken();
       await axios.post(
         "https://learn-earn-contest-3.onrender.com/api/v1/auth/user/logout",
         {},
@@ -41,7 +42,7 @@ const Sidebar = ({ menu = [], title = "Panel", role = "admin" }) => {
     } catch {
       /* silent */
     } finally {
-      localStorage.removeItem("token");
+      clearAuthSession();
       sessionStorage.clear();
       navigate("/");
     }

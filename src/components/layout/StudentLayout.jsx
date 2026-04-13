@@ -1,5 +1,5 @@
 import Sidebar from "@/components/ui/Sidebar";
-import StudentHeader from "@/features/student/components/StudentHeader";
+import StudentPanelHeader from "@/features/student/components/StudentPanelHeader";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 
@@ -31,7 +31,7 @@ const StudentLayout = ({ sidebar = [] }) => {
 
         {/* HEADER */}
         <div className="sticky top-0 z-40 bg-[#f8fafc] dark:bg-gray-900 px-4 md:px-6 pt-4">
-          <StudentHeader />
+          <StudentPanelHeader />
         </div>
 
         {/* BACK BUTTON */}

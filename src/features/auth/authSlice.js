@@ -1,14 +1,16 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
-import Cookies from "js-cookie";
 import { logoutUserApi } from "./authAPI";
+import {
+  clearAuthSession,
+  getAuthToken,
+  getStoredUser,
+  persistAuthSession,
+} from "@/utils/authStorage";
 
 const BASE_URL = "https://learn-earn-contest-3.onrender.com/api/v1";
 
-// Load user from localStorage
-const savedUser = localStorage.getItem("user")
-  ? JSON.parse(localStorage.getItem("user"))
-  : null;
+const savedUser = getStoredUser();
 
 // REGISTER
 export const registerUser = createAsyncThunk(
@@ -31,8 +33,6 @@ export const loginUser = createAsyncThunk(
   async (credentials, { rejectWithValue }) => {
     try {
       const res = await axios.post(`${BASE_URL}/auth/login`, credentials);
-      Cookies.set("token", res.data.accessToken, { expires: 7 });
-      Cookies.set("role", res.data.role, { expires: 7 });
       return res.data;
     } catch (err) {
       return rejectWithValue(
@@ -47,8 +47,12 @@ export const logoutUser = createAsyncThunk(
   "auth/logoutUser",
   async (_, { rejectWithValue }) => {
     try {
-      const token = Cookies.get("token");
-      await logoutUserApi(token);
+      const token = getAuthToken();
+
+      if (token) {
+        await logoutUserApi(token);
+      }
+
       return true;
     } catch (err) {
       return rejectWithValue(
@@ -68,9 +72,7 @@ const authSlice = createSlice({
   reducers: {
     logout: (state) => {
       state.user = null;
-      localStorage.removeItem("user");
-      Cookies.remove("token");
-      Cookies.remove("role");
+      clearAuthSession();
     },
   },
   extraReducers: (builder) => {
@@ -96,7 +98,7 @@ const authSlice = createSlice({
         state.loading = false;
         const data = action.payload;
 
-        state.user = data.user
+        const normalizedUser = data.user
           ? data.user
           : {
               _id: data._id,
@@ -105,7 +107,14 @@ const authSlice = createSlice({
               role: data.role,
             };
 
-        localStorage.setItem("user", JSON.stringify(state.user));
+        state.user = normalizedUser;
+
+        persistAuthSession({
+          accessToken: data.accessToken,
+          role: data.role || normalizedUser.role,
+          user: normalizedUser,
+        });
+
         state.error = null;
       })
       .addCase(loginUser.rejected, (state, action) => {
@@ -120,9 +129,7 @@ const authSlice = createSlice({
       .addCase(logoutUser.fulfilled, (state) => {
         state.loading = false;
         state.user = null;
-        localStorage.removeItem("user");
-        Cookies.remove("token");
-        Cookies.remove("role");
+        clearAuthSession();
       })
       .addCase(logoutUser.rejected, (state, action) => {
         state.loading = false;

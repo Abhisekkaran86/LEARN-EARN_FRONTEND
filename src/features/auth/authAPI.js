@@ -4,7 +4,7 @@ export const loginUserApi = (data) => API.post("/auth/login", data);
 
 export const logoutUserApi = (token) =>
   API.post(
-    "/auth/logout",
+    "/auth/user/logout",
     {},
     {
       headers: {

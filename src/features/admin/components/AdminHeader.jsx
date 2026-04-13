@@ -141,32 +141,7 @@ const AdminHeader = ({ onSearch }) => {
 
   const dropdownRef = useRef(null);
 
-  // ✅ REPLACE SOCKET WITH API POLLING
-  useEffect(() => {
-    const fetchRequests = async () => {
-      try {
-        const res = await API.get("/admin/requests"); // 👈 your API
-
-        if (res.data?.requests?.length > 0) {
-          setHasNotification(true);
-        } else {
-          setHasNotification(false);
-        }
-      } catch (err) {
-        console.error(err);
-      }
-    };
-
-    // initial call
-    fetchRequests();
-
-    // polling every 10 sec
-    const interval = setInterval(fetchRequests, 10000);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  // outside click
+  
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
@@ -180,7 +155,6 @@ const AdminHeader = ({ onSearch }) => {
 
   const handleLogout = () => {
     dispatch(logout());
-    localStorage.removeItem("token");
     navigate("/login");
   };
 

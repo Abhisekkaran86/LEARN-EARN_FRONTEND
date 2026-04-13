@@ -1,9 +1,9 @@
 import { Navigate, useLocation } from "react-router-dom";
-import Cookies from "js-cookie";
+import { getAuthRole, getAuthToken } from "@/utils/authStorage";
 
 const ProtectedRoute = ({ children, role }) => {
-  const token = Cookies.get("token");
-  const userRole = Cookies.get("role");
+  const token = getAuthToken();
+  const userRole = getAuthRole();
   const location = useLocation();
 
   if (!token) {

@@ -10,7 +10,7 @@ import { LayoutDashboard, Trophy, ClipboardCheck, Users, BarChart3Icon } from "l
 import { FiAward, FiBarChart2 } from "react-icons/fi";
 import ContestsPage from "../features/contest/pages/ContestsPage";
 import WinnersPage from "../features/admin/pages/WinnerPage";
-import EvaluationDashboard from "../features/admin/components/EvaluationDashboard";
+import EvaluationDashboard from "../features/admin/components/AdminEvaluationDashboard";
 import WinnerDetailPage from "../features/admin/pages/WinnerDetailPage";
 
 const sidebarMenu = [

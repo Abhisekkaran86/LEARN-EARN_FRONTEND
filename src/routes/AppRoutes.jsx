@@ -15,9 +15,9 @@ import ContestDetailsPage from "@/features/contest/pages/ContestDetailsPage";
 import MainLayout from "@/components/layout/MainLayout";
 import AdminRoutes from "@/routes/AdminRoutes";
 import StudentRoutes from "@/routes/StudentRoutes";
-import InvitesPage from "../features/student/components/InvitesPage";
+// import InvitesPage from "../features/student/components/InvitesPage";
 import ApprovalPage from "../features/admin/components/AdminApproval";
-import InviteConfirmPage from "../components/ui/InviteConfirmPage";
+import TeamInviteConfirmPage from "../components/ui/TeamInviteConfirmPage";
 
 const AppRoutes = () => {
   return (
@@ -36,9 +36,12 @@ const AppRoutes = () => {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
       <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
-      <Route path="/student/invites" element={<InvitesPage />} />
-      {/* Public invite confirmation - accessible without login, handles auth check itself */}
-      <Route path="/student/invite/confirm/:token" element={<InviteConfirmPage />} />
+      {/* <Route path="/student/invites" element={<InvitesPage />} /> */}
+      <Route path="/invite/confirm/:token" element={<TeamInviteConfirmPage />} />
+      <Route
+        path="/student/invite/confirm/:token"
+        element={<TeamInviteConfirmPage />}
+      />
 
           {/* ADMIN */}
           <Route path="/admin/requests" element={<ApprovalPage />} />

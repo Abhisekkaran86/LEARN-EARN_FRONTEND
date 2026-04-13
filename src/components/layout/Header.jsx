@@ -7,14 +7,14 @@ import { logoutUser, logout } from "@/features/auth/authSlice";
 import { useDispatch } from "react-redux";
 import { useState } from "react";
 import { FiMenu, FiX } from "react-icons/fi";
+import { isAuthenticated } from "@/utils/authStorage";
 
 const Header = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  const token = localStorage.getItem("token");
-  const isLoggedIn = !!token;
+  const isLoggedIn = isAuthenticated();
 
   const handleLogout = async () => {
     try {
@@ -23,7 +23,6 @@ const Header = () => {
       /* silent */
     }
     dispatch(logout());
-    localStorage.removeItem("token");
     navigate("/");
   };
 
