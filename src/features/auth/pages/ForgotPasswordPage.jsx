@@ -2,8 +2,8 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { FiMail, FiArrowLeft } from "react-icons/fi";
 import { toast } from "react-toastify";
-import axios from "axios";
 import logo from "@/assets/Logo.png";
+import { forgotPasswordApi } from "@/features/auth/authAPI";
 
 const ForgotPasswordPage = () => {
   const [email, setEmail] = useState("");
@@ -11,16 +11,15 @@ const ForgotPasswordPage = () => {
 
   const handleForgotPassword = async (e) => {
     e.preventDefault();
-    if (!email) {
+    const normalizedEmail = email.trim();
+
+    if (!normalizedEmail) {
       toast.error("Please enter your email");
       return;
     }
     try {
       setLoading(true);
-      const { data } = await axios.post(
-        `https://learn-earn-contest-3.onrender.com/api/v1/auth/forgot-password`,
-        { email }
-      );
+      const { data } = await forgotPasswordApi(normalizedEmail);
       toast.success(data.message || "Reset link sent to your email ✅");
       setEmail("");
     } catch (error) {
@@ -52,6 +51,8 @@ const ForgotPasswordPage = () => {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                autoComplete="email"
+                required
                 className="w-full pl-10 pr-4 pt-5 pb-2 rounded-xl bg-white/5 border border-white/20 text-white outline-none focus:ring-2 focus:ring-[#82C600]"
               />
               <label

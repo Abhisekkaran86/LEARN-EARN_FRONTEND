@@ -1,5 +1,5 @@
 import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
+import AppFooter from "@/components/layout/AppFooter";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 
@@ -8,9 +8,6 @@ const MainLayout = () => {
   const location = useLocation();
 
   const path = location.pathname;
-
-  const isAdmin = path.startsWith("/admin");
-  const isStudent = path.startsWith("/student");
 
   const hideBack =
     path === "/" ||
@@ -41,7 +38,7 @@ const MainLayout = () => {
       </main>
 
       {/* FOOTER */}
-      <Footer />
+      <AppFooter />
     </div>
   );
 };

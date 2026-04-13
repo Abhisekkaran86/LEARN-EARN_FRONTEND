@@ -96,10 +96,9 @@
 import StatCard from "@/components/ui/StatCard";
 import Chart from "@/components/ui/Chart";
 import ActionPanel from "@/components/ui/ActionPanel";
-import ActiveContestContainer from "@/features/admin/pages/ActiveContestPage";
+import ContestAdminPage from "@/features/admin/pages/ContestAdminPage";
 
 const AdminDashboardView = ({
-  stats = [],
   chartData = [],
   actions = [],
   onCardClick,
@@ -153,7 +152,7 @@ const AdminDashboardView = ({
 
       {/* ✅ ACTIVE CONTESTS */}
       <div className="overflow-x-auto">
-        <ActiveContestContainer />
+        <ContestAdminPage />
       </div>
 
     </div>

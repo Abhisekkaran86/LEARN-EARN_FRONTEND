@@ -35,6 +35,9 @@ const AppRoutes = () => {
       <Route path="/signup" element={<SignupPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+      <Route path="/password/reset" element={<ResetPasswordPage />} />
+      <Route path="/password/reset/:token" element={<ResetPasswordPage />} />
+      <Route path="/reset-password" element={<ResetPasswordPage />} />
       <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
       {/* <Route path="/student/invites" element={<InvitesPage />} /> */}
       <Route path="/invite/confirm/:token" element={<TeamInviteConfirmPage />} />

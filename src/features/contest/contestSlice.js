@@ -135,7 +135,33 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import API from "../../services/axios";// ✅ ONLY CHANGE
 import Cookies from "js-cookie";
 
+
 const BASE_URL = "/contest"; // ✅ keep relative (important)
+
+const getContestId = (contest) => contest?._id || contest?.id || null;
+
+const getContestList = (payload) => {
+  if (Array.isArray(payload)) {
+    return payload;
+  }
+
+  if (Array.isArray(payload?.contests)) {
+    return payload.contests;
+  }
+
+  if (Array.isArray(payload?.data?.contests)) {
+    return payload.data.contests;
+  }
+
+  if (Array.isArray(payload?.data)) {
+    return payload.data;
+  }
+
+  return [];
+};
+
+const getContestItem = (payload) =>
+  payload?.contest || payload?.data?.contest || payload?.data || payload || null;
 
 // CREATE
 export const createContest = createAsyncThunk(
@@ -149,7 +175,7 @@ export const createContest = createAsyncThunk(
           "Content-Type": "multipart/form-data",
         },
       });
-      return res.data;
+      return getContestItem(res.data);
     } catch (err) {
       return rejectWithValue(
         err.response?.data || { message: err.message }
@@ -164,9 +190,11 @@ export const fetchContests = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const res = await API.get(BASE_URL); // ✅ FIXED
-      return res.data;
+      return getContestList(res.data);
     } catch (err) {
-      return rejectWithValue(err.response?.data);
+      return rejectWithValue(
+        err.response?.data || { message: err.message }
+      );
     }
   }
 );
@@ -198,7 +226,7 @@ export const updateContest = createAsyncThunk(
       const res = await API.put(`${BASE_URL}/update/${id}`, data, { // ✅ FIXED
         headers: { Authorization: `Bearer ${token}` },
       });
-      return res.data;
+      return getContestItem(res.data);
     } catch (err) {
       return rejectWithValue(
         err.response?.data || { message: err.message }
@@ -221,28 +249,28 @@ const contestSlice = createSlice({
       })
       .addCase(fetchContests.fulfilled, (state, action) => {
         state.loading = false;
-        state.contests =
-          action.payload?.data ||
-          action.payload?.contests ||
-          action.payload?.data?.contests ||
-          action.payload ||
-          [];
+        state.contests = action.payload;
       })
       .addCase(fetchContests.rejected, (state) => {
         state.loading = false;
       })
 
       .addCase(createContest.fulfilled, (state, action) => {
-        const newContest = action.payload?.data || action.payload;
-        if (newContest) {
-          state.contests.unshift(newContest);
+        if (action.payload) {
+          state.contests.unshift(action.payload);
         }
       })
 
       .addCase(updateContest.fulfilled, (state, action) => {
-        const updated = action.payload?.data || action.payload;
+        const updated = action.payload;
+        const updatedId = getContestId(updated);
+
+        if (!updatedId) {
+          return;
+        }
+
         const index = state.contests.findIndex(
-          (c) => c._id === updated._id
+          (contest) => getContestId(contest) === updatedId
         );
         if (index !== -1) {
           state.contests[index] = updated;
@@ -251,7 +279,7 @@ const contestSlice = createSlice({
 
       .addCase(deleteContest.fulfilled, (state, action) => {
         state.contests = state.contests.filter(
-          (c) => c._id !== action.payload
+          (contest) => getContestId(contest) !== action.payload
         );
       });
   },

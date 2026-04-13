@@ -10,6 +10,9 @@ import {
 
 import API from "../../../services/axios";
 
+const getErrorMessage = (error, fallbackMessage) =>
+  error?.response?.data?.message || error?.message || fallbackMessage;
+
 const getToastClasses = (tone) => {
   if (tone === "error") {
     return "bg-red-500 text-white";
@@ -31,6 +34,12 @@ const AdminEvaluationDashboard = () => {
   const [editId, setEditId] = useState(null);
   const [editScore, setEditScore] = useState("");
   const [editRemarks, setEditRemarks] = useState("");
+
+  const resetEditState = () => {
+    setEditId(null);
+    setEditScore("");
+    setEditRemarks("");
+  };
 
   const showToast = (message, tone = "success") => {
     setToast({ message, tone });
@@ -67,10 +76,7 @@ const AdminEvaluationDashboard = () => {
         );
       } catch (err) {
         console.error(err);
-        showToast(
-          err.response?.data?.message || "Failed to load evaluation dashboard",
-          "error"
-        );
+        showToast(getErrorMessage(err, "Failed to load evaluation dashboard"), "error");
       } finally {
         setLoading(false);
       }
@@ -143,18 +149,44 @@ const AdminEvaluationDashboard = () => {
   };
 
   const updateSelectedContestSubmission = (submissionId, updater) => {
+    if (!selectedContest?._id) {
+      return;
+    }
+
+    const nextSubmissions = (selectedContest.submissionDetails || []).map(
+      (submission) =>
+        submission.submissionId === submissionId ? updater(submission) : submission
+    );
+
+    const nextSelectedContest = buildContestState(selectedContest, nextSubmissions);
+
     setSelectedContest((prev) => {
-      if (!prev) return prev;
+      if (!prev || prev._id !== selectedContest._id) {
+        return prev;
+      }
 
       return {
-        ...prev,
-        submissionDetails: prev.submissionDetails.map((submission) =>
-          submission.submissionId === submissionId
-            ? updater(submission)
-            : submission
-        ),
+        ...nextSelectedContest,
+        winner: prev.winner,
+        isClosed: prev.isClosed,
       };
     });
+
+    setContests((prev) =>
+      prev.map((contest) => {
+        if (contest._id !== selectedContest._id) {
+          return contest;
+        }
+
+        const nextContest = buildContestState(contest, nextSubmissions);
+
+        return {
+          ...nextContest,
+          winner: contest.winner,
+          isClosed: contest.isClosed,
+        };
+      })
+    );
   };
 
   const handleEdit = (submission) => {
@@ -164,9 +196,16 @@ const AdminEvaluationDashboard = () => {
   };
 
   const handleSaveEvaluation = async (submission) => {
+    const normalizedScore = Number(editScore);
+
+    if (editScore === "" || Number.isNaN(normalizedScore) || normalizedScore < 0) {
+      showToast("Enter a valid score greater than or equal to 0", "warning");
+      return;
+    }
+
     try {
       const payload = {
-        totalScore: Number(editScore),
+        totalScore: normalizedScore,
         remarks: editRemarks,
       };
 
@@ -180,23 +219,17 @@ const AdminEvaluationDashboard = () => {
 
       updateSelectedContestSubmission(submission.submissionId, (current) => ({
         ...current,
-        totalScore:
-          updatedSubmission?.totalScore ?? Number(editScore),
+        totalScore: updatedSubmission?.totalScore ?? normalizedScore,
         remarks: updatedSubmission?.remarks ?? editRemarks,
         status: updatedSubmission?.status || "evaluated",
         updatedAt: updatedSubmission?.updatedAt || current.updatedAt,
       }));
 
-      setEditId(null);
-      setEditScore("");
-      setEditRemarks("");
+      resetEditState();
       showToast(res.data?.message || "Evaluation saved successfully");
     } catch (err) {
       console.error(err);
-      showToast(
-        err.response?.data?.message || "Failed to save evaluation",
-        "error"
-      );
+      showToast(getErrorMessage(err, "Failed to save evaluation"), "error");
     }
   };
 
@@ -218,10 +251,7 @@ const AdminEvaluationDashboard = () => {
       showToast(res.data?.message || "Evaluation deleted successfully");
     } catch (err) {
       console.error(err);
-      showToast(
-        err.response?.data?.message || "Failed to delete evaluation",
-        "error"
-      );
+      showToast(getErrorMessage(err, "Failed to delete evaluation"), "error");
     }
   };
 
@@ -240,9 +270,7 @@ const AdminEvaluationDashboard = () => {
         (item) => item.submissionId !== submission.submissionId
       );
 
-      setEditId((current) =>
-        current === submission.submissionId ? null : current
-      );
+      setEditId((current) => (current === submission.submissionId ? null : current));
       setEditScore("");
       setEditRemarks("");
 
@@ -275,10 +303,7 @@ const AdminEvaluationDashboard = () => {
       showToast(res.data?.message || "Submission deleted successfully");
     } catch (err) {
       console.error(err);
-      showToast(
-        err.response?.data?.message || "Failed to delete submission",
-        "error"
-      );
+      showToast(getErrorMessage(err, "Failed to delete submission"), "error");
     }
   };
 
@@ -332,10 +357,7 @@ const AdminEvaluationDashboard = () => {
       showToast(res.data?.message || "Winner declared successfully");
     } catch (err) {
       console.error(err);
-      showToast(
-        err.response?.data?.message || "Failed to declare winner",
-        "error"
-      );
+      showToast(getErrorMessage(err, "Failed to declare winner"), "error");
     }
   };
 
@@ -465,7 +487,7 @@ const AdminEvaluationDashboard = () => {
                       </button>
 
                       <button
-                        onClick={() => setEditId(null)}
+                        onClick={resetEditState}
                         className="flex-1 rounded bg-gray-300 py-1"
                       >
                         Cancel
@@ -496,7 +518,7 @@ const AdminEvaluationDashboard = () => {
                           : "cursor-not-allowed bg-gray-100 text-gray-400"
                       }`}
                     >
-                      Reset
+                      Delete Evaluation
                     </button>
                   </div>
                 )}

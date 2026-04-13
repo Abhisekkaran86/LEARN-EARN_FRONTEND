@@ -1,13 +1,17 @@
 import { useState } from "react";
-import { useNavigate, useParams, Link } from "react-router-dom";
+import { useLocation, useNavigate, useParams, Link } from "react-router-dom";
 import { FiLock, FiEye, FiEyeOff, FiArrowLeft } from "react-icons/fi";
 import { toast } from "react-toastify";
-import axios from "axios";
 import logo from "@/assets/Logo.png";
+import { resetPasswordApi } from "@/features/auth/authAPI";
 
 const ResetPasswordPage = () => {
-  const { token } = useParams();
+  const { token: routeToken } = useParams();
+  const location = useLocation();
   const navigate = useNavigate();
+
+  const queryToken = new URLSearchParams(location.search).get("token");
+  const token = routeToken || queryToken || "";
 
   const [form, setForm] = useState({ password: "", confirmPassword: "" });
   const [showPass, setShowPass] = useState(false);
@@ -20,6 +24,10 @@ const ResetPasswordPage = () => {
 
   const handleResetPassword = async (e) => {
     e.preventDefault();
+    if (!token) {
+      toast.error("Reset link is invalid or expired");
+      return;
+    }
     if (!form.password || !form.confirmPassword) {
       toast.error("Please fill all fields");
       return;
@@ -30,11 +38,13 @@ const ResetPasswordPage = () => {
     }
     try {
       setLoading(true);
-      const { data } = await axios.post(
-        `https://learn-earn-contest-3.onrender.com/api/v1/auth/reset-password/${token}`,
-        { password: form.password }
+      const { data } = await resetPasswordApi(
+        token,
+        form.password,
+        form.confirmPassword
       );
       toast.success(data.message || "Password reset successful ✅");
+      setForm({ password: "", confirmPassword: "" });
       navigate("/login");
     } catch (error) {
       toast.error(error.response?.data?.message || "Reset failed ❌");
@@ -53,7 +63,11 @@ const ResetPasswordPage = () => {
           <div className="text-center mb-8">
             <img src={logo} alt="logo" className="mx-auto w-16 mb-3" />
             <h1 className="text-white font-bold text-xl">Reset Password</h1>
-            <p className="text-white/60 text-sm">Enter your new password</p>
+            <p className="text-white/60 text-sm">
+              {token
+                ? "Enter your new password"
+                : "This reset link is invalid or missing a token"}
+            </p>
           </div>
 
           <form onSubmit={handleResetPassword}>
@@ -64,6 +78,8 @@ const ResetPasswordPage = () => {
                 name="password"
                 value={form.password}
                 onChange={handleChange}
+                autoComplete="new-password"
+                required
                 className="w-full pl-10 pr-10 pt-5 pb-2 rounded-xl bg-white/5 border border-white/20 text-white outline-none focus:ring-2 focus:ring-[#82C600]"
               />
               <label
@@ -88,6 +104,8 @@ const ResetPasswordPage = () => {
                 name="confirmPassword"
                 value={form.confirmPassword}
                 onChange={handleChange}
+                autoComplete="new-password"
+                required
                 className="w-full pl-10 pr-10 pt-5 pb-2 rounded-xl bg-white/5 border border-white/20 text-white outline-none focus:ring-2 focus:ring-[#82C600]"
               />
               <label
@@ -109,7 +127,7 @@ const ResetPasswordPage = () => {
 
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || !token}
               className="w-full py-3 rounded-xl bg-gradient-to-r from-[#82C600] to-[#a3e635] text-black font-semibold hover:scale-105 transition shadow-lg disabled:opacity-50"
             >
               {loading ? "Updating..." : "Reset Password"}

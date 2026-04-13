@@ -1,8 +1,10 @@
 import axios from "axios";
 import { getAuthToken } from "@/utils/authStorage";
 
+export const API_BASE_URL = "https://learn-earn-contest-3.onrender.com/api/v1";
+
 const API = axios.create({
-  baseURL: "https://learn-earn-contest-3.onrender.com/api/v1",
+  baseURL: API_BASE_URL,
 });
 
 // Token injection

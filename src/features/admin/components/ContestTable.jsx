@@ -241,34 +241,44 @@ import {
   getPaginationRowModel,
 } from "@tanstack/react-table";
 
-import { useMemo, useState } from "react";
-import { MoreVertical, Pencil, Trash2 } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { Pencil, Trash2 } from "lucide-react";
+
+const resolveContestId = (contest) => contest?._id || contest?.id || null;
+
+const formatDate = (date) => {
+  if (!date) {
+    return "N/A";
+  }
+
+  const parsedDate = new Date(date);
+
+  if (Number.isNaN(parsedDate.getTime())) {
+    return "N/A";
+  }
+
+  return parsedDate.toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+};
+
+const getStatusStyle = (status) => {
+  switch (status) {
+    case "active":
+      return "bg-green-100 text-green-700";
+    case "upcoming":
+      return "bg-blue-100 text-blue-700";
+    case "completed":
+      return "bg-slate-200 text-slate-700";
+    default:
+      return "bg-gray-100 text-gray-500";
+  }
+};
 
 const ContestTable = ({ data = [], onDelete, onEdit }) => {
   const safeData = useMemo(() => data.filter(Boolean), [data]);
-  const [openMenu, setOpenMenu] = useState(null);
-
-  const formatDate = (date) => {
-    if (!date) return "N/A";
-    return new Date(date).toLocaleDateString("en-GB", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-    });
-  };
-
-  const getStatusStyle = (status) => {
-    switch (status) {
-      case "active":
-        return "bg-green-100 text-green-600";
-      case "upcoming":
-        return "bg-blue-100 text-blue-600";
-      case "complete":
-        return "bg-gray-200 text-gray-600";
-      default:
-        return "bg-gray-100 text-gray-500";
-    }
-  };
 
   const columns = useMemo(
     () => [
@@ -299,6 +309,7 @@ const ContestTable = ({ data = [], onDelete, onEdit }) => {
       {
         header: "Participants",
         accessorKey: "participants",
+        cell: ({ getValue }) => getValue() ?? 0,
       },
       {
         header: "Status",
@@ -318,52 +329,49 @@ const ContestTable = ({ data = [], onDelete, onEdit }) => {
       },
       {
         id: "actions",
-        header: "",
-        cell: ({ row }) => (
-          <div className="flex justify-end relative">
-            <MoreVertical
-              onClick={() =>
-                setOpenMenu(openMenu === row.id ? null : row.id)
-              }
-              className="cursor-pointer text-gray-400 hover:text-black"
-            />
+        header: "Actions",
+        cell: ({ row }) => {
+          const contestId = resolveContestId(row.original);
 
-            {openMenu === row.id && (
-              <div className="absolute right-0 mt-2 w-36 bg-white border rounded-xl shadow-xl z-10 overflow-hidden">
-                <button
-                  onClick={() => {
-                    onEdit(row.original);
-                    setOpenMenu(null);
-                  }}
-                  className="flex items-center gap-2 w-full px-4 py-2 text-sm hover:bg-gray-100"
-                >
-                  <Pencil size={14} />
-                  Edit
-                </button>
+          return (
+            <div className="flex items-center justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => onEdit?.(row.original)}
+                className="inline-flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-700 transition hover:bg-emerald-100"
+              >
+                <Pencil size={14} />
+                Edit
+              </button>
 
-                <button
-                  onClick={() => {
-                    onDelete(row.original.id);
-                    setOpenMenu(null);
-                  }}
-                  className="flex items-center gap-2 w-full px-4 py-2 text-sm text-red-500 hover:bg-red-50"
-                >
-                  <Trash2 size={14} />
-                  Delete
-                </button>
-              </div>
-            )}
-          </div>
-        ),
+              <button
+                type="button"
+                onClick={() => onDelete?.(contestId)}
+                disabled={!contestId}
+                className="inline-flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs font-semibold text-red-600 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                <Trash2 size={14} />
+                Delete
+              </button>
+            </div>
+          );
+        },
       },
     ],
-    [onDelete, onEdit, openMenu]
+    [onDelete, onEdit]
   );
 
   const [pagination, setPagination] = useState({
     pageIndex: 0,
     pageSize: 5,
   });
+
+  useEffect(() => {
+    setPagination((prev) => ({
+      ...prev,
+      pageIndex: 0,
+    }));
+  }, [safeData.length]);
 
   const table = useReactTable({
     data: safeData,
