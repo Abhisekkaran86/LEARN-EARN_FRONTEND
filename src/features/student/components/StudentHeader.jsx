@@ -116,19 +116,26 @@
 
 
 import { FaBell, FaSearch, FaSignOutAlt, FaUserCircle } from "react-icons/fa";
-import { useDispatch, useSelector } from "react-redux";
-import { logout } from "@/features/auth/authSlice";
+import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
+import ConfirmModal from "@/components/ui/ConfirmModal";
+import useLogoutConfirmation from "@/hooks/useLogoutConfirmation";
 
 const StudentHeader = ({ onSearch }) => {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const { user } = useSelector((state) => state.auth);
 
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef(null);
+  const {
+    isLogoutModalOpen,
+    isLoggingOut,
+    openLogoutModal,
+    closeLogoutModal,
+    confirmLogout,
+  } = useLogoutConfirmation({ redirectTo: "/login" });
 
   // Close dropdown
   useEffect(() => {
@@ -142,10 +149,9 @@ const StudentHeader = ({ onSearch }) => {
       document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleLogout = () => {
-    dispatch(logout());
-    localStorage.removeItem("token");
-    navigate("/login");
+  const handleLogoutClick = () => {
+    setOpen(false);
+    openLogoutModal();
   };
 
   return (
@@ -212,7 +218,7 @@ const StudentHeader = ({ onSearch }) => {
             </div>
 
             <button
-              onClick={handleLogout}
+              onClick={handleLogoutClick}
               className="flex items-center gap-2 w-full px-3 py-2 text-xs text-red-500 hover:bg-red-50"
             >
               <FaSignOutAlt />
@@ -221,6 +227,17 @@ const StudentHeader = ({ onSearch }) => {
           </div>
         </div>
       </div>
+
+      <ConfirmModal
+        isOpen={isLogoutModalOpen}
+        title="Logout now?"
+        message="Are you sure you want to logout from your account?"
+        confirmLabel="Logout"
+        cancelLabel="Cancel"
+        isLoading={isLoggingOut}
+        onCancel={closeLogoutModal}
+        onConfirm={confirmLogout}
+      />
     </div>
   );
 };

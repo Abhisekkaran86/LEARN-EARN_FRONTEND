@@ -21,13 +21,13 @@ const StudentLayout = ({ sidebar = [] }) => {
   };
 
   return (
-    <div className="flex h-screen w-full bg-[#f8fafc] dark:bg-gray-950 overflow-hidden">
+    <div className="dashboard-shell flex min-h-screen w-full overflow-x-hidden bg-[#f8fafc] dark:bg-gray-950 lg:h-screen lg:overflow-hidden">
 
       {/* SIDEBAR */}
       <Sidebar menu={sidebar} title="Student Panel" role="student" />
 
       {/* MAIN CONTENT */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 min-w-0 overflow-y-auto pt-16 lg:pt-0">
 
         {/* HEADER */}
         <div className="sticky top-0 z-40 bg-[#f8fafc] dark:bg-gray-900 px-4 md:px-6 pt-4">

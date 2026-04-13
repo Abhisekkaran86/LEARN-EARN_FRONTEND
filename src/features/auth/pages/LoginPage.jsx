@@ -30,7 +30,9 @@ const LoginPage = () => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleLogin = async () => {
+  const handleLogin = async (e) => {
+    e?.preventDefault();
+
     if (!form.email || !form.password) {
       toast.error("Please fill all fields ❌");
       return;
@@ -83,7 +85,8 @@ const LoginPage = () => {
             </p>
           </div>
 
-          {/* EMAIL INPUT */}
+          <form onSubmit={handleLogin}>
+            {/* EMAIL INPUT */}
           <div className="relative mb-6">
             <FiMail className="absolute left-4 top-4 text-white/50 pointer-events-none" />
 
@@ -162,13 +165,15 @@ const LoginPage = () => {
 
           {/* BUTTON */}
           <button
-            onClick={handleLogin}
+            type="submit"
             disabled={loading || !form.email || !form.password}
             className="w-full py-3 rounded-xl bg-gradient-to-r from-[#82C600] to-[#a3e635] text-black font-semibold flex items-center justify-center gap-2 hover:scale-105 transition shadow-lg"
           >
             {loading ? "Signing in..." : "Sign in"}
             <FiArrowRight />
           </button>
+
+          </form>
 
           {/* DIVIDER */}
           <div className="flex items-center gap-3 my-6">

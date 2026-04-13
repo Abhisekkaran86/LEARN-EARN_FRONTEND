@@ -1,8 +1,10 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowLeft, Users, User } from "lucide-react";
 import API from "../../../services/axios";
+import AlertModal from "@/components/ui/AlertModal";
+import useAlertModal from "@/hooks/useAlertModal";
 
 const ContestParticipatePage = () => {
   const { id } = useParams();
@@ -22,16 +24,69 @@ const ContestParticipatePage = () => {
   const [showDropdown, setShowDropdown] = useState(false);
 
   const [creatingTeam, setCreatingTeam] = useState(false);
+  const [joiningSolo, setJoiningSolo] = useState(false);
   const [sendingInviteUserId, setSendingInviteUserId] = useState("");
   const [fetchingUsers, setFetchingUsers] = useState(false);
+  const { alertState, showAlert, closeAlert } = useAlertModal();
+
+  const contestId = contest?._id || contest?.id || id;
+  const participationType = contest?.participationType || "solo";
+  const allowSolo =
+    participationType === "solo" || participationType === "both";
+  const allowTeam =
+    participationType === "team" || participationType === "both";
+
+  useEffect(() => {
+    if (allowTeam && !allowSolo) {
+      setMode("team");
+      return;
+    }
+
+    if (allowSolo && !allowTeam) {
+      setMode("single");
+    }
+  }, [allowSolo, allowTeam]);
 
   if (!contest) {
-    return <div className="text-center mt-20">Contest not found</div>;
+    return (
+      <>
+        <div className="text-center mt-20">Contest not found</div>
+        <AlertModal {...alertState} onClose={closeAlert} />
+      </>
+    );
   }
+
+  const joinSolo = async () => {
+    try {
+      setJoiningSolo(true);
+
+      const res = await API.post(
+        `/participations/contest/${contestId}/join/solo`
+      );
+
+      showAlert({
+        message: res.data?.message || "Joined solo contest successfully.",
+        variant: "success",
+        onClose: () => navigate("/student/my-contests"),
+      });
+    } catch (err) {
+      showAlert({
+        message:
+          err.response?.data?.message || "Unable to join solo contest.",
+        variant: "error",
+      });
+    } finally {
+      setJoiningSolo(false);
+    }
+  };
 
   const createTeam = async () => {
     if (!teamName.trim()) {
-      return alert("Team name required");
+      showAlert({
+        message: "Team name required.",
+        variant: "warning",
+      });
+      return;
     }
 
     try {
@@ -39,7 +94,7 @@ const ContestParticipatePage = () => {
 
       const res = await API.post("/team", {
         teamName: teamName.trim(),
-        contest: id,
+        contest: contestId,
         inviteUserIds: [],
       });
 
@@ -51,13 +106,18 @@ const ContestParticipatePage = () => {
       }
 
       setTeamId(createdTeamId);
-      alert(res.data.message || "Team created successfully");
+      showAlert({
+        message: res.data.message || "Team created successfully.",
+        variant: "success",
+      });
     } catch (err) {
-      alert(
-        err.response?.data?.message ||
+      showAlert({
+        message:
+          err.response?.data?.message ||
           err.message ||
-          "Team creation failed"
-      );
+          "Team creation failed.",
+        variant: "error",
+      });
     } finally {
       setCreatingTeam(false);
     }
@@ -75,7 +135,10 @@ const ContestParticipatePage = () => {
       setUsers(students);
       setShowDropdown(true);
     } catch (err) {
-      alert(err.response?.data?.message || "Failed to fetch users");
+      showAlert({
+        message: err.response?.data?.message || "Failed to fetch users.",
+        variant: "error",
+      });
     } finally {
       setFetchingUsers(false);
     }
@@ -103,7 +166,11 @@ const ContestParticipatePage = () => {
 
   const sendInvite = async (member) => {
     if (!teamId) {
-      return alert("Create team first");
+      showAlert({
+        message: "Create team first.",
+        variant: "warning",
+      });
+      return;
     }
 
     try {
@@ -121,16 +188,23 @@ const ContestParticipatePage = () => {
         )
       );
 
-      alert(res.data.message || "Invitation created successfully");
+      showAlert({
+        message: res.data.message || "Invitation created successfully.",
+        variant: "success",
+      });
     } catch (err) {
-      alert(err.response?.data?.message || "Invite failed");
+      showAlert({
+        message: err.response?.data?.message || "Invite failed.",
+        variant: "error",
+      });
     } finally {
       setSendingInviteUserId("");
     }
   };
 
   return (
-    <div className="min-h-screen p-6 bg-gradient-to-br from-white to-green-50">
+    <>
+      <div className="min-h-screen bg-gradient-to-br from-white to-green-50 p-4 sm:p-6">
       <button
         onClick={() => navigate(-1)}
         className="mb-6 flex items-center gap-2 text-gray-700 hover:text-black"
@@ -139,54 +213,68 @@ const ContestParticipatePage = () => {
         Back
       </button>
 
-      <div className="max-w-4xl mx-auto bg-white p-6 rounded-2xl shadow">
-        <h1 className="text-2xl font-bold text-gray-800">{contest.title}</h1>
+      <div className="mx-auto max-w-4xl rounded-2xl bg-white p-4 shadow sm:p-6">
+        <h1 className="break-words text-2xl font-bold text-gray-800">{contest.title}</h1>
 
-        <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div
-            onClick={() => setMode("single")}
-            className={`p-4 border rounded-xl cursor-pointer transition ${
-              mode === "single"
-                ? "border-green-600 bg-green-50"
-                : "border-gray-200"
-            }`}
-          >
-            <div className="flex items-center gap-2 font-medium">
-              <User size={18} />
-              Solo
+        <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
+          {allowSolo && (
+            <div
+              onClick={() => setMode("single")}
+              className={`rounded-xl border p-4 cursor-pointer transition ${
+                mode === "single"
+                  ? "border-green-600 bg-green-50"
+                  : "border-gray-200"
+              }`}
+            >
+              <div className="flex items-center gap-2 font-medium">
+                <User size={18} />
+                Solo
+              </div>
             </div>
-          </div>
+          )}
 
-          <div
-            onClick={() => setMode("team")}
-            className={`p-4 border rounded-xl cursor-pointer transition ${
-              mode === "team"
-                ? "border-green-600 bg-green-50"
-                : "border-gray-200"
-            }`}
-          >
-            <div className="flex items-center gap-2 font-medium">
-              <Users size={18} />
-              Team
+          {allowTeam && (
+            <div
+              onClick={() => setMode("team")}
+              className={`rounded-xl border p-4 cursor-pointer transition ${
+                mode === "team"
+                  ? "border-green-600 bg-green-50"
+                  : "border-gray-200"
+              }`}
+            >
+              <div className="flex items-center gap-2 font-medium">
+                <Users size={18} />
+                Team
+              </div>
             </div>
-          </div>
+          )}
         </div>
 
-        {mode === "team" && (
+        {allowSolo && mode === "single" && (
+          <button
+            onClick={joinSolo}
+            disabled={joiningSolo}
+            className="mt-5 w-full rounded-lg bg-green-600 px-5 py-2 text-white hover:bg-green-700 disabled:opacity-60 sm:w-auto"
+          >
+            {joiningSolo ? "Joining..." : "Join Solo Contest"}
+          </button>
+        )}
+
+        {allowTeam && mode === "team" && (
           <button
             onClick={() => setIsTeamModalOpen(true)}
-            className="mt-5 bg-green-600 text-white px-5 py-2 rounded-lg hover:bg-green-700"
+            className="mt-5 w-full rounded-lg bg-green-600 px-5 py-2 text-white hover:bg-green-700 sm:w-auto"
           >
             Create Team
           </button>
         )}
       </div>
 
-      {isTeamModalOpen && (
-        <div className="fixed inset-0 bg-black/40 flex justify-center items-center p-4 z-50">
-          <div className="bg-white p-6 rounded-2xl w-full max-w-lg shadow-xl">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="font-semibold text-xl">Create Team</h2>
+        {isTeamModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+          <div className="max-h-[90dvh] w-full max-w-lg overflow-y-auto rounded-2xl bg-white p-4 shadow-xl sm:p-6">
+            <div className="mb-4 flex items-center justify-between gap-3">
+              <h2 className="text-lg font-semibold sm:text-xl">Create Team</h2>
               <button
                 onClick={() => setIsTeamModalOpen(false)}
                 className="text-gray-500 hover:text-black"
@@ -221,7 +309,7 @@ const ContestParticipatePage = () => {
                 <button
                   onClick={fetchUsers}
                   disabled={fetchingUsers}
-                  className="text-green-700 font-medium mb-3"
+                  className="mb-3 w-full rounded-lg bg-green-50 px-4 py-2 text-left font-medium text-green-700 sm:w-auto"
                 >
                   {fetchingUsers ? "Loading users..." : "+ Add Member"}
                 </button>
@@ -254,7 +342,7 @@ const ContestParticipatePage = () => {
                     members.map((m) => (
                       <div
                         key={m.userId}
-                        className="flex justify-between items-center border p-3 rounded-lg"
+                        className="flex flex-col gap-3 rounded-lg border p-3 sm:flex-row sm:items-center sm:justify-between"
                       >
                         <div>
                           <p className="font-medium">{m.name || m.email}</p>
@@ -268,7 +356,7 @@ const ContestParticipatePage = () => {
                           </p>
                         </div>
 
-                        <div className="flex gap-2">
+                        <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
                           {!m.invited && (
                             <button
                               onClick={() => sendInvite(m)}
@@ -296,8 +384,11 @@ const ContestParticipatePage = () => {
             )}
           </div>
         </div>
-      )}
-    </div>
+        )}
+      </div>
+
+      <AlertModal {...alertState} onClose={closeAlert} />
+    </>
   );
 };
 

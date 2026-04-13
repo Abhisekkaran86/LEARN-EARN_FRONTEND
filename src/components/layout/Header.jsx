@@ -1,29 +1,29 @@
 import Container from "@/components/ui/Container";
 import Button from "@/components/ui/Button";
+import ConfirmModal from "@/components/ui/ConfirmModal";
 import ThemeToggle from "@/components/ui/ThemeToggle";
-import { NavLink, Link, useNavigate } from "react-router-dom";
+import { NavLink, Link } from "react-router-dom";
 import logo from "@/assets/desun.png";
-import { logoutUser, logout } from "@/features/auth/authSlice";
-import { useDispatch } from "react-redux";
 import { useState } from "react";
 import { FiMenu, FiX } from "react-icons/fi";
 import { isAuthenticated } from "@/utils/authStorage";
+import useLogoutConfirmation from "@/hooks/useLogoutConfirmation";
 
 const Header = () => {
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const {
+    isLogoutModalOpen,
+    isLoggingOut,
+    openLogoutModal,
+    closeLogoutModal,
+    confirmLogout,
+  } = useLogoutConfirmation({ redirectTo: "/" });
 
   const isLoggedIn = isAuthenticated();
 
-  const handleLogout = async () => {
-    try {
-      await dispatch(logoutUser()).unwrap();
-    } catch {
-      /* silent */
-    }
-    dispatch(logout());
-    navigate("/");
+  const handleLogoutClick = () => {
+    setMobileOpen(false);
+    openLogoutModal();
   };
 
   const menuItems = [
@@ -81,7 +81,7 @@ const Header = () => {
             {/* Auth Button (desktop) */}
             <div className="hidden md:block">
               {isLoggedIn ? (
-                <Button onClick={handleLogout} size="sm">
+                <Button onClick={handleLogoutClick} size="sm">
                   Logout
                 </Button>
               ) : (
@@ -125,7 +125,7 @@ const Header = () => {
 
           <div className="pt-2 border-t border-gray-200 dark:border-gray-700">
             {isLoggedIn ? (
-              <Button onClick={handleLogout} size="sm">
+              <Button onClick={handleLogoutClick} size="sm">
                 Logout
               </Button>
             ) : (
@@ -138,6 +138,17 @@ const Header = () => {
       )}
 
       <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-[#82c600]/40 to-transparent"></div>
+
+      <ConfirmModal
+        isOpen={isLogoutModalOpen}
+        title="Logout now?"
+        message="Are you sure you want to logout from your account?"
+        confirmLabel="Logout"
+        cancelLabel="Stay here"
+        isLoading={isLoggingOut}
+        onCancel={closeLogoutModal}
+        onConfirm={confirmLogout}
+      />
     </header>
   );
 };

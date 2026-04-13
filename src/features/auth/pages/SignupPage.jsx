@@ -38,7 +38,9 @@ const SignupPage = () => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e) => {
+    e?.preventDefault();
+
     try {
       const { name, email, password, phoneNumber, gender } = form;
       const payload = { name, email, password, phoneNumber, gender };
@@ -142,7 +144,7 @@ const SignupPage = () => {
               Create Account 🚀
             </h2>
 
-            <div className="mt-6 space-y-4">
+            <form onSubmit={handleSubmit} className="mt-6 space-y-4">
 
               {/* NAME */}
               <div className="relative">
@@ -237,7 +239,7 @@ const SignupPage = () => {
 
               {/* BUTTON */}
               <button
-                onClick={handleSubmit}
+                type="submit"
                 disabled={loading}
                 className="w-full py-3 rounded-xl bg-gradient-to-r from-[#82C600] to-[#a3e635] text-black font-semibold flex items-center justify-center gap-2 hover:scale-105 transition"
               >
@@ -252,7 +254,7 @@ const SignupPage = () => {
                 </Link>
               </p>
 
-            </div>
+            </form>
           </div>
         </div>
       </div>

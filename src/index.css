@@ -23,9 +23,24 @@ html {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+body {
+  background-color: #ffffff;
+  color: #0f172a;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+#root {
+  min-height: 100vh;
+}
+
 html.dark {
   background-color: #030712;
   color-scheme: dark;
+}
+
+html.dark body {
+  background-color: #030712;
+  color: #e5e7eb;
 }
 
 /* Hide scrollbar */
@@ -99,4 +114,330 @@ html.dark {
 
 .animate-slideUp {
   animation: slideUp 0.3s ease;
+}
+
+.desun-loader {
+  --loader-size: min(22rem, calc(100vw - 2rem), calc(100dvh - 2rem));
+  --loader-gap: clamp(0.45rem, 2vw, 0.85rem);
+  --loader-font-size: clamp(1.25rem, 4.8vw, 2.8rem);
+  --loader-letter-space: clamp(0.22rem, 1.4vw, 0.55rem);
+  --loader-line-width: clamp(0.9rem, 10vw, 2.6rem);
+  --loader-beam-width: clamp(4.8rem, 34vw, 7.4rem);
+  --loader-beam-offset: clamp(3.2rem, 24%, 4.6rem);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--loader-size);
+  max-width: 100%;
+  aspect-ratio: 1;
+  isolation: isolate;
+}
+
+.desun-loader__halo {
+  position: absolute;
+  inset: 18%;
+  border-radius: 9999px;
+  background: radial-gradient(circle, rgba(130, 198, 0, 0.28) 0%, rgba(130, 198, 0, 0.08) 36%, rgba(130, 198, 0, 0) 72%);
+  filter: blur(18px);
+  animation: desunLoaderPulse 2.6s ease-in-out infinite;
+}
+
+.desun-loader__ring {
+  position: absolute;
+  border-radius: 9999px;
+}
+
+.desun-loader__ring--outer {
+  inset: 3%;
+  border: 2px solid rgba(226, 232, 240, 0.14);
+  border-top-color: #82c600;
+  border-right-color: rgba(209, 250, 229, 0.62);
+  box-shadow: 0 0 36px rgba(130, 198, 0, 0.14);
+  animation: desunSpin 2.8s linear infinite;
+}
+
+.desun-loader__ring--middle {
+  inset: 12%;
+  border: 1px dashed rgba(226, 232, 240, 0.22);
+  border-bottom-color: rgba(163, 230, 53, 0.9);
+  border-left-color: rgba(255, 255, 255, 0.52);
+  animation: desunSpinReverse 3.6s linear infinite;
+}
+
+.desun-loader__ring--inner {
+  inset: 21%;
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
+  border-bottom: 1px solid rgba(130, 198, 0, 0.5);
+  border-left: 1px solid transparent;
+  border-right: 1px solid transparent;
+  animation: desunFloat 2.1s ease-in-out infinite;
+}
+
+.desun-loader__core {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--loader-gap);
+  width: min(84%, 17rem);
+  max-width: 100%;
+  padding: 0.9rem 0;
+}
+
+.desun-loader__line {
+  flex: 1 1 0;
+  min-width: 0.8rem;
+  max-width: var(--loader-line-width);
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, rgba(130, 198, 0, 0.92) 55%, rgba(255, 255, 255, 0.18) 100%);
+  opacity: 0.9;
+}
+
+.desun-loader__wordmark {
+  position: relative;
+  display: inline-block;
+  flex: 0 0 auto;
+  padding-left: var(--loader-letter-space);
+  font-size: var(--loader-font-size);
+  font-weight: 800;
+  letter-spacing: var(--loader-letter-space);
+  text-transform: uppercase;
+  background: linear-gradient(90deg, #ffffff 0%, #ecfccb 42%, #82c600 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  text-shadow: 0 0 22px rgba(130, 198, 0, 0.16);
+}
+
+.desun-loader__beam {
+  position: absolute;
+  left: 50%;
+  bottom: var(--loader-beam-offset);
+  width: var(--loader-beam-width);
+  height: 2px;
+  transform: translateX(-50%);
+  background: linear-gradient(90deg, transparent 0%, rgba(130, 198, 0, 0.08) 18%, rgba(130, 198, 0, 0.95) 50%, rgba(130, 198, 0, 0.08) 82%, transparent 100%);
+  box-shadow: 0 0 18px rgba(130, 198, 0, 0.38);
+  animation: desunBeam 1.8s ease-in-out infinite;
+}
+
+@keyframes desunSpin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes desunSpinReverse {
+  from {
+    transform: rotate(360deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes desunLoaderPulse {
+  0%,
+  100% {
+    opacity: 0.62;
+    transform: scale(0.96);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.04);
+  }
+}
+
+@keyframes desunFloat {
+  0%,
+  100% {
+    transform: scale(0.97);
+    opacity: 0.55;
+  }
+  50% {
+    transform: scale(1.01);
+    opacity: 1;
+  }
+}
+
+@keyframes desunBeam {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: translateX(-50%) scaleX(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: translateX(-50%) scaleX(1.08);
+  }
+}
+
+@media (max-width: 640px) {
+  .desun-loader {
+    --loader-size: min(18rem, calc(100vw - 1.5rem), calc(100dvh - 1.5rem));
+    --loader-gap: clamp(0.35rem, 1.8vw, 0.6rem);
+    --loader-font-size: clamp(1.1rem, 6vw, 2rem);
+    --loader-letter-space: clamp(0.16rem, 1.2vw, 0.34rem);
+    --loader-line-width: clamp(0.8rem, 8vw, 1.8rem);
+    --loader-beam-width: clamp(4rem, 30vw, 5.8rem);
+    --loader-beam-offset: clamp(2.7rem, 23%, 4rem);
+  }
+
+  .desun-loader__wordmark {
+    text-wrap: nowrap;
+  }
+}
+
+@media (max-width: 380px) {
+  .desun-loader {
+    --loader-size: min(15rem, calc(100vw - 1rem), calc(100dvh - 1rem));
+    --loader-gap: 0.35rem;
+    --loader-font-size: 1rem;
+    --loader-letter-space: 0.14rem;
+    --loader-line-width: 1rem;
+    --loader-beam-width: 4.2rem;
+    --loader-beam-offset: 2.55rem;
+  }
+
+  .desun-loader__core {
+    width: 88%;
+  }
+}
+
+@media (max-height: 540px) and (orientation: landscape) {
+  .desun-loader {
+    --loader-size: min(13rem, calc(100dvh - 1rem), calc(100vw - 1rem));
+    --loader-font-size: clamp(0.95rem, 4vw, 1.45rem);
+    --loader-letter-space: 0.14rem;
+    --loader-line-width: 0.95rem;
+    --loader-beam-width: 3.8rem;
+    --loader-beam-offset: 2.25rem;
+  }
+
+  .desun-loader__core {
+    width: 90%;
+  }
+}
+
+@media (min-width: 1280px) {
+  .desun-loader {
+    --loader-size: min(24rem, 26vw, calc(100dvh - 3rem));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .desun-loader__halo,
+  .desun-loader__ring--outer,
+  .desun-loader__ring--middle,
+  .desun-loader__ring--inner,
+  .desun-loader__beam {
+    animation-duration: 0.01ms;
+    animation-iteration-count: 1;
+  }
+}
+
+.dark :is(.theme-root, .dashboard-shell) {
+  color: #e5e7eb;
+}
+
+.dark :is(.theme-root, .dashboard-shell) [class~="bg-gradient-to-br"] {
+  background-image: linear-gradient(135deg, #020617 0%, #0f172a 52%, #111827 100%);
+}
+
+.dark :is(.theme-root, .dashboard-shell) [class~="bg-gradient-to-b"] {
+  background-image: linear-gradient(180deg, #020617 0%, #0f172a 52%, #111827 100%);
+}
+
+.dark :is(.theme-root, .dashboard-shell) [class~="bg-[#f8fafc]"],
+.dark :is(.theme-root, .dashboard-shell) [class~="bg-[#f5f7fb]"],
+.dark :is(.theme-root, .dashboard-shell) [class~="bg-[#eef2f7]"] {
+  background-color: #020617;
+}
+
+.dark :is(.theme-root, .dashboard-shell) [class~="bg-white"] {
+  background-color: #0f172a;
+}
+
+.dark :is(.theme-root, .dashboard-shell) [class~="bg-white/80"] {
+  background-color: rgba(15, 23, 42, 0.82);
+}
+
+.dark :is(.theme-root, .dashboard-shell) [class~="bg-white/90"] {
+  background-color: rgba(15, 23, 42, 0.9);
+}
+
+.dark :is(.theme-root, .dashboard-shell) [class~="bg-gray-50"] {
+  background-color: #0b1220;
+}
+
+.dark :is(.theme-root, .dashboard-shell) [class~="bg-gray-100"],
+.dark :is(.theme-root, .dashboard-shell) [class~="bg-gray-200"] {
+  background-color: #1e293b;
+}
+
+.dark :is(.theme-root, .dashboard-shell) [class~="bg-green-50"] {
+  background-color: rgba(20, 83, 45, 0.26);
+}
+
+.dark :is(.theme-root, .dashboard-shell) [class~="bg-blue-50"] {
+  background-color: rgba(30, 64, 175, 0.22);
+}
+
+.dark :is(.theme-root, .dashboard-shell) [class~="bg-red-50"] {
+  background-color: rgba(127, 29, 29, 0.24);
+}
+
+.dark :is(.theme-root, .dashboard-shell) [class~="bg-yellow-50"] {
+  background-color: rgba(113, 63, 18, 0.28);
+}
+
+.dark :is(.theme-root, .dashboard-shell) [class~="border-gray-100"],
+.dark :is(.theme-root, .dashboard-shell) [class~="border-gray-200"],
+.dark :is(.theme-root, .dashboard-shell) [class~="border-gray-300"] {
+  border-color: #334155;
+}
+
+.dark :is(.theme-root, .dashboard-shell) [class~="text-gray-900"],
+.dark :is(.theme-root, .dashboard-shell) [class~="text-gray-800"] {
+  color: #f8fafc;
+}
+
+.dark :is(.theme-root, .dashboard-shell) [class~="text-gray-700"] {
+  color: #e2e8f0;
+}
+
+.dark :is(.theme-root, .dashboard-shell) [class~="text-gray-600"] {
+  color: #cbd5e1;
+}
+
+.dark :is(.theme-root, .dashboard-shell) [class~="text-gray-500"],
+.dark :is(.theme-root, .dashboard-shell) [class~="text-gray-400"] {
+  color: #94a3b8;
+}
+
+.dark :is(.theme-root, .dashboard-shell) [class~="hover:bg-gray-50"]:hover,
+.dark :is(.theme-root, .dashboard-shell) [class~="hover:bg-gray-100"]:hover {
+  background-color: #1f2937;
+}
+
+.dark :is(.theme-root, .dashboard-shell) [class~="hover:text-black"]:hover {
+  color: #f8fafc;
+}
+
+.dark :is(.theme-root, .dashboard-shell) input:not([type="checkbox"]):not([type="radio"]):not([class*="bg-transparent"]),
+.dark :is(.theme-root, .dashboard-shell) textarea:not([class*="bg-transparent"]),
+.dark :is(.theme-root, .dashboard-shell) select:not([class*="bg-transparent"]) {
+  background-color: rgba(15, 23, 42, 0.75);
+  color: #f8fafc;
+  border-color: #334155;
+}
+
+.dark :is(.theme-root, .dashboard-shell) input::placeholder,
+.dark :is(.theme-root, .dashboard-shell) textarea::placeholder {
+  color: #94a3b8;
 }

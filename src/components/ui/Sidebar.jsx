@@ -8,9 +8,9 @@ import {
 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useState } from "react";
-import axios from "axios";
 import Button from "@/components/ui/Button";
-import { clearAuthSession, getAuthToken } from "@/utils/authStorage";
+import ConfirmModal from "@/components/ui/ConfirmModal";
+import useLogoutConfirmation from "@/hooks/useLogoutConfirmation";
 
 const Sidebar = ({ menu = [], title = "Panel", role = "admin" }) => {
   const navigate = useNavigate();
@@ -18,6 +18,13 @@ const Sidebar = ({ menu = [], title = "Panel", role = "admin" }) => {
 
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const {
+    isLogoutModalOpen,
+    isLoggingOut,
+    openLogoutModal,
+    closeLogoutModal,
+    confirmLogout,
+  } = useLogoutConfirmation({ redirectTo: "/login" });
 
   const active = location.pathname;
 
@@ -28,24 +35,9 @@ const Sidebar = ({ menu = [], title = "Panel", role = "admin" }) => {
     }
   };
 
-  const handleLogout = async () => {
-    const confirmLogout = window.confirm("Are you sure you want to logout?");
-    if (!confirmLogout) return;
-
-    try {
-      const token = getAuthToken();
-      await axios.post(
-        "https://learn-earn-contest-3.onrender.com/api/v1/auth/user/logout",
-        {},
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-    } catch {
-      /* silent */
-    } finally {
-      clearAuthSession();
-      sessionStorage.clear();
-      navigate("/");
-    }
+  const handleLogoutClick = () => {
+    setMobileOpen(false);
+    openLogoutModal();
   };
 
   const createPath =
@@ -167,7 +159,7 @@ const Sidebar = ({ menu = [], title = "Panel", role = "admin" }) => {
           {/* LOGOUT BUTTON */}
           <div className="pt-2 border-t border-gray-200 dark:border-gray-700">
             <button
-              onClick={handleLogout}
+              onClick={handleLogoutClick}
               className={`
                 w-full flex items-center
                 ${collapsed ? "justify-center" : "justify-between"}
@@ -193,6 +185,17 @@ const Sidebar = ({ menu = [], title = "Panel", role = "admin" }) => {
             </button>
           </div>
         </div>
+
+        <ConfirmModal
+          isOpen={isLogoutModalOpen}
+          title="Logout now?"
+          message="Are you sure you want to logout from your account?"
+          confirmLabel="Logout"
+          cancelLabel="Cancel"
+          isLoading={isLoggingOut}
+          onCancel={closeLogoutModal}
+          onConfirm={confirmLogout}
+        />
       </div>
     </>
   );

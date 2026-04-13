@@ -17,20 +17,22 @@ function App() {
 
   return (
     <BrowserRouter>
-      <GlobalLoader />
-      <ToastContainer
-        position="top-right"
-        autoClose={2000}
-        hideProgressBar={false}
-        newestOnTop
-        closeOnClick
-        pauseOnHover
-        draggable
-        theme="light"
-        toastClassName="custom-toast"
-        bodyClassName="custom-toast-body"
-      />
-      <AppRoutes />
+      <div className="theme-root min-h-screen">
+        <GlobalLoader />
+        <ToastContainer
+          position="top-right"
+          autoClose={2000}
+          hideProgressBar={false}
+          newestOnTop
+          closeOnClick
+          pauseOnHover
+          draggable
+          theme="light"
+          toastClassName="custom-toast"
+          bodyClassName="custom-toast-body"
+        />
+        <AppRoutes />
+      </div>
     </BrowserRouter>
   );
 }

@@ -64,7 +64,7 @@
 
 
 import Sidebar from "@/components/ui/Sidebar";
-import AdminHeader from "@/features/admin/components/AdminHeader";
+import AdminHeaderBar from "@/features/admin/components/AdminHeaderBar";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { useState } from "react";
@@ -89,22 +89,22 @@ const AdminLayout = ({ sidebar = [] }) => {
   };
 
   return (
-    <div className="flex h-screen w-full bg-[#f5f7fb] dark:bg-gray-950 overflow-hidden">
+    <div className="dashboard-shell flex min-h-screen w-full overflow-x-hidden bg-[#f5f7fb] dark:bg-gray-950 lg:h-screen lg:overflow-hidden">
 
       {/* SIDEBAR */}
       <Sidebar menu={sidebar} title="Admin Panel" role="admin" />
 
       {/* MAIN */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 min-w-0 overflow-y-auto pt-16 lg:pt-0">
 
         {/* HEADER */}
-        <div className="sticky top-0 z-40 bg-[#f5f7fb] dark:bg-gray-900 px-6 pt-4">
-          <AdminHeader onSearch={setSearch} />
+        <div className="sticky top-0 z-40 bg-[#f5f7fb] px-4 pt-4 dark:bg-gray-900 md:px-6">
+          <AdminHeaderBar onSearch={setSearch} />
         </div>
 
         {/* BACK BUTTON */}
         {!hideBack && (
-          <div className="px-6 mt-3">
+          <div className="mt-3 px-4 md:px-6">
             <button
               onClick={handleBack}
               className="flex items-center gap-2 px-3 py-1.5 rounded-xl 
@@ -119,7 +119,7 @@ const AdminLayout = ({ sidebar = [] }) => {
         )}
 
         {/* CONTENT */}
-        <div className="px-6 pb-6 mt-4">
+        <div className="mt-4 px-4 pb-6 md:px-6">
           <Outlet context={{ search }} />
         </div>
 

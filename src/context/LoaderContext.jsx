@@ -1,15 +1,53 @@
-import { createContext, useContext, useState, useCallback } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 
 const LoaderContext = createContext();
+const LOADER_SHOW_DELAY_MS = 300;
 
 export const LoaderProvider = ({ children }) => {
   const [loadCount, setLoadCount] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const showTimeoutRef = useRef(null);
 
   const showLoader = useCallback(() => setLoadCount((c) => c + 1), []);
   const hideLoader = useCallback(() => setLoadCount((c) => Math.max(c - 1, 0)), []);
 
+  useEffect(() => {
+    if (loadCount > 0) {
+      if (!loading && !showTimeoutRef.current) {
+        showTimeoutRef.current = window.setTimeout(() => {
+          setLoading(true);
+          showTimeoutRef.current = null;
+        }, LOADER_SHOW_DELAY_MS);
+      }
+
+      return;
+    }
+
+    if (showTimeoutRef.current) {
+      window.clearTimeout(showTimeoutRef.current);
+      showTimeoutRef.current = null;
+    }
+
+    setLoading(false);
+  }, [loadCount, loading]);
+
+  useEffect(() => {
+    return () => {
+      if (showTimeoutRef.current) {
+        window.clearTimeout(showTimeoutRef.current);
+      }
+    };
+  }, []);
+
   return (
-    <LoaderContext.Provider value={{ loading: loadCount > 0, showLoader, hideLoader }}>
+    <LoaderContext.Provider value={{ loading, showLoader, hideLoader }}>
       {children}
     </LoaderContext.Provider>
   );

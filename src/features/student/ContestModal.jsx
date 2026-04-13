@@ -147,7 +147,6 @@
 // export default ContestModal;
 
 
-import { useNavigate } from "react-router-dom";
 import {
   FiX,
   FiCalendar,
@@ -158,26 +157,29 @@ import {
 } from "react-icons/fi";
 import { useState, useEffect } from "react";
 import API from "../../services/axios"; // adjust path if needed
+import AlertModal from "@/components/ui/AlertModal";
+import useAlertModal from "@/hooks/useAlertModal";
 
 const ContestModal = ({ selectedContest, onClose }) => {
-  const navigate = useNavigate();
-
   const [showJoin, setShowJoin] = useState(false);
   const [mode, setMode] = useState("single");
   const [teams, setTeams] = useState([]);
   const [teamName, setTeamName] = useState("");
   const [showCreate, setShowCreate] = useState(false);
-
-  if (!selectedContest) return null;
+  const { alertState, showAlert, closeAlert } = useAlertModal();
 
   // ================= FETCH TEAMS =================
   useEffect(() => {
-    if (mode === "team" && showJoin) {
-      API.get(`/teams/contest/${selectedContest.contest._id}`)
-        .then((res) => setTeams(res.data.teams))
-        .catch(() => setTeams([]));
+    if (!selectedContest || mode !== "team" || !showJoin) {
+      return;
     }
-  }, [mode, showJoin]);
+
+    API.get(`/teams/contest/${selectedContest.contest._id}`)
+      .then((res) => setTeams(res.data.teams))
+      .catch(() => setTeams([]));
+  }, [mode, selectedContest, showJoin]);
+
+  if (!selectedContest) return null;
 
   // ================= ACTIONS =================
   const joinSolo = async () => {
@@ -185,10 +187,16 @@ const ContestModal = ({ selectedContest, onClose }) => {
       await API.post(
         `/participations/contest/${selectedContest.contest._id}/join/solo`
       );
-      alert("✅ Joined Solo");
-      window.location.reload();
+      showAlert({
+        message: "Joined solo successfully.",
+        variant: "success",
+        onClose: () => window.location.reload(),
+      });
     } catch (err) {
-      alert(err.response?.data?.message || "Error");
+      showAlert({
+        message: err.response?.data?.message || "Unable to join solo.",
+        variant: "error",
+      });
     }
   };
 
@@ -198,20 +206,32 @@ const ContestModal = ({ selectedContest, onClose }) => {
         `/participations/contest/${selectedContest.contest._id}/join/team`,
         { teamName }
       );
-      alert("✅ Team Created");
-      window.location.reload();
+      showAlert({
+        message: "Team created successfully.",
+        variant: "success",
+        onClose: () => window.location.reload(),
+      });
     } catch (err) {
-      alert(err.response?.data?.message || "Error");
+      showAlert({
+        message: err.response?.data?.message || "Unable to create team.",
+        variant: "error",
+      });
     }
   };
 
   const joinTeam = async (teamId) => {
     try {
       await API.post(`/teams/join/${teamId}`);
-      alert("✅ Joined Team");
-      window.location.reload();
+      showAlert({
+        message: "Joined team successfully.",
+        variant: "success",
+        onClose: () => window.location.reload(),
+      });
     } catch (err) {
-      alert(err.response?.data?.message || "Error");
+      showAlert({
+        message: err.response?.data?.message || "Unable to join team.",
+        variant: "error",
+      });
     }
   };
 
@@ -219,11 +239,11 @@ const ContestModal = ({ selectedContest, onClose }) => {
     <>
       {/* ================= MAIN MODAL ================= */}
       <div
-        className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[9999]"
+        className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 p-3 backdrop-blur-sm sm:p-4"
         onClick={onClose}
       >
         <div
-          className="bg-white w-[95%] md:w-[600px] rounded-3xl shadow-2xl overflow-hidden relative"
+          className="relative max-h-[90dvh] w-full max-w-lg overflow-y-auto rounded-3xl bg-white shadow-2xl sm:max-w-xl"
           onClick={(e) => e.stopPropagation()}
         >
           {/* CLOSE */}
@@ -235,16 +255,17 @@ const ContestModal = ({ selectedContest, onClose }) => {
           </button>
 
           {/* IMAGE */}
-          <div className="relative h-52 w-full overflow-hidden">
+          <div className="relative h-40 w-full overflow-hidden sm:h-52">
             <img
               src={selectedContest.contest?.image || "/default.jpg"}
+              alt={selectedContest.contest?.title || "Contest"}
               className="w-full h-full object-cover"
             />
           </div>
 
           {/* BODY */}
-          <div className="p-6 space-y-5">
-            <h2 className="text-lg font-semibold">
+          <div className="space-y-5 p-4 sm:p-6">
+            <h2 className="text-base font-semibold sm:text-lg">
               {selectedContest.contest?.title}
             </h2>
 
@@ -253,8 +274,8 @@ const ContestModal = ({ selectedContest, onClose }) => {
             </p>
 
             {/* INFO */}
-            <div className="grid grid-cols-2 gap-3">
-              <div className="bg-gray-50 p-3 rounded-xl flex gap-2">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <div className="flex gap-2 rounded-xl bg-gray-50 p-3 text-sm sm:items-center">
                 <FiCalendar />
                 <span>
                   {new Date(
@@ -263,7 +284,7 @@ const ContestModal = ({ selectedContest, onClose }) => {
                 </span>
               </div>
 
-              <div className="bg-gray-50 p-3 rounded-xl flex gap-2">
+              <div className="flex gap-2 rounded-xl bg-gray-50 p-3 text-sm sm:items-center">
                 <FiCheckCircle />
                 <span>{selectedContest.contest?.status}</span>
               </div>
@@ -290,24 +311,24 @@ const ContestModal = ({ selectedContest, onClose }) => {
       {/* ================= JOIN MODAL ================= */}
       {showJoin && (
         <div
-          className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999]"
+          className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 p-3 sm:p-4"
           onClick={() => setShowJoin(false)}
         >
           <div
-            className="bg-white w-[95%] md:w-[500px] rounded-2xl p-5"
+            className="max-h-[90dvh] w-full max-w-md overflow-y-auto rounded-2xl bg-white p-4 sm:max-w-lg sm:p-5"
             onClick={(e) => e.stopPropagation()}
           >
-            <h2 className="text-lg font-semibold mb-4">
+            <h2 className="mb-4 text-lg font-semibold">
               Join Contest
             </h2>
 
             {/* OPTIONS */}
-            <div className="grid grid-cols-2 gap-3 mb-4">
+            <div className="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
               {(selectedContest.contest?.participationType === "solo" ||
                 selectedContest.contest?.participationType === "both") && (
                 <div
                   onClick={() => setMode("single")}
-                  className={`p-3 border rounded-xl cursor-pointer ${
+                  className={`flex items-center gap-2 rounded-xl border p-3 text-sm cursor-pointer ${
                     mode === "single" ? "bg-green-100" : ""
                   }`}
                 >
@@ -319,7 +340,7 @@ const ContestModal = ({ selectedContest, onClose }) => {
                 selectedContest.contest?.participationType === "both") && (
                 <div
                   onClick={() => setMode("team")}
-                  className={`p-3 border rounded-xl cursor-pointer ${
+                  className={`flex items-center gap-2 rounded-xl border p-3 text-sm cursor-pointer ${
                     mode === "team" ? "bg-green-100" : ""
                   }`}
                 >
@@ -354,13 +375,15 @@ const ContestModal = ({ selectedContest, onClose }) => {
                     {teams.map((team) => (
                       <div
                         key={team._id}
-                        className="flex justify-between items-center border p-2 rounded"
+                        className="flex flex-col gap-3 rounded border p-3 sm:flex-row sm:items-center sm:justify-between"
                       >
-                        <span>{team.teamName}</span>
+                        <span className="break-words text-sm font-medium text-gray-700">
+                          {team.teamName}
+                        </span>
 
                         <button
                           onClick={() => joinTeam(team._id)}
-                          className="bg-blue-500 text-white px-2 py-1 text-xs rounded"
+                          className="w-full rounded bg-blue-500 px-3 py-2 text-xs text-white sm:w-auto"
                         >
                           Join
                         </button>
@@ -391,6 +414,8 @@ const ContestModal = ({ selectedContest, onClose }) => {
           </div>
         </div>
       )}
+
+      <AlertModal {...alertState} onClose={closeAlert} />
     </>
   );
 };

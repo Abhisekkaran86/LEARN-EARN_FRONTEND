@@ -124,8 +124,7 @@ import {
   FaUserCircle,
 } from "react-icons/fa";
 
-import { useDispatch, useSelector } from "react-redux";
-import { logout } from "@/features/auth/authSlice";
+import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
 import API from "@/services/axios"; // ✅ ADD API
@@ -137,7 +136,7 @@ const AdminHeader = ({ onSearch }) => {
   const { user } = useSelector((state) => state.auth);
 
   const [open, setOpen] = useState(false);
-  const [hasNotification, setHasNotification] = useState(false);
+  const [hasNotification] = useState(false);
 
   const dropdownRef = useRef(null);
 
@@ -159,13 +158,13 @@ const AdminHeader = ({ onSearch }) => {
   };
 
   return (
-    <div className="flex justify-between items-center bg-white px-6 py-4 rounded-2xl shadow-sm">
+    <div className="flex flex-col gap-3 rounded-xl bg-white px-3 py-3 shadow-sm sm:rounded-2xl sm:px-6 sm:py-4 lg:flex-row lg:items-center lg:justify-between">
 
       {/* LEFT */}
-      <div className="flex items-center gap-4 w-full">
+      <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
 
         <div>
-          <h1 className="text-lg font-semibold text-gray-800">
+          <h1 className="text-base font-semibold text-gray-800 sm:text-lg">
             Admin Dashboard
           </h1>
           <p className="text-xs text-gray-400">
@@ -173,27 +172,27 @@ const AdminHeader = ({ onSearch }) => {
           </p>
         </div>
 
-        <div className="flex items-center bg-[#f5f7fb] px-3 py-2 rounded-lg w-full max-w-xs">
-          <FaSearch className="text-gray-400 mr-2" />
+        <div className="flex w-full items-center rounded-lg bg-[#f5f7fb] px-3 py-2 lg:max-w-xs">
+          <FaSearch className="mr-2 text-sm text-gray-400" />
           <input
             type="text"
             placeholder="Search..."
             onChange={(e) => onSearch?.(e.target.value)}
-            className="bg-transparent outline-none text-sm w-full"
+            className="w-full bg-transparent text-sm outline-none"
           />
         </div>
 
       </div>
 
       {/* RIGHT */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center justify-between gap-4 sm:justify-end">
 
         {/* 🔔 Notification */}
         <div
           onClick={() => navigate("/admin/requests")}
-          className="relative cursor-pointer"
+          className="relative cursor-pointer text-gray-500"
         >
-          <FaBell className="text-gray-500 text-lg" />
+          <FaBell className="text-base sm:text-lg" />
 
           {hasNotification && (
             <span className="absolute -top-1 -right-1 w-2 h-2 bg-[#82C600] rounded-full"></span>
@@ -204,7 +203,7 @@ const AdminHeader = ({ onSearch }) => {
         <div className="relative" ref={dropdownRef}>
           <div
             onClick={() => setOpen(!open)}
-            className="cursor-pointer text-2xl text-gray-600"
+            className="cursor-pointer text-xl text-gray-600 sm:text-2xl"
           >
             <FaUserCircle />
           </div>

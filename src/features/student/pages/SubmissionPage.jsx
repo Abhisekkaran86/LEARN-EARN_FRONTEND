@@ -356,6 +356,8 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import API from "../../../services/axios"; // ✅ using your API
+import AlertModal from "@/components/ui/AlertModal";
+import useAlertModal from "@/hooks/useAlertModal";
 
 import {
   FaGithub,
@@ -380,6 +382,7 @@ const SubmissionPage = () => {
   });
 
   const [loading, setLoading] = useState(false);
+  const { alertState, showAlert, closeAlert } = useAlertModal();
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -389,12 +392,18 @@ const SubmissionPage = () => {
     const cleanId = id?.trim();
 
     if (!cleanId || cleanId.length !== 24) {
-      alert("Invalid Contest ID ❌");
+      showAlert({
+        message: "Invalid contest ID.",
+        variant: "error",
+      });
       return;
     }
 
     if (!form.githubLink) {
-      alert("GitHub link is required ❌");
+      showAlert({
+        message: "GitHub link is required.",
+        variant: "warning",
+      });
       return;
     }
 
@@ -410,29 +419,36 @@ const SubmissionPage = () => {
 
       const res = await API.post("/submission/submit", payload);
 
-      alert("✅ " + res.data.message);
-      navigate("/student/my-contests");
+      showAlert({
+        message: res.data.message || "Submission completed successfully.",
+        variant: "success",
+        onClose: () => navigate("/student/my-contests"),
+      });
     } catch (err) {
-      alert(err.response?.data?.message || "Submission failed ❌");
+      showAlert({
+        message: err.response?.data?.message || "Submission failed.",
+        variant: "error",
+      });
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#f1f5f9] via-white to-[#ecfdf5] flex items-center justify-center p-6">
+    <>
+      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-[#f1f5f9] via-white to-[#ecfdf5] p-4 sm:p-6">
 
-      <div className="w-full max-w-2xl bg-white/80 backdrop-blur-xl shadow-2xl rounded-3xl p-8 border border-gray-100">
+      <div className="w-full max-w-2xl rounded-2xl border border-gray-100 bg-white/80 p-5 shadow-2xl backdrop-blur-xl sm:rounded-3xl sm:p-8">
 
         {/* HEADER */}
         <div className="mb-8">
-          <h2 className="text-2xl font-semibold text-gray-800 flex items-center gap-2">
+          <h2 className="flex items-center gap-2 text-xl font-semibold text-gray-800 sm:text-2xl">
             🚀 Submit Your Project
           </h2>
           <div className="w-16 h-1 bg-gradient-to-r from-[#82C600] to-[#6ea800] rounded-full mt-3"></div>
         </div>
 
-        <div className="space-y-6">
+        <div className="space-y-5 sm:space-y-6">
 
           {/* PROJECT TITLE */}
           <div>
@@ -524,9 +540,13 @@ const SubmissionPage = () => {
             {loading ? "Submitting..." : "Submit Project"}
           </button>
 
+      </div>
+
         </div>
       </div>
-    </div>
+
+      <AlertModal {...alertState} onClose={closeAlert} />
+    </>
   );
 };
 
