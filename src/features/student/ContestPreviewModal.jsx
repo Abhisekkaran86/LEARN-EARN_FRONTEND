@@ -22,6 +22,40 @@ const statusTone = {
     "bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300",
 };
 
+const formatDate = (value, fallback = "TBA") => {
+  if (!value) {
+    return fallback;
+  }
+
+  const parsedDate = new Date(value);
+
+  if (Number.isNaN(parsedDate.getTime())) {
+    return fallback;
+  }
+
+  return parsedDate.toLocaleDateString();
+};
+
+const formatDateTime = (value, fallback = "N/A") => {
+  if (!value) {
+    return fallback;
+  }
+
+  const parsedDate = new Date(value);
+
+  if (Number.isNaN(parsedDate.getTime())) {
+    return fallback;
+  }
+
+  return parsedDate.toLocaleString([], {
+    year: "numeric",
+    month: "short",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+};
+
 const ContestPreviewModal = ({ selectedContest, onClose }) => {
   const navigate = useNavigate();
 
@@ -30,8 +64,9 @@ const ContestPreviewModal = ({ selectedContest, onClose }) => {
   }
 
   const contest = selectedContest?.contest ?? selectedContest;
+  const contestId = contest?._id || contest?.id;
 
-  if (!contest?._id) {
+  if (!contestId) {
     return null;
   }
 
@@ -71,36 +106,32 @@ const ContestPreviewModal = ({ selectedContest, onClose }) => {
     onClose?.();
 
     if (!isLoggedIn) {
-      navigate(`/contest/${contest._id}`);
+      navigate(`/contest/${contestId}`);
       return;
     }
 
     if (isParticipationRecord && isStudent && contest.status !== "completed") {
-      navigate(`/student/submit/${contest._id}`);
+      navigate(`/student/submit/${contestId}`);
       return;
     }
 
     if (isStudent) {
-      navigate(`/student/contest/${contest._id}`);
+      navigate(`/student/contest/${contestId}`);
       return;
     }
 
-    navigate(`/contest/${contest._id}`);
+    navigate(`/contest/${contestId}`);
   };
 
   const infoCards = [
     {
       label: "Start",
-      value: contest.startDate
-        ? new Date(contest.startDate).toLocaleDateString()
-        : "TBA",
+      value: formatDate(contest.startDate),
       icon: <FiCalendar />,
     },
     {
       label: "Deadline",
-      value: contest.deadline
-        ? new Date(contest.deadline).toLocaleDateString()
-        : "TBA",
+      value: formatDate(contest.deadline),
       icon: <FiClock />,
     },
     {
@@ -112,6 +143,11 @@ const ContestPreviewModal = ({ selectedContest, onClose }) => {
       label: "Mode",
       value: participationType === "both" ? "Solo + Team" : participationType,
       icon: participationType === "team" ? <FiUsers /> : <FiUser />,
+    },
+    {
+      label: "Created",
+      value: formatDateTime(contest.createdAt || contest.created_at),
+      icon: <FiClock />,
     },
   ];
 
@@ -172,7 +208,7 @@ const ContestPreviewModal = ({ selectedContest, onClose }) => {
         </div>
 
         <div className="space-y-5 p-4 sm:p-6">
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-5">
             {infoCards.map((item) => (
               <div
                 key={item.label}

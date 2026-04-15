@@ -210,7 +210,7 @@ const MyActiveContestsPage = () => {
 
         {loading ? (
           <p className="text-gray-400 text-center mt-20 animate-pulse">
-            Loading contests...
+            
           </p>
         ) : activeParticipations.length === 0 ? (
           <div className="bg-white/70 dark:bg-white/5 backdrop-blur p-12 rounded-3xl text-center shadow">

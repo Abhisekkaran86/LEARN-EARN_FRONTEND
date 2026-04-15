@@ -230,3 +230,4 @@ const ActiveContestUI = ({
 };
 
 export default ActiveContestUI;
+

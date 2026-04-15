@@ -9,7 +9,6 @@ import {
 } from "@/features/contest/contestSlice";
 
 import {
-  FiCalendar,
   FiDownload,
   FiEdit2,
   FiImage,
@@ -24,6 +23,7 @@ import {
   getContestBriefingName,
   getContestBriefingUrl,
 } from "@/utils/contestBriefing";
+import ContestPreviewModal from "./ContestPreviewModal";
 
 const emptyForm = {
   id: "",
@@ -69,6 +69,48 @@ const normalizeListText = (value) => {
   }
 
   return "";
+};
+
+const formatDate = (value, fallback = "N/A") => {
+  if (!value) {
+    return fallback;
+  }
+
+  const parsedDate = new Date(value);
+
+  if (Number.isNaN(parsedDate.getTime())) {
+    return fallback;
+  }
+
+  return parsedDate.toLocaleDateString();
+};
+
+const formatDateTime = (value, fallback = "N/A") => {
+  if (!value) {
+    return fallback;
+  }
+
+  const parsedDate = new Date(value);
+
+  if (Number.isNaN(parsedDate.getTime())) {
+    return fallback;
+  }
+
+  return parsedDate.toLocaleString([], {
+    year: "numeric",
+    month: "short",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+};
+
+const getParticipationModeLabel = (value) => {
+  if ((value || "").toLowerCase() === "both") {
+    return "Solo + Team";
+  }
+
+  return value || "solo";
 };
 
 const normalizeContestForm = (contest) => ({
@@ -149,7 +191,7 @@ const buildContestPayload = (form) => {
 const ContestManagementPage = () => {
   const dispatch = useDispatch();
   const { contests = [], loading } = useSelector((state) => state.contest);
-
+  const [selectedContest, setSelectedContest] = useState(null);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [editingContestId, setEditingContestId] = useState("");
@@ -374,34 +416,42 @@ const ContestManagementPage = () => {
 
       {loading ? (
         <div className="theme-surface rounded-3xl border border-dashed px-6 py-16 text-center theme-text-muted">
-          Loading contests...
+
         </div>
       ) : filteredContests.length === 0 ? (
         <div className="theme-surface rounded-3xl border border-dashed px-6 py-16 text-center theme-text-muted">
           No contests found
         </div>
       ) : (
-        <div className="grid gap-5 xl:grid-cols-2">
+        <div className="grid gap-5 xl:grid-cols-2 items-stretch">
           {filteredContests.map((contest) => {
             const contestId = contest?._id || contest?.id || "";
             const rewardsLabel = normalizeListText(contest?.rewards || contest?.prize);
             const isEditing = editingContestId === contestId;
             const briefingUrl = getContestBriefingUrl(contest);
             const briefingName = getContestBriefingName(contest);
-
+            const rewardsArray = Array.isArray(contest.rewards)
+              ? contest.rewards.flatMap((item) =>
+                typeof item === "string" ? item.split(",") : item
+              )
+              : [];
             return (
               <div
                 key={contestId}
-                className={`theme-surface overflow-hidden rounded-[28px] shadow-sm transition ${isEditing ? "border-lime-300 shadow-lg" : ""
+                className={`theme-surface overflow-hidden rounded-[28px] shadow-sm  transition ${isEditing ? "border-lime-300 shadow-lg" : ""
                   }`}
               >
-                <div className="grid gap-0 md:grid-cols-[220px_1fr]">
+                <div
+                  onClick={() => setSelectedContest(contest)}
+                  className="grid cursor-pointer gap-0 md:grid-cols-[220px_1fr] "
+                >
+                  {/* IMAGE */}
                   <div className="relative min-h-[200px] flex items-center justify-center bg-gray-100">
                     {contest.image ? (
                       <img
                         src={contest.image}
                         alt={contest.title}
-                        className="max-h-[200px] w-full object-contain"
+                        className="max-h-[300px] w-full object-contain"
                       />
                     ) : (
                       <div className="flex h-full items-center justify-center text-gray-400">
@@ -414,96 +464,97 @@ const ContestManagementPage = () => {
                     </div>
                   </div>
 
-                  <div className="p-5 sm:p-6">
-                    <div className="flex flex-wrap items-start justify-between gap-4">
-                      <div>
-                      <h2 className="theme-text text-xl font-semibold">
+                  {/* CONTENT */}
+                  <div className="p-5 sm:p-6 flex flex-col justify-between">
+
+                    {/* HEADER */}
+                    <div className="flex items-start justify-between gap-4 min-h-[70px]">
+
+                      {/* TITLE + DESC */}
+                      <div className="max-w-[70%]">
+                        <h2 className="theme-text text-lg font-semibold line-clamp-1">
                           {contest.title}
                         </h2>
-                        <p className="theme-text-soft mt-2 text-sm leading-6">
+
+                        <p className="theme-text-soft mt-1 text-sm line-clamp-2 min-h-[40px]">
                           {contest.description}
                         </p>
                       </div>
 
-                      <div className="flex flex-wrap gap-2">
-                        <button
-                          type="button"
-                          onClick={() => handleEditOpen(contest)}
-                          className="inline-flex items-center gap-2 rounded-xl bg-blue-100 px-4 py-2 text-sm font-medium text-blue-700 transition hover:bg-blue-200"
-                        >
-                          <FiEdit2 />
-                          Update
-                        </button>
 
-                        <button
-                          type="button"
-                          onClick={() => handleDelete(contestId)}
-                          disabled={deletingId === contestId}
-                          className="inline-flex items-center gap-2 rounded-xl bg-rose-100 px-4 py-2 text-sm font-medium text-rose-700 transition hover:bg-rose-200 disabled:cursor-not-allowed disabled:opacity-70"
-                        >
-                          <FiTrash2 />
-                          {deletingId === contestId ? "Deleting..." : "Delete"}
-                        </button>
-                      </div>
                     </div>
 
-                    <div className="mt-5 grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+                    {/* INFO GRID */}
+                    <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
 
-                      <div className="rounded-2xl bg-gray-50 p-4 min-h-[80px] flex flex-col justify-between">
-                        <p className="text-[11px] uppercase tracking-[0.18em] text-gray-400">
-                          Start
+                      {/* START */}
+                      <div className="h-[70px] flex flex-col justify-between p-3 rounded-2xl bg-white/80 border border-blue-100 shadow-sm">
+                        <p className="text-[10px] uppercase text-gray-400">
+                          Start Date
                         </p>
-                        <p className="mt-2 text-sm font-medium text-gray-900">
-                          {contest.startDate
-                            ? new Date(contest.startDate).toLocaleDateString()
-                            : "N/A"}
+                        <p className="text-sm font-semibold text-blue-600">
+                          {formatDate(contest.startDate)}
                         </p>
                       </div>
 
-                      <div className="rounded-2xl bg-gray-50 p-4 min-h-[80px] flex flex-col justify-between">
-                        <p className="text-[11px] uppercase tracking-[0.18em] text-gray-400">
+                      {/* DEADLINE */}
+                      <div className="h-[70px] flex flex-col justify-between p-4 rounded-2xl bg-white/80 border border-red-100 shadow-sm">
+                        <p className="text-[10px] uppercase text-gray-400">
                           Deadline
                         </p>
-                        <p className="mt-2 text-sm font-medium text-gray-900">
-                          {contest.deadline
-                            ? new Date(contest.deadline).toLocaleDateString()
-                            : "N/A"}
+                        <p className="text-sm font-semibold text-red-500">
+                          {formatDate(contest.deadline)}
                         </p>
                       </div>
 
-                      <div className="rounded-2xl bg-gray-50 p-4 min-h-[80px] flex flex-col justify-between">
-                        <p className="text-[11px] uppercase tracking-[0.18em] text-gray-400">
+                      {/* TYPE */}
+                      <div className="h-[70px] flex flex-col justify-between p-4 rounded-2xl bg-white/80 border border-green-100 shadow-sm">
+                        <p className="text-[10px] uppercase text-gray-400">
                           Type
                         </p>
-                        <p className="mt-2 text-sm font-medium capitalize text-gray-900">
-                          {contest.participationType || "solo"}
+                        <p className="text-sm font-semibold text-green-600 capitalize">
+                          {getParticipationModeLabel(contest.participationType)}
                         </p>
                       </div>
 
                     </div>
+
+                    {/* FOOTER */}
                     <div className="mt-4 flex flex-wrap gap-3 text-sm text-gray-500">
+
                       <span className="inline-flex items-center gap-2 rounded-full bg-lime-100 px-3 py-1 text-lime-700">
                         <FiUsers />
                         Max team size: {contest.maxTeamSize || 1}
                       </span>
 
-                      {rewardsLabel ? (
-                        <span className="rounded-full bg-amber-100 px-3 py-1 text-amber-700">
-                          Rewards: {rewardsLabel}
-                        </span>
-                      ) : null}
+                      {/* REWARDS */}
+                      {rewardsArray.length > 0 && (
+                        <div className="flex flex-wrap gap-2">
+                          {rewardsArray.map((reward, i) => (
+                            <span
+                              key={i}
+                              className="px-3 py-1 rounded-full text-xs bg-amber-100 text-amber-700"
+                            >
+                              {["🥇 1st", "🥈 2nd", "🥉 3rd"][i] || `#${i + 1}`} : ₹{reward.trim()}
+                            </span>
+                          ))}
+                        </div>
+                      )}
 
-                      {briefingUrl ? (
+                      {/* PDF */}
+                      {briefingUrl && (
                         <a
                           href={briefingUrl}
                           target="_blank"
                           rel="noreferrer"
-                          className="inline-flex items-center gap-2 rounded-full bg-sky-100 px-3 py-1 text-sky-700 transition hover:bg-sky-200"
+                          download
+                          onClick={(event) => event.stopPropagation()}
+                          className="inline-flex items-center gap-2 rounded-full bg-sky-100 px-3 py-1 text-sky-700 hover:bg-sky-200"
                         >
                           <FiDownload />
-                          {briefingName}
+                          Download {briefingName}
                         </a>
-                      ) : null}
+                      )}
                     </div>
                   </div>
                 </div>
@@ -512,6 +563,13 @@ const ContestManagementPage = () => {
           })}
         </div>
       )}
+
+      <ContestPreviewModal
+        selectedContest={selectedContest}
+        onClose={() => setSelectedContest(null)}
+        onEdit={handleEditOpen}
+        onDelete={handleDelete}
+      />
 
       {editingContestId ? (
         <div className="theme-modal-overlay fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -757,13 +815,7 @@ const ContestManagementPage = () => {
                   ) : null}
                 </div>
 
-                <div className="rounded-3xl bg-gray-50 p-4 text-sm text-gray-600">
-                  <p className="font-semibold text-gray-800">Backend note</p>
-                  <p className="mt-2 leading-6">
-                    The frontend now sends the project briefing PDF too and will
-                    accept any matching briefing URL your backend returns on contest fetch.
-                  </p>
-                </div>
+               
               </div>
             </div>
 

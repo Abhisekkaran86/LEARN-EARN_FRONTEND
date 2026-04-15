@@ -272,7 +272,7 @@ const ContestFormSection = ({
           </span>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
 
           {/* SOLO */}
           <div
@@ -294,21 +294,6 @@ const ContestFormSection = ({
               </div>
             </div>
           </div>
-          <div className="col-span-2 grid grid-cols-2 gap-3 md:grid-cols-5">
-            {categorie.map((cat) => (
-              <div
-                key={cat}
-                onClick={() => setForm({ ...form, category: cat })}
-                className={`cursor-pointer rounded-2xl p-3 border text-sm font-medium transition text-center ${form.category === cat
-                    ? "border-[#82C600] bg-[#82C600]/5 text-[#82C600]"
-                    : "border-gray-200 hover:border-[#82C600]/40 text-gray-600"
-                  }`}
-              >
-                {cat}
-              </div>
-            ))}
-          </div>
-
           {/* TEAM */}
           <div
             onClick={() =>
@@ -329,6 +314,49 @@ const ContestFormSection = ({
               </div>
             </div>
           </div>
+
+          {/* BOTH */}
+          <div
+            onClick={() =>
+              setForm({
+                ...form,
+                participationType: "both",
+                maxTeamSize: form.maxTeamSize || 2,
+              })
+            }
+            className={`cursor-pointer rounded-2xl p-4 border transition ${form.participationType === "both"
+                ? "border-[#82C600] bg-[#82C600]/5 shadow-sm"
+                : "border-gray-200 hover:border-[#82C600]/40"
+              }`}
+          >
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-xl bg-emerald-100 text-emerald-700">
+                <div className="flex items-center gap-1">
+                  <User size={16} />
+                  <Users size={16} />
+                </div>
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-gray-800">Both</p>
+                <p className="text-xs text-gray-400">Solo and team allowed</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-4 grid grid-cols-2 gap-3 md:grid-cols-5">
+          {categorie.map((cat) => (
+            <div
+              key={cat}
+              onClick={() => setForm({ ...form, category: cat })}
+              className={`cursor-pointer rounded-2xl p-3 border text-sm font-medium transition text-center ${form.category === cat
+                  ? "border-[#82C600] bg-[#82C600]/5 text-[#82C600]"
+                  : "border-gray-200 hover:border-[#82C600]/40 text-gray-600"
+                }`}
+            >
+              {cat}
+            </div>
+          ))}
         </div>
 
         {/* 🔥 TEAM SIZE */}
