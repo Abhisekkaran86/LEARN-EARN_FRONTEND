@@ -210,7 +210,7 @@ const SignupPage = () => {
 
             <form onSubmit={handleSubmit} className="mt-6 space-y-4">
               <div className="flex flex-col items-center gap-3 pb-2">
-                <label className="group relative flex h-24 w-24 cursor-pointer items-center justify-center overflow-hidden rounded-[28px] border border-white/20 bg-white/5">
+                <label className="group relative flex h-15 w-20 cursor-pointer items-center justify-center overflow-hidden rounded-[28px] border border-white/20 bg-white/5">
                   {profilePreview ? (
                     <img
                       src={profilePreview}
@@ -257,7 +257,7 @@ const SignupPage = () => {
                   autoComplete="off"
                   className={inputClass}
                 />
-                <label className={getLabelClass("name")}>Full Name</label>
+                <label className={("name")}>Full Name</label>
               </div>
 
               {/* EMAIL */}
