@@ -5,6 +5,10 @@ import { FaBell } from "react-icons/fa";
 import API from "@/services/axios";
 
 const INVITATIONS_UPDATED_EVENT = "team-invitations-updated";
+const normalizeInvitations = (rawInvitations) =>
+  Array.isArray(rawInvitations)
+    ? rawInvitations.filter((item) => item && typeof item === "object")
+    : [];
 
 const NotificationBell = () => {
   const navigate = useNavigate();
@@ -22,7 +26,7 @@ const NotificationBell = () => {
       }
 
       const res = await API.get("/team/my-invitations");
-      setNotifications(res.data.invitations || []);
+      setNotifications(normalizeInvitations(res.data?.invitations));
       setHasLoaded(true);
     } catch {
       if (!silent) {
@@ -40,7 +44,7 @@ const NotificationBell = () => {
       const nextInvitations = event.detail?.invitations;
 
       if (Array.isArray(nextInvitations)) {
-        setNotifications(nextInvitations);
+        setNotifications(normalizeInvitations(nextInvitations));
         setHasLoaded(true);
         return;
       }
@@ -136,21 +140,26 @@ const NotificationBell = () => {
             <p className="py-3 text-sm text-gray-400">No pending invitations</p>
           ) : (
             <div className="space-y-2">
-              {notifications.slice(0, 4).map((invite) => (
+              {notifications.slice(0, 4).map((invite, index) => (
                 <button
-                  key={invite._id || invite.token}
+                  key={
+                    invite?._id ||
+                    invite?.token ||
+                    invite?.acceptToken ||
+                    `invite-${index}`
+                  }
                   type="button"
                   onClick={() => handleOpenInvitation(invite)}
                   className="block w-full rounded-xl border border-gray-100 px-3 py-2 text-left transition hover:bg-gray-50"
                 >
                   <p className="text-sm font-medium text-gray-800">
-                    {invite.team?.teamName || "Team invitation"}
+                    {invite?.team?.teamName || "Team invitation"}
                   </p>
                   <p className="text-xs text-gray-500">
-                    Contest: {invite.team?.contest?.title || "N/A"}
+                    Contest: {invite?.team?.contest?.title || "N/A"}
                   </p>
                   <p className="text-xs text-gray-500">
-                    Invited by: {invite.invitedBy?.name || "Unknown"}
+                    Invited by: {invite?.invitedBy?.name || "Unknown"}
                   </p>
                 </button>
               ))}

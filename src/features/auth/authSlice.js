@@ -133,6 +133,10 @@ export const fetchCurrentUserProfile = createAsyncThunk(
           continue;
         }
 
+        if (typeof err.response?.status === "number" && err.response.status >= 500) {
+          continue;
+        }
+
         if (err.response?.status === 401 || err.response?.status === 403) {
           clearAuthSession();
         }

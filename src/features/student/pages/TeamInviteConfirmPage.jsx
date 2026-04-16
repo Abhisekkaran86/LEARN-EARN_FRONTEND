@@ -5,6 +5,13 @@ import Cookies from "js-cookie";
 import API from "@/services/axios";
 import AlertModal from "@/components/ui/AlertModal";
 import useAlertModal from "@/hooks/useAlertModal";
+import { acceptInvitation } from "@/features/student/invitationAPI";
+
+const INVITATIONS_UPDATED_EVENT = "team-invitations-updated";
+const normalizeInvitations = (rawInvitations) =>
+  Array.isArray(rawInvitations)
+    ? rawInvitations.filter((item) => item && typeof item === "object")
+    : [];
 
 const TeamInviteConfirmPage = () => {
   const { token } = useParams();
@@ -34,13 +41,13 @@ const TeamInviteConfirmPage = () => {
     const fetchInvite = async () => {
       try {
         const res = await API.get("/team/my-invitations");
-        const invitations = res.data?.invitations || [];
+        const invitations = normalizeInvitations(res.data?.invitations);
 
         const matchedInvite = invitations.find(
           (item) =>
-            item.token === token ||
-            item.acceptToken === token ||
-            item._id === token
+            item?.token === token ||
+            item?.acceptToken === token ||
+            item?._id === token
         );
 
         setInvite(matchedInvite || null);
@@ -70,21 +77,19 @@ const TeamInviteConfirmPage = () => {
     try {
       setAccepting(true);
 
-      const res = await API.post(
-        `/team/invite/confirm/${invitationReference}` // ✅ FIXED
-      );
+      const res = await acceptInvitation(invitationReference);
+
+      window.dispatchEvent(new CustomEvent(INVITATIONS_UPDATED_EVENT));
 
       showAlert({
         message: res.data?.message || "Invitation accepted successfully.",
         variant: "success",
         onClose: () => navigate("/student/my-invitations"),
       });
-
     } catch (err) {
       console.log(err.response?.data || err.message);
       showAlert({
-        message:
-          err.response?.data?.message || "Failed to accept invitation.",
+        message: err.response?.data?.message || "Failed to accept invitation.",
         variant: "error",
       });
     } finally {
@@ -112,8 +117,8 @@ const TeamInviteConfirmPage = () => {
               Invitation not found
             </h2>
             <p className="mt-2 text-sm text-gray-500">
-              This invitation may be expired, already accepted, or not assigned to
-              your account.
+              This invitation may be expired, already accepted, or not assigned
+              to your account.
             </p>
 
             <div className="mt-5 flex justify-center gap-3">
@@ -157,7 +162,8 @@ const TeamInviteConfirmPage = () => {
           </p>
 
           <p className="mt-1 text-sm text-gray-500">
-            Invited by: {invite.invitedBy?.name || invite.team?.leader?.name || "Unknown"}
+            Invited by:{" "}
+            {invite.invitedBy?.name || invite.team?.leader?.name || "Unknown"}
           </p>
 
           <div className="mt-6 flex justify-center gap-3">

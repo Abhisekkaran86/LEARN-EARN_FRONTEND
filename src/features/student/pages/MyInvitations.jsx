@@ -2,8 +2,13 @@ import { useEffect, useState } from "react";
 import API from "./../../../services/axios";
 import AlertModal from "@/components/ui/AlertModal";
 import useAlertModal from "@/hooks/useAlertModal";
+import { acceptInvitation } from "@/features/student/invitationAPI";
 
 const INVITATIONS_UPDATED_EVENT = "team-invitations-updated";
+const normalizeInvitations = (rawInvitations) =>
+  Array.isArray(rawInvitations)
+    ? rawInvitations.filter((item) => item && typeof item === "object")
+    : [];
 
 const MyInvitations = () => {
   const [invitations, setInvitations] = useState([]);
@@ -23,7 +28,7 @@ const MyInvitations = () => {
     try {
       setLoading(true);
       const res = await API.get("/team/my-invitations");
-      const nextInvitations = res.data.invitations || [];
+      const nextInvitations = normalizeInvitations(res.data?.invitations);
       setInvitations(nextInvitations);
       broadcastInvitations(nextInvitations);
     } catch (err) {
@@ -51,28 +56,30 @@ const MyInvitations = () => {
     try {
       setAcceptingToken(invitationReference);
 
-      const res = await API.post(
-        `/team/invite/confirm/${invitationReference}` // ✅ FIXED
-      );
+      const res = await acceptInvitation(invitationReference);
 
       showAlert({
-        message: res.data.message || "Invitation accepted",
+        message: res.data?.message || "Invitation accepted",
         variant: "success",
       });
 
-      setInvitations((prev) =>
-        prev.filter(
-          (item) =>
-            item._id !== invite._id &&
-            item.token !== invite.token &&
-            item.acceptToken !== invite.acceptToken
-        )
-      );
+      const inviteId = invite?._id;
+      const inviteToken = invite?.token;
+      const inviteAcceptToken = invite?.acceptToken;
 
+      setInvitations((prevInvitations) => {
+        const nextInvitations = prevInvitations.filter(
+          (item) =>
+            item?._id !== inviteId &&
+            item?.token !== inviteToken &&
+            item?.acceptToken !== inviteAcceptToken
+        );
+        broadcastInvitations(nextInvitations);
+        return nextInvitations;
+      });
     } catch (err) {
       showAlert({
-        message:
-          err.response?.data?.message || "Failed to accept invitation",
+        message: err.response?.data?.message || "Failed to accept invitation",
         variant: "error",
       });
     } finally {
@@ -104,36 +111,41 @@ const MyInvitations = () => {
           </div>
         ) : (
           <div className="grid gap-4">
-            {invitations.map((invite) => (
+            {invitations.map((invite, index) => (
               <div
-                key={invite._id}
+                key={
+                  invite?._id ||
+                  invite?.token ||
+                  invite?.acceptToken ||
+                  `invite-${index}`
+                }
                 className="rounded-xl border bg-white p-4 shadow sm:p-5"
               >
                 <h2 className="break-words text-lg font-semibold">
-                  Team: {invite.team?.teamName}
+                  Team: {invite?.team?.teamName}
                 </h2>
-                <p className="text-sm text-gray-600 mt-1">
-                  Contest: {invite.team?.contest?.title}
+                <p className="mt-1 text-sm text-gray-600">
+                  Contest: {invite?.team?.contest?.title}
                 </p>
                 <p className="text-sm text-gray-600">
-                  Invited By: {invite.invitedBy?.name || "Unknown"}
+                  Invited By: {invite?.invitedBy?.name || "Unknown"}
                 </p>
                 <p className="text-sm text-gray-600">
-                  Status: {invite.status}
+                  Status: {invite?.status}
                 </p>
 
                 <button
                   onClick={() => acceptInvite(invite)}
                   disabled={
-                    acceptingToken === invite.acceptToken ||
-                    acceptingToken === invite.token ||
-                    acceptingToken === invite._id
+                    acceptingToken === invite?.acceptToken ||
+                    acceptingToken === invite?.token ||
+                    acceptingToken === invite?._id
                   }
                   className="mt-4 w-full rounded-lg bg-green-600 px-4 py-2 text-white hover:bg-green-700 disabled:opacity-60 sm:w-auto"
                 >
-                  {acceptingToken === invite.acceptToken ||
-                    acceptingToken === invite.token ||
-                    acceptingToken === invite._id
+                  {acceptingToken === invite?.acceptToken ||
+                  acceptingToken === invite?.token ||
+                  acceptingToken === invite?._id
                     ? "Accepting..."
                     : "Accept Invitation"}
                 </button>
