@@ -34,7 +34,6 @@
 // export default HomePage;
 
 
-
 import Hero from "@/features/home/components/Hero";
 import WhyJoin from "@/features/home/components/WhyJoin";
 import Challenges from "@/features/home/components/Challenges";
@@ -45,49 +44,47 @@ import { Navigate } from "react-router-dom";
 import { getAuthRole } from "@/utils/authStorage";
 
 const HomePage = () => {
-
   const { setDisableLoader } = useLoader();
   const role = getAuthRole();
 
   useEffect(() => {
-    setDisableLoader(true);   // ❌ disable loader on home
+    // ❌ Disable loader on Home page
+    setDisableLoader(true);
 
     return () => {
-      setDisableLoader(false); // ✅ enable again when leaving
+      // ✅ Enable loader again when leaving page
+      setDisableLoader(false);
     };
   }, [setDisableLoader]);
 
+  // 🔐 Redirect Admin
   if (role === "admin") {
     return <Navigate to="/admin/dashboard" replace />;
   }
 
   return (
-    <main className="bg-white dark:bg-gray-950">
+    <div className="w-full bg-white dark:bg-gray-950 overflow-x-hidden">
 
-      {/* HERO */}
-      <section className="relative">
-        <Hero />
-      </section>
+      {/* 🔥 HERO (Full Width Section) */}
+      <Hero />
 
-      {/* WHY JOIN */}
-      <section className="relative">
+      {/* 🔥 WHY JOIN */}
+      <div className="w-full py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-10">
         <WhyJoin />
-      </section>
+      </div>
 
-      {/* CHALLENGES */}
-      <section className="relative">
+      {/* 🔥 CHALLENGES */}
+      <div className="w-full py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-10 bg-gray-50 dark:bg-gray-900">
         <Challenges />
-      </section>
+      </div>
 
-      {/* REVIEWS */}
-      <section className="relative">
+      {/* 🔥 REVIEWS */}
+      <div className="w-full py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-10">
         <ReviewSlider />
-      </section>
+      </div>
 
-    </main>
+    </div>
   );
 };
 
 export default HomePage;
-
-

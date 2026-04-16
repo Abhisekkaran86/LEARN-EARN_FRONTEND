@@ -90,10 +90,10 @@ textarea:focus {
   -ms-overflow-style: none;  /* IE & Edge */
   scrollbar-width: none;     /* Firefox */
 }
-html, body {
+html, body, #root {
   margin: 0;
   padding: 0;
-  overflow-x: hidden;
+  min-height: 100%;
 }
 
 /* Dark mode body transition */
@@ -120,10 +120,7 @@ html.dark body {
   color: var(--theme-text);
 }
 
-/* Hide scrollbar */
-.scrollbar-hide::-webkit-scrollbar {
-  display: none;
-}
+
 .scrollbar-hide {
   -ms-overflow-style: none;
   scrollbar-width: none;

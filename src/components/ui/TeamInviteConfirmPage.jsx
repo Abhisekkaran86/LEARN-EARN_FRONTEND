@@ -70,19 +70,21 @@ const TeamInviteConfirmPage = () => {
     try {
       setAccepting(true);
 
-      const res = await API.post("/team/invite/confirm", {
-        invitationToken: invitationReference,
-      });
+      const res = await API.post(
+        `/team/invite/confirm/${invitationReference}` // ✅ FIXED
+      );
 
       showAlert({
         message: res.data?.message || "Invitation accepted successfully.",
         variant: "success",
         onClose: () => navigate("/student/my-invitations"),
       });
+
     } catch (err) {
       console.log(err.response?.data || err.message);
       showAlert({
-        message: err.response?.data?.message || "Failed to accept invitation.",
+        message:
+          err.response?.data?.message || "Failed to accept invitation.",
         variant: "error",
       });
     } finally {

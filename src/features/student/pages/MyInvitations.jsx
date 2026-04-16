@@ -42,7 +42,7 @@ const MyInvitations = () => {
 
     if (!invitationReference) {
       showAlert({
-        message: "Invitation reference is missing.",
+        message: "Invitation token missing",
         variant: "error",
       });
       return;
@@ -50,26 +50,29 @@ const MyInvitations = () => {
 
     try {
       setAcceptingToken(invitationReference);
-      const res = await API.post("/team/invite/confirm", {
-        invitationToken: invitationReference,
-      });
+
+      const res = await API.post(
+        `/team/invite/confirm/${invitationReference}` // ✅ FIXED
+      );
+
       showAlert({
-        message: res.data.message || "Invitation accepted.",
+        message: res.data.message || "Invitation accepted",
         variant: "success",
       });
-      setInvitations((prev) => {
-        const nextInvitations = prev.filter(
+
+      setInvitations((prev) =>
+        prev.filter(
           (item) =>
             item._id !== invite._id &&
             item.token !== invite.token &&
             item.acceptToken !== invite.acceptToken
-        );
-        broadcastInvitations(nextInvitations);
-        return nextInvitations;
-      });
+        )
+      );
+
     } catch (err) {
       showAlert({
-        message: err.response?.data?.message || "Failed to accept invitation.",
+        message:
+          err.response?.data?.message || "Failed to accept invitation",
         variant: "error",
       });
     } finally {
@@ -129,8 +132,8 @@ const MyInvitations = () => {
                   className="mt-4 w-full rounded-lg bg-green-600 px-4 py-2 text-white hover:bg-green-700 disabled:opacity-60 sm:w-auto"
                 >
                   {acceptingToken === invite.acceptToken ||
-                  acceptingToken === invite.token ||
-                  acceptingToken === invite._id
+                    acceptingToken === invite.token ||
+                    acceptingToken === invite._id
                     ? "Accepting..."
                     : "Accept Invitation"}
                 </button>
