@@ -1,17 +1,16 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import Cookies from "js-cookie";
 
-import API from "@/services/axios";
 import AlertModal from "@/components/ui/AlertModal";
 import useAlertModal from "@/hooks/useAlertModal";
-import { acceptInvitation } from "@/features/student/invitationAPI";
-
-const INVITATIONS_UPDATED_EVENT = "team-invitations-updated";
-const normalizeInvitations = (rawInvitations) =>
-  Array.isArray(rawInvitations)
-    ? rawInvitations.filter((item) => item && typeof item === "object")
-    : [];
+import {
+  INVITATIONS_UPDATED_EVENT,
+  acceptInvitation,
+  fetchMyInvitations,
+  findInvitationByReference,
+  getInvitationReference,
+} from "@/features/student/invitationAPI";
+import { getAuthToken } from "@/utils/authStorage";
 
 const TeamInviteConfirmPage = () => {
   const { token } = useParams();
@@ -23,7 +22,7 @@ const TeamInviteConfirmPage = () => {
   const [accepting, setAccepting] = useState(false);
   const { alertState, showAlert, closeAlert } = useAlertModal();
 
-  const authToken = Cookies.get("token");
+  const authToken = getAuthToken();
 
   useEffect(() => {
     if (!token) {
@@ -40,15 +39,8 @@ const TeamInviteConfirmPage = () => {
 
     const fetchInvite = async () => {
       try {
-        const res = await API.get("/team/my-invitations");
-        const invitations = normalizeInvitations(res.data?.invitations);
-
-        const matchedInvite = invitations.find(
-          (item) =>
-            item?.token === token ||
-            item?.acceptToken === token ||
-            item?._id === token
-        );
+        const invitations = await fetchMyInvitations();
+        const matchedInvite = findInvitationByReference(invitations, token);
 
         setInvite(matchedInvite || null);
       } catch (err) {
@@ -63,8 +55,7 @@ const TeamInviteConfirmPage = () => {
   }, [authToken, location.pathname, navigate, token]);
 
   const handleAccept = async () => {
-    const invitationReference =
-      invite?.acceptToken || invite?.token || invite?._id || token;
+    const invitationReference = getInvitationReference(invite, token);
 
     if (!invitationReference) {
       showAlert({
@@ -100,7 +91,7 @@ const TeamInviteConfirmPage = () => {
   if (loading) {
     return (
       <>
-        <div className="mt-20 text-center text-gray-500">
+        <div className="theme-text-soft mt-20 text-center">
           Loading invitation...
         </div>
         <AlertModal {...alertState} onClose={closeAlert} />
@@ -111,12 +102,12 @@ const TeamInviteConfirmPage = () => {
   if (!invite) {
     return (
       <>
-        <div className="min-h-screen bg-gradient-to-br from-white to-green-50 px-4 py-16">
-          <div className="mx-auto max-w-md rounded-2xl bg-white p-6 text-center shadow">
-            <h2 className="text-lg font-semibold text-gray-800">
+        <div className="theme-page-shell min-h-screen px-4 py-16">
+          <div className="theme-surface mx-auto max-w-md rounded-2xl p-6 text-center">
+            <h2 className="theme-text text-lg font-semibold">
               Invitation not found
             </h2>
-            <p className="mt-2 text-sm text-gray-500">
+            <p className="theme-text-soft mt-2 text-sm">
               This invitation may be expired, already accepted, or not assigned
               to your account.
             </p>
@@ -125,7 +116,7 @@ const TeamInviteConfirmPage = () => {
               <button
                 type="button"
                 onClick={() => navigate("/student/my-invitations")}
-                className="rounded-lg bg-[#82C600] px-4 py-2 text-sm font-medium text-white hover:bg-[#6ea900]"
+                className="theme-brand-button rounded-lg px-4 py-2 text-sm font-medium"
               >
                 My Invitations
               </button>
@@ -133,7 +124,7 @@ const TeamInviteConfirmPage = () => {
               <button
                 type="button"
                 onClick={() => navigate("/student/dashboard")}
-                className="rounded-lg border border-gray-200 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                className="theme-outline-button rounded-lg px-4 py-2 text-sm"
               >
                 Dashboard
               </button>
@@ -148,20 +139,20 @@ const TeamInviteConfirmPage = () => {
 
   return (
     <>
-      <div className="min-h-screen bg-gradient-to-br from-white to-green-50 px-4 py-16">
-        <div className="mx-auto max-w-md rounded-2xl bg-white p-6 text-center shadow">
-          <h2 className="text-lg font-bold text-gray-900">Team Invitation</h2>
-          <p className="mt-2 text-sm text-gray-500">You are invited to join:</p>
+      <div className="theme-page-shell min-h-screen px-4 py-16">
+        <div className="theme-surface mx-auto max-w-md rounded-2xl p-6 text-center">
+          <h2 className="theme-text text-lg font-bold">Team Invitation</h2>
+          <p className="theme-text-soft mt-2 text-sm">You are invited to join:</p>
 
           <p className="mt-3 text-xl font-semibold text-[#82C600]">
             {invite.team?.teamName || "Team"}
           </p>
 
-          <p className="mt-2 text-sm text-gray-500">
+          <p className="theme-text-soft mt-2 text-sm">
             Contest: {invite.team?.contest?.title || "N/A"}
           </p>
 
-          <p className="mt-1 text-sm text-gray-500">
+          <p className="theme-text-soft mt-1 text-sm">
             Invited by:{" "}
             {invite.invitedBy?.name || invite.team?.leader?.name || "Unknown"}
           </p>
@@ -171,7 +162,7 @@ const TeamInviteConfirmPage = () => {
               type="button"
               onClick={handleAccept}
               disabled={accepting}
-              className="rounded-lg bg-[#82C600] px-4 py-2 text-white hover:bg-[#6ea900] disabled:opacity-60"
+              className="theme-brand-button rounded-lg px-4 py-2 disabled:opacity-60"
             >
               {accepting ? "Accepting..." : "Accept Invitation"}
             </button>
@@ -179,7 +170,7 @@ const TeamInviteConfirmPage = () => {
             <button
               type="button"
               onClick={() => navigate("/student/my-invitations")}
-              className="rounded-lg border border-gray-200 px-4 py-2 text-gray-700 hover:bg-gray-50"
+              className="theme-outline-button rounded-lg px-4 py-2"
             >
               View All
             </button>

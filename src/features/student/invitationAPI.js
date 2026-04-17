@@ -1,5 +1,28 @@
 import API from "@/services/axios";
 
+export const INVITATIONS_UPDATED_EVENT = "team-invitations-updated";
+
+export const normalizeInvitations = (rawInvitations) =>
+  Array.isArray(rawInvitations)
+    ? rawInvitations.filter((item) => item && typeof item === "object")
+    : [];
+
+export const fetchMyInvitations = async () => {
+  const res = await API.get("/team/my-invitations");
+  return normalizeInvitations(res.data?.invitations);
+};
+
+export const getInvitationReference = (invite, fallbackReference = "") =>
+  invite?.acceptToken || invite?.token || invite?._id || fallbackReference;
+
+export const findInvitationByReference = (invitations, reference) =>
+  normalizeInvitations(invitations).find(
+    (item) =>
+      item?.token === reference ||
+      item?.acceptToken === reference ||
+      item?._id === reference
+  ) || null;
+
 const shouldTryNextAcceptEndpoint = (error, isLastAttempt) => {
   if (isLastAttempt) {
     return false;
@@ -16,6 +39,14 @@ const shouldTryNextAcceptEndpoint = (error, isLastAttempt) => {
     return true;
   }
 
+  if (
+    status === 400 &&
+    message.includes("token") &&
+    (message.includes("required") || message.includes("missing"))
+  ) {
+    return true;
+  }
+
   return (
     message.includes("reading 'token'") ||
     message.includes("cannot read properties of undefined")
@@ -23,14 +54,27 @@ const shouldTryNextAcceptEndpoint = (error, isLastAttempt) => {
 };
 
 export const acceptInvitation = async (invitationReference) => {
+  const tokenPayload = { token: invitationReference };
+
   const endpointAttempts = [
+    () => API.post(`/team/invite/confirm/${invitationReference}`, tokenPayload),
     () =>
-      API.post(`/team/invite/confirm/${invitationReference}`, {
-        token: invitationReference,
+      API.post(`/team/invite/confirm/${invitationReference}`, tokenPayload, {
+        params: { token: invitationReference },
       }),
-    () => API.post("/team/invite/confirm", { token: invitationReference }),
-    () => API.post(`/invitations/accept/${invitationReference}`),
-    () => API.post("/invitations/accept", { token: invitationReference }),
+    () => API.post("/team/invite/confirm", tokenPayload),
+    () =>
+      API.post("/team/invite/confirm", { invitationToken: invitationReference }),
+    () =>
+      API.post("/team/invite/confirm", tokenPayload, {
+        params: { token: invitationReference },
+      }),
+    () => API.post(`/invitations/accept/${invitationReference}`, tokenPayload),
+    () => API.post("/invitations/accept", tokenPayload),
+    () =>
+      API.post("/invitations/accept", tokenPayload, {
+        params: { token: invitationReference },
+      }),
   ];
 
   let lastError = null;

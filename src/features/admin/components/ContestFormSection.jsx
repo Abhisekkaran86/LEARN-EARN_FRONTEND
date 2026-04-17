@@ -168,17 +168,38 @@ const ContestFormSection = ({
   briefingPdfName = "",
   // categories={categorie}
 }) => {
-    const [categorie, setCategorie] = useState([]);
-    useEffect(() => {
-  // 🔥 You can later replace with API
-  setCategorie([
-    "Web Dev",
-    "AI/ML",
-    "App Dev",
-    "Design",
-    "Data Science",
-  ]);
-}, []);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [search, setSearch] = useState("");
+  const [categorie, setCategorie] = useState([]);
+  const filteredCategories = categorie.filter((cat) =>
+    cat.toLowerCase().includes(search.toLowerCase())
+  );
+
+  useEffect(() => {
+    // 🔥 You can later replace with API
+    setCategorie([
+      "All",
+      "Web Development",
+      "Mobile App Development",
+      "AI & Machine Learning",
+      "Data Science",
+      "JavaScript & DSA",
+      "Competitive Programming",
+      "UI/UX Design",
+      "Full Stack",
+      "Backend Development",
+      "Frontend Development",
+      "DevOps & Cloud",
+      "Cyber Security",
+      "Blockchain & Web3",
+      "Game Development",
+      "Open Source",
+      "Software Engineering",
+      "Database Systems",
+      "API Development",
+      "Other"
+    ]);
+  }, []);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -280,8 +301,8 @@ const ContestFormSection = ({
               setForm({ ...form, participationType: "solo", maxTeamSize: "" })
             }
             className={`cursor-pointer rounded-2xl p-4 border transition ${form.participationType === "solo"
-                ? "border-[#82C600] bg-[#82C600]/5 shadow-sm"
-                : "border-gray-200 hover:border-[#82C600]/40"
+              ? "border-[#82C600] bg-[#82C600]/5 shadow-sm"
+              : "border-gray-200 hover:border-[#82C600]/40"
               }`}
           >
             <div className="flex items-center gap-3">
@@ -300,8 +321,8 @@ const ContestFormSection = ({
               setForm({ ...form, participationType: "team" })
             }
             className={`cursor-pointer rounded-2xl p-4 border transition ${form.participationType === "team"
-                ? "border-[#82C600] bg-[#82C600]/5 shadow-sm"
-                : "border-gray-200 hover:border-[#82C600]/40"
+              ? "border-[#82C600] bg-[#82C600]/5 shadow-sm"
+              : "border-gray-200 hover:border-[#82C600]/40"
               }`}
           >
             <div className="flex items-center gap-3">
@@ -325,8 +346,8 @@ const ContestFormSection = ({
               })
             }
             className={`cursor-pointer rounded-2xl p-4 border transition ${form.participationType === "both"
-                ? "border-[#82C600] bg-[#82C600]/5 shadow-sm"
-                : "border-gray-200 hover:border-[#82C600]/40"
+              ? "border-[#82C600] bg-[#82C600]/5 shadow-sm"
+              : "border-gray-200 hover:border-[#82C600]/40"
               }`}
           >
             <div className="flex items-center gap-3">
@@ -343,20 +364,69 @@ const ContestFormSection = ({
             </div>
           </div>
         </div>
+        <div className="mt-4 relative">
 
-        <div className="mt-4 grid grid-cols-2 gap-3 md:grid-cols-5">
-          {categorie.map((cat) => (
-            <div
-              key={cat}
-              onClick={() => setForm({ ...form, category: cat })}
-              className={`cursor-pointer rounded-2xl p-3 border text-sm font-medium transition text-center ${form.category === cat
-                  ? "border-[#82C600] bg-[#82C600]/5 text-[#82C600]"
-                  : "border-gray-200 hover:border-[#82C600]/40 text-gray-600"
-                }`}
-            >
-              {cat}
+          {/* INPUT FIELD */}
+          <input
+            placeholder="Select or type category"
+            value={form.category || ""}
+            onChange={(e) => {
+              const value = e.target.value;
+              setSearch(value);
+              setForm({ ...form, category: value });
+
+              // ✅ add new category
+              if (
+                value &&
+                !categorie.some(
+                  (c) => c.toLowerCase() === value.toLowerCase()
+                )
+              ) {
+                setCategorie((prev) => [...prev, value]);
+              }
+            }}
+            onFocus={() => setShowDropdown(true)}
+            onBlur={() => setTimeout(() => setShowDropdown(false), 150)}
+            className="w-full rounded-2xl p-3 border text-sm font-medium 
+               border-gray-200 bg-white 
+               focus:border-[#82C600] focus:outline-none 
+               focus:ring-2 focus:ring-[#82C600]/20 transition"
+          />
+
+          {/* DROPDOWN */}
+          {showDropdown && (
+            <div className="absolute z-20 mt-2 w-full bg-white border border-gray-200 rounded-2xl shadow-xl max-h-60 overflow-y-auto">
+
+              {filteredCategories.length > 0 ? (
+                filteredCategories.map((cat) => (
+                  <div
+                    key={cat}
+                    onMouseDown={() => {
+                      setForm({ ...form, category: cat });
+                      setSearch(cat);
+                      setShowDropdown(false);
+                    }}
+                    className={`px-4 py-2 text-sm cursor-pointer transition flex justify-between items-center ${form.category === cat
+                      ? "bg-[#82C600]/10 text-[#82C600]"
+                      : "hover:bg-gray-100 text-gray-700"
+                      }`}
+                  >
+                    {cat}
+
+                    {form.category === cat && (
+                      <span className="text-xs text-[#82C600]">✓</span>
+                    )}
+                  </div>
+                ))
+              ) : (
+                <div className="px-4 py-2 text-sm text-gray-400">
+                  No match found
+                </div>
+              )}
+
             </div>
-          ))}
+          )}
+
         </div>
 
         {/* 🔥 TEAM SIZE */}
@@ -375,8 +445,8 @@ const ContestFormSection = ({
                     setForm({ ...form, maxTeamSize: size })
                   }
                   className={`px-3 py-1 rounded-full text-sm border transition ${Number(form.maxTeamSize) === size
-                      ? "bg-[#82C600] text-white border-[#82C600]"
-                      : "bg-white hover:border-[#82C600]"
+                    ? "bg-[#82C600] text-white border-[#82C600]"
+                    : "bg-white hover:border-[#82C600]"
                     }`}
                 >
                   {size}
@@ -548,3 +618,5 @@ const ContestFormSection = ({
 };
 
 export default ContestFormSection;
+
+

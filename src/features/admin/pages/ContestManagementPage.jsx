@@ -384,9 +384,7 @@ const ContestManagementPage = () => {
           <h1 className="theme-text text-2xl font-bold sm:text-3xl">
             All Contest Management
           </h1>
-          <p className="theme-text-soft mt-1 text-sm">
-            Admin update and delete actions are now wired to your contest backend APIs.
-          </p>
+         
         </div>
 
         <div className="grid gap-3 sm:grid-cols-[1fr_auto] lg:min-w-[460px]">

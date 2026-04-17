@@ -67,7 +67,7 @@ const socialLinks = [
 
 const Footer = () => {
   return (
-    <footer className="relative mt-16 overflow-hidden border-t border-gray-200/70 bg-slate-950 text-slate-200 transition-colors dark:border-white/10 dark:bg-gray-950">
+    <footer className="theme-surface relative mt-16 overflow-hidden border-t transition-colors">
       <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#82c600]/70 to-transparent" />
       <div className="pointer-events-none absolute -left-20 top-0 h-56 w-56 rounded-full bg-[#82c600]/12 blur-3xl" />
       <div className="pointer-events-none absolute -right-16 bottom-0 h-64 w-64 rounded-full bg-emerald-400/10 blur-3xl" />
@@ -79,17 +79,17 @@ const Footer = () => {
               <img
                 src={logo}
                 alt="DESUN Academy"
-                className="h-14 w-14 rounded-2xl object-contain ring-1 ring-white/10"
+                className="h-14 w-14 rounded-2xl object-contain ring-1 ring-[var(--theme-border)]"
               />
               <div>
-                <p className="text-lg font-bold tracking-[0.18em] text-white">
+                <p className="theme-text text-lg font-bold tracking-[0.18em]">
                   DESUN
                 </p>
                 <p className="text-sm font-medium text-[#a3e635]">Academy</p>
               </div>
             </Link>
 
-            <p className="mt-5 text-sm leading-7 text-slate-400">
+            <p className="theme-text-soft mt-5 text-sm leading-7">
               DESUN Academy helps students learn faster, compete smarter, and
               grow through real contests, practical projects, and skill-based
               opportunities.
@@ -103,7 +103,7 @@ const Footer = () => {
                   target="_blank"
                   rel="noreferrer"
                   aria-label={label}
-                  className="flex h-11 w-11 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-slate-300 transition hover:-translate-y-1 hover:border-[#82c600]/60 hover:bg-[#82c600] hover:text-slate-950"
+                  className="theme-surface-muted theme-border theme-text-soft flex h-11 w-11 items-center justify-center rounded-2xl border transition hover:-translate-y-1 hover:border-[#82c600]/60 hover:bg-[#82c600] hover:text-slate-950"
                 >
                   {icon}
                 </a>
@@ -112,15 +112,15 @@ const Footer = () => {
           </div>
 
           <div>
-            <h3 className="text-sm font-semibold uppercase tracking-[0.2em] text-white/80">
+            <h3 className="theme-text text-sm font-semibold uppercase tracking-[0.2em]">
               Quick Links
             </h3>
-            <ul className="mt-5 space-y-3 text-sm text-slate-400">
+            <ul className="theme-text-soft mt-5 space-y-3 text-sm">
               {quickLinks.map((item) => (
                 <li key={item.label}>
                   <Link
                     to={item.to}
-                    className="transition hover:text-[#a3e635]"
+                    className="transition hover:text-[#82c600]"
                   >
                     {item.label}
                   </Link>
@@ -130,15 +130,15 @@ const Footer = () => {
           </div>
 
           <div>
-            <h3 className="text-sm font-semibold uppercase tracking-[0.2em] text-white/80">
+            <h3 className="theme-text text-sm font-semibold uppercase tracking-[0.2em]">
               Platform
             </h3>
-            <ul className="mt-5 space-y-3 text-sm text-slate-400">
+            <ul className="theme-text-soft mt-5 space-y-3 text-sm">
               {platformLinks.map((item) => (
                 <li key={item.label}>
                   <Link
                     to={item.to}
-                    className="transition hover:text-[#a3e635]"
+                    className="transition hover:text-[#82c600]"
                   >
                     {item.label}
                   </Link>
@@ -148,28 +148,28 @@ const Footer = () => {
           </div>
 
           <div>
-            <h3 className="text-sm font-semibold uppercase tracking-[0.2em] text-white/80">
+            <h3 className="theme-text text-sm font-semibold uppercase tracking-[0.2em]">
               Contact
             </h3>
             <ul className="mt-5 space-y-4">
               {contactItems.map(({ icon, label, value, href }) => (
                 <li key={label} className="flex items-start gap-3 text-sm">
-                  <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white/5 text-[#a3e635] ring-1 ring-white/10">
+                  <span className="theme-surface-muted mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-[#82c600] ring-1 ring-[var(--theme-border)]">
                     {icon}
                   </span>
                   <div className="min-w-0">
-                    <p className="text-xs uppercase tracking-[0.2em] text-slate-500">
+                    <p className="theme-text-muted text-xs uppercase tracking-[0.2em]">
                       {label}
                     </p>
                     {href ? (
                       <a
                         href={href}
-                        className="mt-1 block break-words text-slate-300 transition hover:text-[#a3e635]"
+                        className="theme-text-soft mt-1 block break-words transition hover:text-[#82c600]"
                       >
                         {value}
                       </a>
                     ) : (
-                      <p className="mt-1 text-slate-300">{value}</p>
+                      <p className="theme-text-soft mt-1">{value}</p>
                     )}
                   </div>
                 </li>
@@ -178,20 +178,20 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="flex flex-col gap-3 border-t border-white/10 py-5 text-sm text-slate-400 md:flex-row md:items-center md:justify-between">
+        <div className="theme-border theme-text-soft flex flex-col gap-3 border-t py-5 text-sm md:flex-row md:items-center md:justify-between">
           <p>
             Copyright {CURRENT_YEAR}{" "}
-            <span className="font-medium text-white">DESUN Academy</span>. All
+            <span className="theme-text font-medium">DESUN Academy</span>. All
             rights reserved.
           </p>
           <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
-            <Link to="/about" className="transition hover:text-[#a3e635]">
+            <Link to="/about" className="transition hover:text-[#82c600]">
               About
             </Link>
-            <Link to="/contact" className="transition hover:text-[#a3e635]">
+            <Link to="/contact" className="transition hover:text-[#82c600]">
               Contact
             </Link>
-            <Link to="/contests" className="transition hover:text-[#a3e635]">
+            <Link to="/contests" className="transition hover:text-[#82c600]">
               Contests
             </Link>
           </div>

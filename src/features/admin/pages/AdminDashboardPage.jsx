@@ -130,7 +130,7 @@ const AdminDashboardPage = () => {
 
         case "TOTAL SUBMISSIONS":
           res = await API.get(
-            "/submission/submitted-contests-count",
+            "/submission/submitted-contests",
             config
           );
           finalData = extractData(res);

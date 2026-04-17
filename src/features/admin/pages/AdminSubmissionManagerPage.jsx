@@ -148,7 +148,7 @@ const AdminSubmissionManagerPage = () => {
       try {
         setLoading(true);
 
-        const res = await API.get("/submission/submitted-contests-count");
+        const res = await API.get("/submission/submitted-contests");
         const data = res?.data?.contests || res?.data?.data || [];
         const nextContests = data.map(buildContestState);
 
@@ -733,3 +733,4 @@ const AdminSubmissionManagerPage = () => {
 };
 
 export default AdminSubmissionManagerPage;
+

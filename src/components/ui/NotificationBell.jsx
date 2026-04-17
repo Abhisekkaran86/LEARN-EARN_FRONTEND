@@ -2,13 +2,12 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaBell } from "react-icons/fa";
 
-import API from "@/services/axios";
-
-const INVITATIONS_UPDATED_EVENT = "team-invitations-updated";
-const normalizeInvitations = (rawInvitations) =>
-  Array.isArray(rawInvitations)
-    ? rawInvitations.filter((item) => item && typeof item === "object")
-    : [];
+import {
+  INVITATIONS_UPDATED_EVENT,
+  fetchMyInvitations,
+  getInvitationReference,
+  normalizeInvitations,
+} from "@/features/student/invitationAPI";
 
 const NotificationBell = () => {
   const navigate = useNavigate();
@@ -25,8 +24,8 @@ const NotificationBell = () => {
         setLoading(true);
       }
 
-      const res = await API.get("/team/my-invitations");
-      setNotifications(normalizeInvitations(res.data?.invitations));
+      const nextInvitations = await fetchMyInvitations();
+      setNotifications(nextInvitations);
       setHasLoaded(true);
     } catch {
       if (!silent) {
@@ -87,7 +86,7 @@ const NotificationBell = () => {
   };
 
   const handleOpenInvitation = (invite) => {
-    const invitationReference = invite?.acceptToken || invite?.token || invite?._id;
+    const invitationReference = getInvitationReference(invite);
 
     setOpen(false);
 
@@ -104,10 +103,10 @@ const NotificationBell = () => {
       <button
         type="button"
         onClick={handleOpen}
-        className="relative rounded-full p-2 text-gray-500 transition hover:bg-gray-100 hover:text-gray-700"
+        // className="theme-icon-button relative rounded-full p-2"
         aria-label="Open invitations"
       >
-        <FaBell className="text-base sm:text-lg" />
+        <FaBell className="text-base sm:text-2xl" />
         {notifications.length > 0 && (
           <span className="absolute -right-1 -top-1 min-w-5 rounded-full bg-[#82C600] px-1.5 py-0.5 text-center text-[10px] font-semibold text-white">
             {notifications.length}
@@ -116,11 +115,11 @@ const NotificationBell = () => {
       </button>
 
       {open && (
-        <div className="absolute right-0 z-50 mt-2 w-80 rounded-2xl border border-gray-100 bg-white p-3 shadow-xl">
+        <div className="theme-surface absolute right-0 z-50 mt-2 w-[min(20rem,calc(100vw-1.5rem))] rounded-2xl p-3 shadow-xl">
           <div className="mb-3 flex items-center justify-between">
             <div>
-              <p className="text-sm font-semibold text-gray-800">Invitations</p>
-              <p className="text-xs text-gray-400">
+              <p className="theme-text text-sm font-semibold">Invitations</p>
+              <p className="theme-text-muted text-xs">
                 Pending team invites in your account
               </p>
             </div>
@@ -135,9 +134,9 @@ const NotificationBell = () => {
           </div>
 
           {loading ? (
-            <p className="py-3 text-sm text-gray-400">Loading invitations...</p>
+            <p className="theme-text-muted py-3 text-sm">Loading invitations...</p>
           ) : notifications.length === 0 ? (
-            <p className="py-3 text-sm text-gray-400">No pending invitations</p>
+            <p className="theme-text-muted py-3 text-sm">No pending invitations</p>
           ) : (
             <div className="space-y-2">
               {notifications.slice(0, 4).map((invite, index) => (
@@ -150,15 +149,15 @@ const NotificationBell = () => {
                   }
                   type="button"
                   onClick={() => handleOpenInvitation(invite)}
-                  className="block w-full rounded-xl border border-gray-100 px-3 py-2 text-left transition hover:bg-gray-50"
+                  className="theme-surface-muted theme-interactive-row block w-full rounded-xl px-3 py-2 text-left"
                 >
-                  <p className="text-sm font-medium text-gray-800">
+                  <p className="theme-text text-sm font-medium">
                     {invite?.team?.teamName || "Team invitation"}
                   </p>
-                  <p className="text-xs text-gray-500">
+                  <p className="theme-text-soft text-xs">
                     Contest: {invite?.team?.contest?.title || "N/A"}
                   </p>
-                  <p className="text-xs text-gray-500">
+                  <p className="theme-text-soft text-xs">
                     Invited by: {invite?.invitedBy?.name || "Unknown"}
                   </p>
                 </button>

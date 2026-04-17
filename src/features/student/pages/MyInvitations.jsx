@@ -1,14 +1,12 @@
 import { useEffect, useState } from "react";
-import API from "./../../../services/axios";
 import AlertModal from "@/components/ui/AlertModal";
 import useAlertModal from "@/hooks/useAlertModal";
-import { acceptInvitation } from "@/features/student/invitationAPI";
-
-const INVITATIONS_UPDATED_EVENT = "team-invitations-updated";
-const normalizeInvitations = (rawInvitations) =>
-  Array.isArray(rawInvitations)
-    ? rawInvitations.filter((item) => item && typeof item === "object")
-    : [];
+import {
+  INVITATIONS_UPDATED_EVENT,
+  acceptInvitation,
+  fetchMyInvitations,
+  getInvitationReference,
+} from "@/features/student/invitationAPI";
 
 const MyInvitations = () => {
   const [invitations, setInvitations] = useState([]);
@@ -27,8 +25,7 @@ const MyInvitations = () => {
   const fetchInvitations = async () => {
     try {
       setLoading(true);
-      const res = await API.get("/team/my-invitations");
-      const nextInvitations = normalizeInvitations(res.data?.invitations);
+      const nextInvitations = await fetchMyInvitations();
       setInvitations(nextInvitations);
       broadcastInvitations(nextInvitations);
     } catch (err) {
@@ -42,8 +39,7 @@ const MyInvitations = () => {
   };
 
   const acceptInvite = async (invite) => {
-    const invitationReference =
-      invite?.acceptToken || invite?.token || invite?._id;
+    const invitationReference = getInvitationReference(invite);
 
     if (!invitationReference) {
       showAlert({
@@ -94,7 +90,7 @@ const MyInvitations = () => {
   if (loading) {
     return (
       <>
-        <div className="p-4 sm:p-6">Loading invitations...</div>
+        <div className="theme-text-soft p-4 sm:p-6">Loading invitations...</div>
         <AlertModal {...alertState} onClose={closeAlert} />
       </>
     );
@@ -102,57 +98,59 @@ const MyInvitations = () => {
 
   return (
     <>
-      <div className="mx-auto max-w-5xl p-4 sm:p-6">
-        <h1 className="mb-6 text-2xl font-bold">My Invitations</h1>
+      <div className="theme-page-shell min-h-screen px-4 py-6 sm:px-6 sm:py-8">
+        <div className="mx-auto max-w-5xl">
+          <h1 className="theme-text mb-6 text-2xl font-bold">My Invitations</h1>
 
-        {invitations.length === 0 ? (
-          <div className="rounded-xl bg-white p-5 text-gray-500 shadow sm:p-6">
-            No pending invitations
-          </div>
-        ) : (
-          <div className="grid gap-4">
-            {invitations.map((invite, index) => (
-              <div
-                key={
-                  invite?._id ||
-                  invite?.token ||
-                  invite?.acceptToken ||
-                  `invite-${index}`
-                }
-                className="rounded-xl border bg-white p-4 shadow sm:p-5"
-              >
-                <h2 className="break-words text-lg font-semibold">
-                  Team: {invite?.team?.teamName}
-                </h2>
-                <p className="mt-1 text-sm text-gray-600">
-                  Contest: {invite?.team?.contest?.title}
-                </p>
-                <p className="text-sm text-gray-600">
-                  Invited By: {invite?.invitedBy?.name || "Unknown"}
-                </p>
-                <p className="text-sm text-gray-600">
-                  Status: {invite?.status}
-                </p>
+          {invitations.length === 0 ? (
+            <div className="theme-surface theme-text-soft rounded-xl p-5 sm:p-6">
+              No pending invitations
+            </div>
+          ) : (
+            <div className="grid gap-4">
+              {invitations.map((invite, index) => (
+                <div
+                  key={
+                    invite?._id ||
+                    invite?.token ||
+                    invite?.acceptToken ||
+                    `invite-${index}`
+                  }
+                  className="theme-surface rounded-xl p-4 sm:p-5"
+                >
+                  <h2 className="theme-text break-words text-lg font-semibold">
+                    Team: {invite?.team?.teamName}
+                  </h2>
+                  <p className="theme-text-soft mt-1 text-sm">
+                    Contest: {invite?.team?.contest?.title}
+                  </p>
+                  <p className="theme-text-soft text-sm">
+                    Invited By: {invite?.invitedBy?.name || "Unknown"}
+                  </p>
+                  <p className="theme-text-soft text-sm">
+                    Status: {invite?.status}
+                  </p>
 
-                <button
-                  onClick={() => acceptInvite(invite)}
-                  disabled={
-                    acceptingToken === invite?.acceptToken ||
+                  <button
+                    onClick={() => acceptInvite(invite)}
+                    disabled={
+                      acceptingToken === invite?.acceptToken ||
+                      acceptingToken === invite?.token ||
+                      acceptingToken === invite?._id
+                    }
+                    className="theme-brand-button mt-4 w-full rounded-lg px-4 py-2 disabled:opacity-60 sm:w-auto"
+                  >
+                    {acceptingToken === invite?.acceptToken ||
                     acceptingToken === invite?.token ||
                     acceptingToken === invite?._id
-                  }
-                  className="mt-4 w-full rounded-lg bg-green-600 px-4 py-2 text-white hover:bg-green-700 disabled:opacity-60 sm:w-auto"
-                >
-                  {acceptingToken === invite?.acceptToken ||
-                  acceptingToken === invite?.token ||
-                  acceptingToken === invite?._id
-                    ? "Accepting..."
-                    : "Accept Invitation"}
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
+                      ? "Accepting..."
+                      : "Accept Invitation"}
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       <AlertModal {...alertState} onClose={closeAlert} />

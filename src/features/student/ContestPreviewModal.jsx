@@ -63,7 +63,10 @@ const ContestPreviewModal = ({ selectedContest, onClose }) => {
     return null;
   }
 
-  const contest = selectedContest?.contest ?? selectedContest;
+  const contest =
+    selectedContest?.contest ??
+    selectedContest?.team?.contest ??
+    selectedContest;
   const contestId = contest?._id || contest?.id;
 
   if (!contestId) {
@@ -74,7 +77,9 @@ const ContestPreviewModal = ({ selectedContest, onClose }) => {
   const role = localStorage.getItem("role");
   const isLoggedIn = Boolean(token);
   const isStudent = role === "student";
-  const isParticipationRecord = Boolean(selectedContest?.contest);
+  const isParticipationRecord = Boolean(
+    selectedContest?.contest || selectedContest?.team?.contest
+  );
   const briefingUrl = getContestBriefingUrl(contest);
   const briefingName = getContestBriefingName(contest);
   const participationType =

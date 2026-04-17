@@ -1,7 +1,3 @@
-
-
-
-
 import { useEffect, useRef, useState } from "react";
 import { FaBell, FaMoon, FaSearch, FaSignOutAlt, FaSun } from "react-icons/fa";
 import { useSelector } from "react-redux";
@@ -10,8 +6,7 @@ import { useNavigate } from "react-router-dom";
 import ConfirmModal from "@/components/ui/ConfirmModal";
 import UserAvatar from "@/components/ui/UserAvatar";
 import useLogoutConfirmation from "@/hooks/useLogoutConfirmation";
-import { useTheme } from "@/context/ThemeContext"; // ✅ ADD
-
+import { useTheme } from "@/context/ThemeContext";
 import { formatRegistrationDate } from "@/utils/userProfile";
 
 const AdminHeaderBar = ({ onSearch }) => {
@@ -19,11 +14,10 @@ const AdminHeaderBar = ({ onSearch }) => {
   const dropdownRef = useRef(null);
 
   const { user } = useSelector((state) => state.auth);
-  const [open, setOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [hasNotification] = useState(false);
-
-  // ✅ THEME
   const { dark, toggleTheme } = useTheme();
+  const registrationLabel = formatRegistrationDate(user);
 
   const {
     isLogoutModalOpen,
@@ -34,79 +28,70 @@ const AdminHeaderBar = ({ onSearch }) => {
   } = useLogoutConfirmation({ redirectTo: "/login" });
 
   useEffect(() => {
-    const handleClickOutside = (event) => {
+    const handleOutsideClick = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setOpen(false);
+        setIsProfileOpen(false);
       }
     };
 
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => document.removeEventListener("mousedown", handleOutsideClick);
   }, []);
 
   const handleLogoutClick = () => {
-    setOpen(false);
+    setIsProfileOpen(false);
     openLogoutModal();
   };
 
-  const registrationLabel = formatRegistrationDate(user);
-
   return (
-    <div className="flex flex-col gap-3 rounded-xl bg-white dark:bg-gray-900 px-3 py-3 shadow-sm sm:rounded-2xl sm:px-6 sm:py-4 lg:flex-row lg:items-center lg:justify-between">
-
-      {/* LEFT */}
+    <div className="dashboard-header-surface flex flex-col gap-3 rounded-2xl px-3 py-3 sm:px-5 sm:py-4 lg:flex-row lg:items-center lg:justify-between">
       <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
-        <div>
-          <h1 className="text-base font-semibold text-gray-800 dark:text-white sm:text-lg">
+        <div className="min-w-0">
+          <h1 className="theme-text truncate text-base font-semibold sm:text-lg">
             Admin Dashboard
           </h1>
-          <p className="text-xs text-gray-400 dark:text-gray-300">
+          <p className="theme-text-muted truncate text-xs">
             {user?.name || "Admin"}
           </p>
         </div>
 
-        <div className="flex w-full items-center rounded-lg bg-[#f5f7fb] dark:bg-gray-800 px-3 py-2 lg:max-w-xs">
-          <FaSearch className="mr-2 text-sm text-gray-400" />
+        <div className="theme-surface-muted theme-border flex w-full items-center rounded-xl border px-3 py-2 lg:max-w-xs">
+          <FaSearch className="theme-text-muted mr-2 text-sm" />
           <input
             type="text"
             placeholder="Search..."
-            onChange={(e) => onSearch?.(e.target.value)}
-            className="w-full bg-transparent text-sm outline-none text-gray-700 dark:text-gray-200"
+            onChange={(event) => onSearch?.(event.target.value)}
+            className="theme-text w-full bg-transparent text-sm outline-none"
           />
         </div>
       </div>
 
-      {/* RIGHT */}
-      <div className="flex items-center justify-between gap-4 sm:justify-end w-full sm:w-auto">
-
-        {/* 🌙 THEME TOGGLE */}
+      <div className="flex w-full items-center justify-between gap-4 sm:w-auto sm:justify-end">
         <button
+          type="button"
           onClick={toggleTheme}
-          className="p-2 rounded-md 
-          bg-gray-200 dark:bg-gray-700 
-          text-gray-700 dark:text-gray-200 
-          flex-shrink-0 transition"
+          className=""
+          aria-label="Toggle theme"
         >
-          {dark ? <FaSun size={14} /> :<FaMoon size={14}  />}
+          {dark ? <FaSun size={25} /> : <FaMoon size={25} />}
         </button>
 
-        {/* 🔔 Notification */}
-        <div
+        <button
+          type="button"
           onClick={() => navigate("/admin/requests")}
-          className="relative cursor-pointer text-gray-500 dark:text-gray-300"
+          className=" "
+          aria-label="Open request notifications"
         >
-          <FaBell className="text-base sm:text-lg" />
-
+          <FaBell className="text-2xl" />
           {hasNotification && (
-            <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-[#82C600]"></span>
+            <span className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full bg-[#82C600]" />
           )}
-        </div>
+        </button>
 
-        {/* 👤 PROFILE */}
         <div className="relative" ref={dropdownRef}>
           <button
             type="button"
-            onClick={() => setOpen((prev) => !prev)}
+            onClick={() => setIsProfileOpen((previous) => !previous)}
             className="cursor-pointer"
             aria-label="Open admin profile menu"
           >
@@ -118,20 +103,22 @@ const AdminHeaderBar = ({ onSearch }) => {
           </button>
 
           <div
-            className={`absolute right-0 mt-2 w-56 rounded-xl border bg-white dark:bg-gray-800 shadow-lg transition ${
-              open ? "opacity-100" : "pointer-events-none opacity-0"
+            className={`theme-surface theme-border absolute right-0 mt-2 w-56 rounded-xl border shadow-lg transition-all duration-200 ${
+              isProfileOpen
+                ? "translate-y-0 opacity-100"
+                : "pointer-events-none -translate-y-2 opacity-0"
             }`}
           >
             <div className="flex items-center gap-3 px-3 py-3">
               <UserAvatar user={user} size="md" />
               <div className="min-w-0">
-                <p className="truncate text-sm font-medium text-gray-800 dark:text-white">
+                <p className="theme-text truncate text-sm font-medium">
                   {user?.name || "Admin"}
                 </p>
-                <p className="truncate text-xs text-gray-400 dark:text-gray-300">
+                <p className="theme-text-muted truncate text-xs">
                   {user?.email || "admin"}
                 </p>
-                <p className="mt-1 text-[11px] text-gray-400 dark:text-gray-400">
+                <p className="theme-text-muted mt-1 text-[11px]">
                   Joined {registrationLabel}
                 </p>
               </div>
@@ -140,7 +127,7 @@ const AdminHeaderBar = ({ onSearch }) => {
             <button
               type="button"
               onClick={handleLogoutClick}
-              className="flex w-full items-center gap-2 px-3 py-2 text-xs text-red-500 hover:bg-red-50 dark:hover:bg-red-900"
+              className="flex w-full items-center gap-2 px-3 py-2 text-xs text-rose-500 hover:bg-rose-50/70 dark:hover:bg-rose-900/35"
             >
               <FaSignOutAlt />
               Logout
@@ -149,7 +136,6 @@ const AdminHeaderBar = ({ onSearch }) => {
         </div>
       </div>
 
-      {/* MODAL */}
       <ConfirmModal
         isOpen={isLogoutModalOpen}
         title="Logout now?"

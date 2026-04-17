@@ -46,10 +46,10 @@ const Sidebar = ({ menu = [], title = "Panel", role = "admin" }) => {
   return (
     <>
       {/* MOBILE HEADER */}
-      <div className="lg:hidden fixed top-0 left-0 w-full bg-white dark:bg-gray-900 z-50 flex items-center justify-between px-4 py-2 border-b border-gray-200 dark:border-gray-700">
+      <div className="dashboard-header-surface fixed left-0 top-0 z-50 flex w-full items-center justify-between border-b px-4 py-2 lg:hidden">
         <button
           onClick={() => setMobileOpen(true)}
-          className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-200"
+          className="theme-icon-button rounded-lg p-2"
         >
           <Menu size={22} />
         </button>
@@ -60,17 +60,17 @@ const Sidebar = ({ menu = [], title = "Panel", role = "admin" }) => {
       {mobileOpen && (
         <div
           onClick={() => setMobileOpen(false)}
-          className="fixed inset-0 bg-black/40 z-40 lg:hidden"
+          className="fixed inset-0 z-40 bg-[var(--theme-overlay)] backdrop-blur-[1px] lg:hidden"
         />
       )}
 
       {/* SIDEBAR */}
       <div
         className={`fixed lg:static top-0 left-0 h-screen
-          bg-[#eef2f7] dark:bg-gray-900
+          bg-[var(--theme-surface-muted)]
           flex flex-col justify-between p-4
           transition-all duration-300
-          border-r border-gray-200 dark:border-gray-700 z-50
+          border-r border-[var(--theme-border)] z-50
           ${collapsed ? "w-20" : "w-64"}
           ${mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
         `}
@@ -83,13 +83,13 @@ const Sidebar = ({ menu = [], title = "Panel", role = "admin" }) => {
             {!collapsed && (
               <div className="flex items-center gap-2">
                 <div className="w-9 h-9 bg-gradient-to-br from-indigo-600 to-blue-500 rounded-xl flex items-center justify-center text-white font-bold shadow">
-                  ✦
+                  D
                 </div>
                 <div>
-                  <h2 className="text-sm font-semibold text-gray-800 dark:text-white">
+                  <h2 className="theme-text text-sm font-semibold">
                     {title}
                   </h2>
-                  <p className="text-xs text-gray-400 dark:text-gray-500">
+                  <p className="theme-text-muted text-xs">
                     {role === "admin" ? "Command Center" : "Student Panel"}
                   </p>
                 </div>
@@ -99,13 +99,13 @@ const Sidebar = ({ menu = [], title = "Panel", role = "admin" }) => {
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setCollapsed(!collapsed)}
-                className="hidden lg:block p-2 rounded-lg hover:bg-white dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300"
+                className="theme-icon-button hidden rounded-lg p-2 lg:block"
               >
                 {collapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
               </button>
               <button
                 onClick={() => setMobileOpen(false)}
-                className="lg:hidden p-2 rounded-lg hover:bg-white dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300"
+                className="theme-icon-button rounded-lg p-2 lg:hidden"
               >
                 <X size={20} />
               </button>
@@ -123,8 +123,8 @@ const Sidebar = ({ menu = [], title = "Panel", role = "admin" }) => {
                   className={`group relative flex items-center gap-3 px-3 py-3 rounded-xl cursor-pointer transition-all
                     ${
                       isActive
-                        ? "bg-white dark:bg-gray-800 shadow-sm text-[#82C600] border-l-4 border-[#82C600]"
-                        : "text-gray-500 dark:text-gray-400 hover:bg-white/70 dark:hover:bg-gray-800/70"
+                        ? "theme-surface text-[#82C600] border-l-4 border-[#82C600]"
+                        : "theme-text-muted hover:bg-[var(--theme-surface-hover)]"
                     }`}
                 >
                   <span className="text-lg">{item.icon}</span>
@@ -132,7 +132,7 @@ const Sidebar = ({ menu = [], title = "Panel", role = "admin" }) => {
                     <span className="text-sm font-medium">{item.label}</span>
                   )}
                   {collapsed && (
-                    <div className="absolute left-14 bg-black text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100">
+                    <div className="theme-surface theme-text absolute left-14 rounded px-2 py-1 text-xs opacity-0 shadow-sm group-hover:opacity-100">
                       {item.label}
                     </div>
                   )}
@@ -157,7 +157,7 @@ const Sidebar = ({ menu = [], title = "Panel", role = "admin" }) => {
           )}
 
           {/* LOGOUT BUTTON */}
-          <div className="pt-2 border-t border-gray-200 dark:border-gray-700">
+          <div className="theme-border pt-2 border-t">
             <button
               onClick={handleLogoutClick}
               className={`
@@ -178,7 +178,7 @@ const Sidebar = ({ menu = [], title = "Panel", role = "admin" }) => {
               </div>
               {!collapsed && (
                 <span className="text-sm opacity-70 group-hover:translate-x-1 transition">
-                  →
+                  
                 </span>
               )}
             </button>

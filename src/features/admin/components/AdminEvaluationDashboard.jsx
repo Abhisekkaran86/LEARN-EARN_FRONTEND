@@ -46,7 +46,7 @@ const AdminEvaluationDashboard = () => {
     const loadContests = async () => {
       try {
         const [contestsRes, winnersRes] = await Promise.all([
-          API.get("/submission/submitted-contests-count"),
+          API.get("/submission/submitted-contests"),
           API.get("/submission/winners").catch(() => null),
         ]);
 

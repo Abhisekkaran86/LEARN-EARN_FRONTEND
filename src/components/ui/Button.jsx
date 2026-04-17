@@ -13,7 +13,7 @@ const Button = ({
     outline: "theme-outline-button",
     secondary: "bg-[#fbd300] text-slate-950 hover:bg-[#f8dc3e]",
     ghost:
-      "bg-transparent text-gray-700 hover:bg-[#82c600]/8 dark:text-gray-200 dark:hover:bg-white/8",
+      "bg-transparent text-[var(--theme-text-soft)] hover:bg-[var(--theme-surface-hover)]",
   };
 
   const sizes = {

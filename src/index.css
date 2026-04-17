@@ -9,58 +9,66 @@
   --theme-primary-hover: #74b000;
   --theme-primary-rgb: 130, 198, 0;
   --theme-primary-contrast: #142400;
-  --theme-bg: #f5f7fb;
+  --theme-bg: #f2f6fb;
   --theme-surface: #ffffff;
-  --theme-surface-muted: #f8fafc;
-  --theme-surface-subtle: #eef2f7;
-  --theme-surface-hover: #f5fbe8;
-  --theme-page-from: #f8fafc;
+  --theme-surface-muted: #f5f8fc;
+  --theme-surface-subtle: #ecf2f9;
+  --theme-surface-hover: #ecf5df;
+  --theme-page-from: #f5f8fc;
   --theme-page-via: #ffffff;
-  --theme-page-to: #ecfdf5;
-  --theme-text: #0f172a;
-  --theme-text-soft: #334155;
-  --theme-text-muted: #64748b;
-  --theme-placeholder: #7b889c;
-  --theme-border: #dbe4ee;
-  --theme-border-strong: #c4d2df;
-  --theme-input-bg: rgba(255, 255, 255, 0.92);
+  --theme-page-to: #eef8ea;
+  --theme-text: #0b1220;
+  --theme-text-soft: #273449;
+  --theme-text-muted: #56657b;
+  --theme-placeholder: #6f819a;
+  --theme-border: #d4deea;
+  --theme-border-strong: #bac8d9;
+  --theme-input-bg: rgba(255, 255, 255, 0.95);
   --theme-input-hover: #ffffff;
-  --theme-overlay: rgba(15, 23, 42, 0.66);
-  --theme-modal-surface: rgba(255, 255, 255, 0.96);
-  --theme-shadow-sm: 0 10px 30px rgba(15, 23, 42, 0.08);
-  --theme-shadow-md: 0 18px 40px rgba(15, 23, 42, 0.14);
-  --theme-shadow-modal: 0 26px 60px rgba(15, 23, 42, 0.28);
+  --theme-overlay: rgba(7, 15, 31, 0.6);
+  --theme-modal-surface: rgba(255, 255, 255, 0.97);
+  --theme-shadow-sm: 0 10px 28px rgba(9, 20, 39, 0.08);
+  --theme-shadow-md: 0 20px 44px rgba(9, 20, 39, 0.14);
+  --theme-shadow-modal: 0 28px 64px rgba(9, 20, 39, 0.24);
   --theme-focus-ring: 0 0 0 3px rgba(var(--theme-primary-rgb), 0.22);
+  --theme-radius-lg: 14px;
+  --theme-radius-xl: 18px;
 }
 
 html.dark {
   color-scheme: dark;
-  --theme-bg: #020617;
+  --theme-bg: #030712;
   --theme-surface: #0f172a;
-  --theme-surface-muted: #111827;
-  --theme-surface-subtle: #1e293b;
-  --theme-surface-hover: #162235;
-  --theme-page-from: #020617;
-  --theme-page-via: #0f172a;
-  --theme-page-to: #111827;
-  --theme-text: #e5e7eb;
-  --theme-text-soft: #cbd5e1;
-  --theme-text-muted: #94a3b8;
-  --theme-placeholder: #98a6ba;
-  --theme-border: #334155;
-  --theme-border-strong: #475569;
-  --theme-input-bg: rgba(15, 23, 42, 0.88);
-  --theme-input-hover: rgba(22, 34, 53, 0.96);
-  --theme-overlay: rgba(2, 6, 23, 0.76);
-  --theme-modal-surface: rgba(15, 23, 42, 0.94);
-  --theme-shadow-sm: 0 18px 36px rgba(2, 6, 23, 0.36);
-  --theme-shadow-md: 0 24px 52px rgba(2, 6, 23, 0.5);
-  --theme-shadow-modal: 0 28px 70px rgba(0, 0, 0, 0.58);
+  --theme-surface-muted: #111b2f;
+  --theme-surface-subtle: #1b2940;
+  --theme-surface-hover: #16263d;
+  --theme-page-from: #020611;
+  --theme-page-via: #0d1728;
+  --theme-page-to: #111d31;
+  --theme-text: #f3f6fb;
+  --theme-text-soft: #d7e0ef;
+  --theme-text-muted: #98a9c1;
+  --theme-placeholder: #90a2bc;
+  --theme-border: #31445f;
+  --theme-border-strong: #3f5574;
+  --theme-input-bg: rgba(13, 23, 40, 0.92);
+  --theme-input-hover: rgba(22, 36, 57, 0.98);
+  --theme-overlay: rgba(1, 5, 14, 0.78);
+  --theme-modal-surface: rgba(13, 23, 40, 0.95);
+  --theme-shadow-sm: 0 18px 36px rgba(1, 7, 20, 0.44);
+  --theme-shadow-md: 0 28px 56px rgba(1, 7, 20, 0.56);
+  --theme-shadow-modal: 0 32px 72px rgba(0, 0, 0, 0.6);
 }
 
 * {
-  caret-color: transparent;
   box-sizing: border-box;
+}
+
+img,
+video,
+canvas,
+svg {
+  max-width: 100%;
 }
 @keyframes typingLoop {
   0% { width: 0 }
@@ -104,11 +112,53 @@ html {
 body {
   background-color: var(--theme-bg);
   color: var(--theme-text);
+  font-family:
+    Inter,
+    "Segoe UI",
+    Roboto,
+    "Helvetica Neue",
+    Arial,
+    "Noto Sans",
+    sans-serif;
+  line-height: 1.55;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   transition: background-color 0.28s ease, color 0.28s ease;
 }
 
 #root {
   min-height: 100vh;
+}
+
+html {
+  scrollbar-color: var(--theme-border-strong) transparent;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  width: 11px;
+  height: 11px;
+}
+
+html::-webkit-scrollbar-track,
+body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+html::-webkit-scrollbar-thumb,
+body::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--theme-border-strong) 74%, transparent);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  border-radius: 9999px;
+}
+
+html::-webkit-scrollbar-thumb:hover,
+body::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, var(--theme-border-strong) 92%, transparent);
+  border: 2px solid transparent;
+  background-clip: padding-box;
 }
 
 html.dark {
@@ -182,6 +232,13 @@ html.dark body {
     opacity 0.24s ease;
 }
 
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
 .theme-page-shell {
   background-image: linear-gradient(
     135deg,
@@ -190,6 +247,44 @@ html.dark body {
     var(--theme-page-to) 100%
   );
   color: var(--theme-text);
+}
+
+.dashboard-shell {
+  background-image: linear-gradient(
+    135deg,
+    var(--theme-page-from) 0%,
+    var(--theme-page-via) 52%,
+    var(--theme-page-to) 100%
+  );
+  color: var(--theme-text);
+}
+
+.dashboard-header-surface {
+  background: color-mix(in srgb, var(--theme-surface) 92%, transparent);
+  border: 1px solid var(--theme-border);
+  box-shadow: var(--theme-shadow-sm);
+  backdrop-filter: blur(14px);
+}
+
+.dashboard-content-shell {
+  background: color-mix(in srgb, var(--theme-surface) 95%, transparent);
+  border: 1px solid var(--theme-border);
+  border-radius: var(--theme-radius-xl);
+  box-shadow: var(--theme-shadow-sm);
+}
+
+.theme-back-button {
+  background: var(--theme-surface);
+  color: var(--theme-text-soft);
+  border: 1px solid var(--theme-border);
+  border-radius: 12px;
+  box-shadow: var(--theme-shadow-sm);
+}
+
+.theme-back-button:hover {
+  background: var(--theme-surface-hover);
+  color: var(--theme-text);
+  border-color: var(--theme-border-strong);
 }
 
 .theme-surface {
@@ -351,6 +446,18 @@ html.dark body {
   border: 1px solid var(--theme-border);
   box-shadow: var(--theme-shadow-modal);
   animation: themeModalIn 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (max-width: 768px) {
+  .theme-page-shell,
+  .dashboard-shell {
+    background-image: linear-gradient(
+      165deg,
+      var(--theme-page-from) 0%,
+      var(--theme-page-via) 58%,
+      var(--theme-page-to) 100%
+    );
+  }
 }
 
 @keyframes themeOverlayIn {
