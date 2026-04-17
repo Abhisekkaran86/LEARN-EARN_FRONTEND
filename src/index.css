@@ -2,7 +2,10 @@
 @import 'react-toastify/dist/ReactToastify.css';
 
 @custom-variant dark (&:where(.dark, .dark *));
-
+input,
+textarea {
+  caret-color: transparent; /* hides blinking cursor */
+}
 :root {
   color-scheme: light;
   --theme-primary: #82c600;
