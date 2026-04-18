@@ -378,11 +378,10 @@
 // };
 
 // export default UsersPage;
-
 import { useEffect, useState } from "react";
 import API from "../../../services/axios";
-
-import { PencilLine, Search, Trash2, Users } from "lucide-react";
+import { Search, Users } from "lucide-react";
+import { toast } from "react-toastify";
 import UserAvatar from "@/components/ui/UserAvatar";
 import {
   formatRegistrationDate,
@@ -402,11 +401,8 @@ const UsersPage = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
-  const [deletingId, setDeletingId] = useState(null);
   const [editingUser, setEditingUser] = useState(emptyForm);
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState("");
-
   const [deleteUser, setDeleteUser] = useState(null);
 
   const token = localStorage.getItem("token");
@@ -427,7 +423,7 @@ const UsersPage = () => {
 
         setUsers(data.map((u) => normalizeUserProfileData(u)));
       } catch (err) {
-        setError(err.response?.data?.message || "Unable to load users");
+        toast.error("Failed to load users");
       } finally {
         setLoading(false);
       }
@@ -436,30 +432,29 @@ const UsersPage = () => {
     fetchUsers();
   }, [token]);
 
-  // DELETE
+  // DELETE USER
   const handleDelete = async (userId) => {
     try {
-      setDeletingId(userId);
-
       await API.delete(`/auth/delete/user/${userId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
       setUsers((prev) => prev.filter((u) => u._id !== userId));
-    } finally {
-      setDeletingId(null);
+      toast.success("User deleted successfully");
+    } catch {
+      toast.error("Delete failed");
     }
   };
 
-  // EDIT OPEN
+  // OPEN EDIT
   const handleEditOpen = (user) => {
     setEditingUser({
-      _id: user._id || "",
-      name: user.name || "",
-      email: user.email || "",
-      phoneNumber: user.phoneNumber || "",
-      gender: user.gender || "",
-      role: user.role || "student",
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      phoneNumber: user.phoneNumber,
+      gender: user.gender,
+      role: user.role,
     });
   };
 
@@ -468,7 +463,7 @@ const UsersPage = () => {
     setEditingUser((prev) => ({ ...prev, [name]: value }));
   };
 
-  // UPDATE
+  // UPDATE USER
   const handleUpdate = async () => {
     if (!editingUser._id) return;
 
@@ -498,7 +493,16 @@ const UsersPage = () => {
         )
       );
 
+      // ✅ SUCCESS TOAST
+      toast.success("User updated successfully 🚀");
+
+      // ✅ CLOSE MODAL
       setEditingUser(emptyForm);
+
+    } catch (err) {
+      toast.error(
+        err?.response?.data?.message || "Update failed ❌"
+      );
     } finally {
       setSaving(false);
     }
@@ -513,21 +517,21 @@ const UsersPage = () => {
   });
 
   return (
-    <div className="theme-page-shell min-h-screen p-6">
+    <div className="theme-page-shell min-h-screen p-4 md:p-6">
 
       {/* HEADER */}
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
         <div className="flex items-center gap-2">
           <Users className="text-[#82C600]" />
-          <h1 className="text-2xl font-bold">Users</h1>
+          <h1 className="text-xl md:text-2xl font-bold">All Users</h1>
         </div>
 
-        <div className="flex items-center gap-2 border px-3 py-2 rounded-xl">
+        <div className="flex items-center gap-2 theme-input px-3 py-2 rounded-xl w-full md:w-72">
           <Search size={16} />
           <input
             type="text"
-            placeholder="Search..."
-            className="outline-none"
+            placeholder="Search users..."
+            className="bg-transparent outline-none w-full"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -535,120 +539,158 @@ const UsersPage = () => {
       </div>
 
       {/* TABLE */}
-      <div className="border rounded-2xl overflow-hidden">
+      <div className="theme-surface rounded-2xl overflow-hidden">
 
-        {filteredUsers.map((user) => (
-          <div
-            key={user._id}
-            className="grid grid-cols-5 p-4 border-b items-center"
-          >
-            <div className="flex gap-2 items-center">
-              <UserAvatar user={user} size="sm" />
-              {user.name}
+        {/* HEADER */}
+        <div className="hidden md:grid grid-cols-5 px-4 py-3 text-sm font-semibold border-b theme-border">
+          <div>User</div>
+          <div>Email</div>
+          <div>Role</div>
+          <div>Date</div>
+          <div className="text-right">Actions</div>
+        </div>
+
+        {loading ? (
+          <div className="p-6 text-center">Loading...</div>
+        ) : filteredUsers.length === 0 ? (
+          <div className="p-6 text-center">No users found</div>
+        ) : (
+          filteredUsers.map((user) => (
+            <div key={user._id} className="border-b theme-border p-4">
+
+              {/* MOBILE */}
+              <div className="flex flex-col gap-3 md:hidden">
+                <div className="flex items-center gap-3">
+                  <UserAvatar user={user} size="sm" />
+                  <div>
+                    <p className="font-medium">{user.name}</p>
+                    <p className="text-xs theme-text-muted">{user.email}</p>
+                  </div>
+                </div>
+
+                <div className="flex justify-between text-sm">
+                  <span className="theme-text-muted">Role</span>
+                  <span>{user.role}</span>
+                </div>
+
+                <div className="flex justify-between text-sm">
+                  <span className="theme-text-muted">Joined</span>
+                  <span>{formatRegistrationDate(user)}</span>
+                </div>
+
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => handleEditOpen(user)}
+                    className="flex-1 theme-outline-button py-2 rounded-lg"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => setDeleteUser(user)}
+                    className="flex-1 theme-outline-button text-red-500 py-2 rounded-lg"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+
+              {/* DESKTOP */}
+              <div className="hidden md:grid grid-cols-5 items-center">
+                <div className="flex gap-2 items-center">
+                  <UserAvatar user={user} size="sm" />
+                  {user.name}
+                </div>
+                <div>{user.email}</div>
+                <div>{user.role}</div>
+                <div>{formatRegistrationDate(user)}</div>
+
+                <div className="flex justify-end gap-2">
+                  <button
+                    onClick={() => handleEditOpen(user)}
+                    className="px-3 py-1 theme-outline-button rounded-lg"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => setDeleteUser(user)}
+                    className="px-3 py-1 theme-outline-button text-red-500 rounded-lg"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+
             </div>
-
-            <div>{user.email}</div>
-            <div>{user.role}</div>
-            <div>{formatRegistrationDate(user)}</div>
-
-            <div className="flex justify-end gap-2">
-              <button
-                onClick={() => handleEditOpen(user)}
-                className="px-3 py-1 bg-blue-100 rounded"
-              >
-                Edit
-              </button>
-
-              <button
-                onClick={() => setDeleteUser(user)}
-                className="px-3 py-1 bg-red-100 rounded"
-              >
-                Delete
-              </button>
-            </div>
-          </div>
-        ))}
+          ))
+        )}
       </div>
 
-      {/* 💎 PREMIUM EDIT MODAL */}
+      {/* EDIT MODAL */}
       {editingUser._id && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-
-          <div className="bg-white dark:bg-[var(--theme-surface)] p-6 rounded-3xl w-full max-w-lg shadow-2xl">
-
-            <h2 className="text-xl font-bold mb-4">
-              Edit User
-            </h2>
+        <div className="fixed inset-0 flex items-center justify-center theme-modal-overlay">
+          <div className="theme-modal-panel p-6 rounded-3xl w-full max-w-lg">
+            <h2 className="text-xl font-bold mb-4">Edit User</h2>
 
             <div className="space-y-3">
-
               <input
                 name="name"
                 value={editingUser.name}
                 onChange={handleEditChange}
                 placeholder="Name"
-                className="w-full p-3 border rounded-xl"
+                className="w-full p-3 rounded-xl theme-input"
               />
-
               <input
                 name="email"
                 value={editingUser.email}
                 onChange={handleEditChange}
                 placeholder="Email"
-                className="w-full p-3 border rounded-xl"
+                className="w-full p-3 rounded-xl theme-input"
               />
-
               <input
                 name="phoneNumber"
                 value={editingUser.phoneNumber}
                 onChange={handleEditChange}
                 placeholder="Phone"
-                className="w-full p-3 border rounded-xl"
+                className="w-full p-3 rounded-xl theme-input"
               />
-
             </div>
 
             <div className="flex justify-end gap-3 mt-6">
-
               <button
                 onClick={() => setEditingUser(emptyForm)}
-                className="px-4 py-2 border rounded-xl"
+                className="theme-outline-button px-4 py-2 rounded-xl"
               >
                 Cancel
               </button>
 
               <button
                 onClick={handleUpdate}
-                className="px-4 py-2 bg-green-500 text-white rounded-xl"
+                disabled={saving}
+                className="theme-brand-button px-4 py-2 rounded-xl"
               >
                 {saving ? "Saving..." : "Save"}
               </button>
-
             </div>
           </div>
         </div>
       )}
 
-      {/* 🗑️ DELETE MODAL */}
+      {/* DELETE MODAL */}
       {deleteUser && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/40">
-
-          <div className="bg-white p-6 rounded-2xl w-full max-w-md">
-
-            <h2 className="font-bold mb-4">
-              Delete User
-            </h2>
-
+        <div className="fixed inset-0 flex items-center justify-center theme-modal-overlay">
+          <div className="theme-modal-panel p-6 rounded-2xl w-full max-w-md">
+            <h2 className="font-bold mb-4">Delete User</h2>
             <p className="mb-4">
-              Delete {deleteUser.name} ?
+              Delete <span className="font-semibold">{deleteUser.name}</span>?
             </p>
 
             <div className="flex justify-end gap-2">
-
-              <button onClick={() => setDeleteUser(null)}>
+              <button
+                onClick={() => setDeleteUser(null)}
+                className="theme-outline-button px-3 py-1 rounded"
+              >
                 Cancel
               </button>
-
               <button
                 onClick={async () => {
                   await handleDelete(deleteUser._id);
@@ -658,7 +700,6 @@ const UsersPage = () => {
               >
                 Delete
               </button>
-
             </div>
           </div>
         </div>
