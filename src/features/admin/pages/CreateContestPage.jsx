@@ -350,7 +350,7 @@ const CreateContestView = () => {
             onClick={handleCreate}
             disabled={loading}
             className={`relative overflow-hidden group w-full sm:w-auto px-6 py-2.5 rounded-xl text-sm font-semibold text-white transition-all duration-300
-      ${loading
+            ${loading
                 ? "bg-gray-400 cursor-not-allowed"
                 : "bg-gradient-to-r from-[#82C600] to-[#6ea800] hover:shadow-lg hover:shadow-[#82C600]/30 active:scale-95"
               }`}
